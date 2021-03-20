@@ -24,6 +24,7 @@ from yalexs.activity import (
     ACTIVITY_ACTIONS_DOORBELL_VIEW,
     ACTIVITY_ACTIONS_LOCK_OPERATION,
     SOURCE_LOG,
+    ActivityType,
     LockOperationActivity,
 )
 from yalexs.lock import LockDoorStatus, LockStatus
@@ -78,6 +79,7 @@ class TestActivity(unittest.TestCase):
         auto_unlock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("auto_unlock_activity.json"))
         )
+        assert auto_unlock_activity.activity_type == ActivityType.LOCK_OPERATION
         assert auto_unlock_activity.operated_by == "My Name"
         assert auto_unlock_activity.operated_remote is False
         assert auto_unlock_activity.operated_keypad is False

@@ -5,6 +5,7 @@ import unittest
 import dateutil.parser
 
 from yalexs.activity import (
+    ActivityType,
     BridgeOperationActivity,
     DoorbellDingActivity,
     DoorbellMotionActivity,
@@ -92,6 +93,9 @@ class TestLockDetail(unittest.TestCase):
         assert isinstance(activities[0], LockOperationActivity)
         assert activities[0].action == "lock"
         assert activities[0].operated_by is None
+        assert (
+            activities[0].activity_type == ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR
+        )
         assert isinstance(activities[1], DoorOperationActivity)
         assert activities[1].action == "dooropen"
 
@@ -107,7 +111,9 @@ class TestLockDetail(unittest.TestCase):
         assert isinstance(activities[0], LockOperationActivity)
         assert activities[0].action == "lock"
         assert activities[0].operated_by is None
-
+        assert (
+            activities[0].activity_type == ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR
+        )
         assert isinstance(activities[1], DoorOperationActivity)
         assert activities[1].action == "doorclosed"
 

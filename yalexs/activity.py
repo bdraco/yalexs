@@ -61,6 +61,7 @@ class ActivityType(Enum):
     DOORBELL_DING = "doorbell_ding"
     DOORBELL_VIEW = "doorbell_view"
     LOCK_OPERATION = "lock_operation"
+    LOCK_OPERATION_WITHOUT_OPERATOR = "lock_operation_without_operator"
     DOOR_OPERATION = "door_operation"
     BRIDGE_OPERATION = "bridge_operation"
 
@@ -201,7 +202,6 @@ class DoorbellViewActivity(Activity):
 
 class LockOperationActivity(Activity):
     def __init__(self, source, data):
-        super().__init__(source, ActivityType.LOCK_OPERATION, data)
 
         calling_user = data.get("callingUser", {})
 
@@ -214,8 +214,12 @@ class LockOperationActivity(Activity):
         last_name = calling_user.get("LastName")
         if first_name is None and last_name is None:
             self._operated_by = None
+            activity_type = ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR
         else:
             self._operated_by = f"{first_name} {last_name}"
+            activity_type = ActivityType.LOCK_OPERATION
+
+        super().__init__(source, activity_type, data)
 
         image_info = calling_user.get("imageInfo", {})
         self._operator_image_url = image_info.get("original", {}).get(
