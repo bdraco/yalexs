@@ -2,7 +2,7 @@ import json
 import os
 import unittest
 
-from august.activity import (
+from yalexs.activity import (
     ACTION_DOOR_CLOSED,
     ACTION_DOOR_OPEN,
     ACTION_DOORBELL_CALL_HANGUP,
@@ -20,7 +20,7 @@ from august.activity import (
     ACTIVITY_ACTIONS_LOCK_OPERATION,
     LockOperationActivity,
 )
-from august.lock import LockDoorStatus, LockStatus
+from yalexs.lock import LockDoorStatus, LockStatus
 
 
 def load_fixture(filename):

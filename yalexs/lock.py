@@ -3,9 +3,9 @@ from enum import Enum
 
 import dateutil.parser
 
-from august.bridge import BridgeDetail, BridgeStatus
-from august.device import Device, DeviceDetail
-from august.keypad import KeypadDetail
+from yalexs.bridge import BridgeDetail, BridgeStatus
+from yalexs.device import Device, DeviceDetail
+from yalexs.keypad import KeypadDetail
 
 LOCKED_STATUS = ("locked", "kAugLockState_Locked", "kAugLockState_Locking")
 UNLOCKED_STATUS = ("unlocked", "kAugLockState_Unlocked", "kAugLockState_Unlocking")

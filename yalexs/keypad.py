@@ -1,4 +1,4 @@
-from august.device import DeviceDetail
+from yalexs.device import DeviceDetail
 
 BATTERY_LEVEL_FULL = "Full"
 BATTERY_LEVEL_MEDIUM = "Medium"

@@ -2,7 +2,7 @@
 
 import dateutil.parser
 
-from august.activity import (
+from yalexs.activity import (
     ACTIVITY_ACTIONS_DOOR_OPERATION,
     ACTIVITY_ACTIONS_DOORBELL_DING,
     ACTIVITY_ACTIONS_DOORBELL_MOTION,
@@ -14,8 +14,8 @@ from august.activity import (
     DoorOperationActivity,
     LockOperationActivity,
 )
-from august.doorbell import Doorbell
-from august.lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
+from yalexs.doorbell import Doorbell
+from yalexs.lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
 
 API_RETRY_TIME = 2.5
 API_RETRY_ATTEMPTS = 10
@@ -110,7 +110,7 @@ def _activity_from_dict(activity_dict):
 
 
 def _map_lock_result_to_activity(lock_id, activity_epoch, action_text):
-    """Create an august activity from a lock result."""
+    """Create an yale access activity from a lock result."""
     mapped_dict = {
         "dateTime": activity_epoch,
         "deviceID": lock_id,

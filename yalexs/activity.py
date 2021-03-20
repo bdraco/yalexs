@@ -3,7 +3,7 @@ from enum import Enum
 
 import dateutil.parser
 
-from august.lock import LockDoorStatus, LockStatus
+from yalexs.lock import LockDoorStatus, LockStatus
 
 ACTION_LOCK_ONETOUCHLOCK = "onetouchlock"
 ACTION_LOCK_LOCK = "lock"

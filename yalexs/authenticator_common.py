@@ -7,7 +7,7 @@ import uuid
 
 import dateutil.parser
 
-from august.api import HEADER_AUGUST_ACCESS_TOKEN
+from yalexs.api import HEADER_AUGUST_ACCESS_TOKEN
 
 # The default time before expiration to refresh a token
 DEFAULT_RENEWAL_THRESHOLD = timedelta(days=7)
@@ -144,7 +144,7 @@ class AuthenticatorCommon:
             return self._authentication
 
         new_expiration = datetime.utcfromtimestamp(jwt_claims["exp"])
-        # The august api always returns expiresAt in the format
+        # The yale access api always returns expiresAt in the format
         # '%Y-%m-%dT%H:%M:%S.%fZ'
         # from the get_session api call
         # It is important we store access_token_expires formatted

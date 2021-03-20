@@ -9,9 +9,9 @@ from requests.models import Response
 from requests.structures import CaseInsensitiveDict
 import requests_mock
 
-import august.activity
-from august.api import Api, _raise_response_exceptions
-from august.api_common import (
+import yalexs.activity
+from yalexs.api import Api, _raise_response_exceptions
+from yalexs.api_common import (
     API_GET_DOORBELL_URL,
     API_GET_DOORBELLS_URL,
     API_GET_HOUSE_ACTIVITIES_URL,
@@ -23,9 +23,9 @@ from august.api_common import (
     API_LOCK_URL,
     API_UNLOCK_URL,
 )
-from august.bridge import BridgeDetail, BridgeStatus, BridgeStatusDetail
-from august.exceptions import AugustApiHTTPError
-from august.lock import LockDoorStatus, LockStatus
+from yalexs.bridge import BridgeDetail, BridgeStatus, BridgeStatusDetail
+from yalexs.exceptions import AugustApiHTTPError
+from yalexs.lock import LockDoorStatus, LockStatus
 
 ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
 
@@ -540,13 +540,13 @@ class TestApi(unittest.TestCase):
         )
 
         self.assertEqual(len(activities), 2)
-        self.assertIsInstance(activities[0], august.activity.LockOperationActivity)
+        self.assertIsInstance(activities[0], yalexs.activity.LockOperationActivity)
         self.assertEqual(activities[0].device_id, "ABC123")
         self.assertEqual(activities[0].device_type, "lock")
         self.assertEqual(activities[0].action, "lock")
         self.assertEqual(activities[0].activity_start_time, expected_lock_dt)
         self.assertEqual(activities[0].activity_end_time, expected_lock_dt)
-        self.assertIsInstance(activities[1], august.activity.DoorOperationActivity)
+        self.assertIsInstance(activities[1], yalexs.activity.DoorOperationActivity)
         self.assertEqual(activities[1].device_id, "ABC123")
         self.assertEqual(activities[1].device_type, "lock")
         self.assertEqual(activities[1].action, "doorclosed")
@@ -571,13 +571,13 @@ class TestApi(unittest.TestCase):
         )
 
         self.assertEqual(len(activities), 2)
-        self.assertIsInstance(activities[0], august.activity.LockOperationActivity)
+        self.assertIsInstance(activities[0], yalexs.activity.LockOperationActivity)
         self.assertEqual(activities[0].device_id, "ABC")
         self.assertEqual(activities[0].device_type, "lock")
         self.assertEqual(activities[0].action, "unlock")
         self.assertEqual(activities[0].activity_start_time, expected_unlock_dt)
         self.assertEqual(activities[0].activity_end_time, expected_unlock_dt)
-        self.assertIsInstance(activities[1], august.activity.DoorOperationActivity)
+        self.assertIsInstance(activities[1], yalexs.activity.DoorOperationActivity)
         self.assertEqual(activities[1].device_id, "ABC")
         self.assertEqual(activities[1].device_type, "lock")
         self.assertEqual(activities[1].action, "doorclosed")
@@ -602,7 +602,7 @@ class TestApi(unittest.TestCase):
         )
 
         self.assertEqual(len(activities), 1)
-        self.assertIsInstance(activities[0], august.activity.LockOperationActivity)
+        self.assertIsInstance(activities[0], yalexs.activity.LockOperationActivity)
         self.assertEqual(activities[0].device_id, "ABC123")
         self.assertEqual(activities[0].device_type, "lock")
         self.assertEqual(activities[0].action, "lock")
@@ -627,7 +627,7 @@ class TestApi(unittest.TestCase):
         )
 
         self.assertEqual(len(activities), 1)
-        self.assertIsInstance(activities[0], august.activity.LockOperationActivity)
+        self.assertIsInstance(activities[0], yalexs.activity.LockOperationActivity)
         self.assertEqual(activities[0].device_id, "ABC123")
         self.assertEqual(activities[0].device_type, "lock")
         self.assertEqual(activities[0].action, "unlock")
@@ -709,16 +709,16 @@ class TestApi(unittest.TestCase):
 
         self.assertEqual(10, len(activities))
 
-        self.assertIsInstance(activities[0], august.activity.LockOperationActivity)
-        self.assertIsInstance(activities[1], august.activity.LockOperationActivity)
-        self.assertIsInstance(activities[2], august.activity.LockOperationActivity)
-        self.assertIsInstance(activities[3], august.activity.LockOperationActivity)
-        self.assertIsInstance(activities[4], august.activity.LockOperationActivity)
-        self.assertIsInstance(activities[5], august.activity.DoorOperationActivity)
-        self.assertIsInstance(activities[6], august.activity.DoorOperationActivity)
-        self.assertIsInstance(activities[7], august.activity.DoorOperationActivity)
-        self.assertIsInstance(activities[8], august.activity.LockOperationActivity)
-        self.assertIsInstance(activities[9], august.activity.LockOperationActivity)
+        self.assertIsInstance(activities[0], yalexs.activity.LockOperationActivity)
+        self.assertIsInstance(activities[1], yalexs.activity.LockOperationActivity)
+        self.assertIsInstance(activities[2], yalexs.activity.LockOperationActivity)
+        self.assertIsInstance(activities[3], yalexs.activity.LockOperationActivity)
+        self.assertIsInstance(activities[4], yalexs.activity.LockOperationActivity)
+        self.assertIsInstance(activities[5], yalexs.activity.DoorOperationActivity)
+        self.assertIsInstance(activities[6], yalexs.activity.DoorOperationActivity)
+        self.assertIsInstance(activities[7], yalexs.activity.DoorOperationActivity)
+        self.assertIsInstance(activities[8], yalexs.activity.LockOperationActivity)
+        self.assertIsInstance(activities[9], yalexs.activity.LockOperationActivity)
 
     def test__raise_response_exceptions(self):
         four_two_eight = MockedResponse(content="not json")

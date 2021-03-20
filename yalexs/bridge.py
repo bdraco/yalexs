@@ -1,6 +1,6 @@
 from enum import Enum
 
-from august.device import DeviceDetail
+from yalexs.device import DeviceDetail
 
 ONLINE_EVENT = "associated_bridge_online"
 OFFLINE_EVENT = "associated_bridge_offline"

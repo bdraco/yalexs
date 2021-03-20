@@ -2,15 +2,15 @@ import datetime
 
 import dateutil.parser
 
-from august.activity import (
+from yalexs.activity import (
     ACTIVITY_ACTION_STATES,
     DoorbellMotionActivity,
     DoorOperationActivity,
     LockOperationActivity,
 )
-from august.bridge import OFFLINE_EVENT, ONLINE_EVENT
-from august.doorbell import DOORBELL_STATUS_KEY
-from august.lock import (
+from yalexs.bridge import OFFLINE_EVENT, ONLINE_EVENT
+from yalexs.doorbell import DOORBELL_STATUS_KEY
+from yalexs.lock import (
     DOOR_STATE_KEY,
     LOCK_STATUS_KEY,
     LockDoorStatus,

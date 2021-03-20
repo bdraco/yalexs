@@ -6,15 +6,15 @@ from aioresponses import aioresponses
 import aiounittest
 from dateutil.tz import tzutc
 
-from august.api_async import ApiAsync
-from august.api_common import (
+from yalexs.api_async import ApiAsync
+from yalexs.api_common import (
     API_GET_HOUSES_URL,
     API_GET_SESSION_URL,
     API_SEND_VERIFICATION_CODE_URLS,
     API_VALIDATE_VERIFICATION_CODE_URLS,
     HEADER_AUGUST_ACCESS_TOKEN,
 )
-from august.authenticator_async import (
+from yalexs.authenticator_async import (
     AuthenticationState,
     AuthenticatorAsync,
     ValidationResult,

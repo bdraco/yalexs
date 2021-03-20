@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 from dateutil.tz import tzutc
 from requests import RequestException
 
-from august.authenticator import AuthenticationState, Authenticator, ValidationResult
+from yalexs.authenticator import AuthenticationState, Authenticator, ValidationResult
 
 
 def format_datetime(dt):
@@ -35,7 +35,7 @@ class TestAuthenticator(unittest.TestCase):
         }
         mock_api.get_session.return_value = session_response
 
-    @patch("august.api.Api")
+    @patch("yalexs.api.Api")
     def test_should_refresh_when_token_expiry_is_after_renewal_threshold(
         self, mock_api
     ):
@@ -53,7 +53,7 @@ class TestAuthenticator(unittest.TestCase):
 
         self.assertEqual(True, should_refresh)
 
-    @patch("august.api.Api")
+    @patch("yalexs.api.Api")
     def test_should_refresh_when_token_expiry_is_before_renewal_threshold(
         self, mock_api
     ):
@@ -71,7 +71,7 @@ class TestAuthenticator(unittest.TestCase):
 
         self.assertEqual(False, should_refresh)
 
-    @patch("august.api.Api")
+    @patch("yalexs.api.Api")
     def test_refresh_token(self, mock_api):
         self._setup_session_response(mock_api, True, True)
 
@@ -89,7 +89,7 @@ class TestAuthenticator(unittest.TestCase):
             access_token.parsed_expiration_time(),
         )
 
-    @patch("august.api.Api")
+    @patch("yalexs.api.Api")
     def test_get_session_with_authenticated_response(self, mock_api):
         self._setup_session_response(mock_api, True, True)
 
@@ -102,7 +102,7 @@ class TestAuthenticator(unittest.TestCase):
         self.assertEqual("install_id", authentication.install_id)
         self.assertEqual(AuthenticationState.AUTHENTICATED, authentication.state)
 
-    @patch("august.api.Api")
+    @patch("yalexs.api.Api")
     def test_get_session_with_bad_password_response(self, mock_api):
         self._setup_session_response(mock_api, False, True)
 
@@ -115,7 +115,7 @@ class TestAuthenticator(unittest.TestCase):
         self.assertEqual("install_id", authentication.install_id)
         self.assertEqual(AuthenticationState.BAD_PASSWORD, authentication.state)
 
-    @patch("august.api.Api")
+    @patch("yalexs.api.Api")
     def test_get_session_with_requires_validation_response(self, mock_api):
         self._setup_session_response(mock_api, True, False)
 
@@ -128,7 +128,7 @@ class TestAuthenticator(unittest.TestCase):
         self.assertEqual("install_id", authentication.install_id)
         self.assertEqual(AuthenticationState.REQUIRES_VALIDATION, authentication.state)
 
-    @patch("august.api.Api")
+    @patch("yalexs.api.Api")
     def test_get_session_with_already_authenticated_state(self, mock_api):
         self._setup_session_response(mock_api, True, True)
 
@@ -144,7 +144,7 @@ class TestAuthenticator(unittest.TestCase):
         self.assertEqual("install_id", authentication.install_id)
         self.assertEqual(AuthenticationState.AUTHENTICATED, authentication.state)
 
-    @patch("august.api.Api")
+    @patch("yalexs.api.Api")
     def test_send_verification_code(self, mock_api):
         self._setup_session_response(mock_api, True, False)
 
@@ -156,7 +156,7 @@ class TestAuthenticator(unittest.TestCase):
             "access_token", "phone", "user"
         )
 
-    @patch("august.api.Api")
+    @patch("yalexs.api.Api")
     def test_validate_verification_code_with_no_code(self, mock_api):
         self._setup_session_response(mock_api, True, False)
 
@@ -168,7 +168,7 @@ class TestAuthenticator(unittest.TestCase):
 
         self.assertEqual(ValidationResult.INVALID_VERIFICATION_CODE, result)
 
-    @patch("august.api.Api")
+    @patch("yalexs.api.Api")
     def test_validate_verification_code_with_validated_response(self, mock_api):
         self._setup_session_response(mock_api, True, False)
 
@@ -185,7 +185,7 @@ class TestAuthenticator(unittest.TestCase):
 
         self.assertEqual(ValidationResult.VALIDATED, result)
 
-    @patch("august.api.Api")
+    @patch("yalexs.api.Api")
     def test_validate_verification_code_with_invalid_code_response(self, mock_api):
         self._setup_session_response(mock_api, True, False)
 

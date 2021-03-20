@@ -1,5 +1,9 @@
-# py-august [![Build Status](https://travis-ci.org/snjoetw/py-august.svg?branch=master)](https://travis-ci.org/snjoetw/py-august)
-Python API for August Smart Lock and Doorbell. This is used in [Home Assistant](https://home-assistant.io) but should be generic enough that can be used elsewhere.
+# yalexs [![PyPI version](https://badge.fury.io/py/yalexs.svg)](https://badge.fury.io/py/yalexs) [![Build Status](https://github.com/bdraco/yalexs/workflows/CI/badge.svg)](https://github.com/bdraco/yalexs) [![codecov](https://codecov.io/gh/bdraco/yalexs/branch/master/graph/badge.svg)](https://codecov.io/gh/bdraco/yalexs) [![Python Versions](https://img.shields.io/pypi/pyversions/yalexs.svg)](https://pypi.python.org/pypi/yalexs/)
+Python API for Yale Access (formerly August) Smart Lock and Doorbell. This is used in [Home Assistant](https://home-assistant.io) but should be generic enough that can be used elsewhere.
+
+## Yale Access formerly August
+
+This library is a fork of Joe Lu's excellent august library from https://github.com/snjoetw/py-august
 
 ## Classes
 ### Authenticator
@@ -14,7 +18,7 @@ Authenicator is responsible for all authentication related logic, this includes 
 | login_method             | Login method, either "phone" or "email".            |
 | username                 | If you're login_method is phone, then this is your full phone# including "+" and country code; otherwise enter your email address here. |
 | password                 | Password.      |
-| install_id*              | ID that's generated when August app is installed. If not specified, Authenticator will auto-generate one. If an install_id is provisioned, then it's good to provide the provisioned install_id as you'll bypass verification process. |
+| install_id*              | ID that's generated when Yale Access app is installed. If not specified, Authenticator will auto-generate one. If an install_id is provisioned, then it's good to provide the provisioned install_id as you'll bypass verification process. |
 | access_token_cache_file* | Path to access_token cache file. If specified, access_token info will be cached in the file. Subsequent authentication will utilize information in the file to determine correct authentication state.|
 
 \* means optional
@@ -42,14 +46,14 @@ Validates verification code. This method returns ValidationResult. Check the val
 ## Install
 
 ```bash
-pip install py-august
+pip install yalexs
 ```
 
 
 ## Usage
 ```python
-from august.api import Api 
-from august.authenticator import Authenticator, AuthenticationState
+from yalexs.api import Api 
+from yalexs.authenticator import Authenticator, AuthenticationState
 
 api = Api(timeout=20)
 authenticator = Authenticator(api, "phone", "YOUR_USERNAME", "YOUR_PASSWORD",
@@ -63,7 +67,7 @@ state = authentication.state
 
 # If AuthenticationState is BAD_PASSWORD, that means your login_method, username and password do not match
 
-# If AuthenticationState is AUTHENTICATED, that means you're authenticated already. If you specify "access_token_cache_file", the authentication is cached in a file. Everytime you try to authenticate again, it'll read from that file and if you're authenticated already, Authenticator won't call August again as you have a valid access_token
+# If AuthenticationState is AUTHENTICATED, that means you're authenticated already. If you specify "access_token_cache_file", the authentication is cached in a file. Everytime you try to authenticate again, it'll read from that file and if you're authenticated already, Authenticator won't call Yale Access again as you have a valid access_token
 
 
 # If AuthenticationState is REQUIRES_VALIDATION, then you'll need to go through verification process

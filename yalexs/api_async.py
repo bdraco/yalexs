@@ -5,7 +5,7 @@ import logging
 
 from aiohttp import ClientResponseError
 
-from august.api_common import (
+from yalexs.api_common import (
     API_LOCK_URL,
     API_RETRY_ATTEMPTS,
     API_RETRY_TIME,
@@ -18,10 +18,10 @@ from august.api_common import (
     _process_doorbells_json,
     _process_locks_json,
 )
-from august.doorbell import DoorbellDetail
-from august.exceptions import AugustApiAIOHTTPError
-from august.lock import LockDetail, determine_door_state, determine_lock_status
-from august.pin import Pin
+from yalexs.doorbell import DoorbellDetail
+from yalexs.exceptions import AugustApiAIOHTTPError
+from yalexs.lock import LockDetail, determine_door_state, determine_lock_status
+from yalexs.pin import Pin
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -176,7 +176,7 @@ class ApiAsync(ApiCommon):
     async def async_lock_return_activities(self, access_token, lock_id):
         """Execute a remote lock operation.
 
-        Returns an array of one or more august.activity.Activity objects
+        Returns an array of one or more yalexs.activity.Activity objects
 
         If the lock supports door sense one of the activities
         will include the current door state.
@@ -202,7 +202,7 @@ class ApiAsync(ApiCommon):
     async def async_unlock_return_activities(self, access_token, lock_id):
         """Execute a remote lock operation.
 
-        Returns an array of one or more august.activity.Activity objects
+        Returns an array of one or more yalexs.activity.Activity objects
 
         If the lock supports door sense one of the activities
         will include the current door state.
