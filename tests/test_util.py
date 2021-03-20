@@ -12,19 +12,11 @@ from yalexs.activity import (
 )
 from yalexs.api import _convert_lock_result_to_activities
 from yalexs.doorbell import DoorbellDetail
-from yalexs.lock import (
-    DOOR_STATE_KEY,
-    LOCK_STATUS_KEY,
-    LockDetail,
-    LockDoorStatus,
-    LockStatus,
-)
+from yalexs.lock import LockDetail, LockDoorStatus, LockStatus
 from yalexs.util import (
     as_utc_from_local,
-    update_doorbell_details_from_pubnub_message,
     update_doorbell_image_from_activity,
     update_lock_detail_from_activity,
-    update_lock_details_from_pubnub_message,
 )
 
 
