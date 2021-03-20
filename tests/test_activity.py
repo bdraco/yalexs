@@ -3,16 +3,21 @@ import os
 import unittest
 
 from yalexs.activity import (
+    ACTION_BRIDGE_OFFLINE,
+    ACTION_BRIDGE_ONLINE,
     ACTION_DOOR_CLOSED,
     ACTION_DOOR_OPEN,
+    ACTION_DOORBELL_BUTTON_PUSHED,
     ACTION_DOORBELL_CALL_HANGUP,
     ACTION_DOORBELL_CALL_INITIATED,
     ACTION_DOORBELL_CALL_MISSED,
+    ACTION_DOORBELL_IMAGE_CAPTURE,
     ACTION_DOORBELL_MOTION_DETECTED,
     ACTION_LOCK_LOCK,
     ACTION_LOCK_ONETOUCHLOCK,
     ACTION_LOCK_UNLOCK,
     ACTIVITY_ACTION_STATES,
+    ACTIVITY_ACTIONS_BRIDGE_OPERATION,
     ACTIVITY_ACTIONS_DOOR_OPERATION,
     ACTIVITY_ACTIONS_DOORBELL_DING,
     ACTIVITY_ACTIONS_DOORBELL_MOTION,
@@ -43,10 +48,15 @@ class TestActivity(unittest.TestCase):
     def test_activity_actions(self):
         self.assertCountEqual(
             ACTIVITY_ACTIONS_DOORBELL_DING,
-            [ACTION_DOORBELL_CALL_MISSED, ACTION_DOORBELL_CALL_HANGUP],
+            [
+                ACTION_DOORBELL_BUTTON_PUSHED,
+                ACTION_DOORBELL_CALL_MISSED,
+                ACTION_DOORBELL_CALL_HANGUP,
+            ],
         )
         self.assertCountEqual(
-            ACTIVITY_ACTIONS_DOORBELL_MOTION, [ACTION_DOORBELL_MOTION_DETECTED]
+            ACTIVITY_ACTIONS_DOORBELL_MOTION,
+            [ACTION_DOORBELL_IMAGE_CAPTURE, ACTION_DOORBELL_MOTION_DETECTED],
         )
         self.assertCountEqual(
             ACTIVITY_ACTIONS_DOORBELL_VIEW, [ACTION_DOORBELL_CALL_INITIATED]
@@ -57,6 +67,10 @@ class TestActivity(unittest.TestCase):
         )
         self.assertCountEqual(
             ACTIVITY_ACTIONS_DOOR_OPERATION, [ACTION_DOOR_OPEN, ACTION_DOOR_CLOSED]
+        )
+        self.assertCountEqual(
+            ACTIVITY_ACTIONS_BRIDGE_OPERATION,
+            [ACTION_BRIDGE_ONLINE, ACTION_BRIDGE_OFFLINE],
         )
 
     def test_auto_unlock_activity(self):

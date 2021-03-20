@@ -3,11 +3,13 @@
 import dateutil.parser
 
 from yalexs.activity import (
+    ACTIVITY_ACTIONS_BRIDGE_OPERATION,
     ACTIVITY_ACTIONS_DOOR_OPERATION,
     ACTIVITY_ACTIONS_DOORBELL_DING,
     ACTIVITY_ACTIONS_DOORBELL_MOTION,
     ACTIVITY_ACTIONS_DOORBELL_VIEW,
     ACTIVITY_ACTIONS_LOCK_OPERATION,
+    BridgeOperationActivity,
     DoorbellDingActivity,
     DoorbellMotionActivity,
     DoorbellViewActivity,
@@ -106,6 +108,8 @@ def _activity_from_dict(activity_dict):
         return LockOperationActivity(activity_dict)
     if action in ACTIVITY_ACTIONS_DOOR_OPERATION:
         return DoorOperationActivity(activity_dict)
+    if action in ACTIVITY_ACTIONS_BRIDGE_OPERATION:
+        return BridgeOperationActivity(activity_dict)
     return None
 
 

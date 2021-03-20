@@ -88,6 +88,7 @@ class LockDetail(DeviceDetail):
 
         if "skuNumber" in data:
             self._model = data["skuNumber"]
+        self._data = data
 
     @property
     def model(self):
@@ -179,6 +180,10 @@ class LockDetail(DeviceDetail):
         if not self._bridge:
             return
         self._bridge.set_online(state)
+
+    def get_user(self, user_id):
+        """Lookup user data by id."""
+        return self._data.get("users", {}).get(user_id)
 
 
 class LockStatus(Enum):
