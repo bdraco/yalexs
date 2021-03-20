@@ -106,9 +106,7 @@ class TestLockDetail(unittest.TestCase):
         )
         assert isinstance(activities[0], LockOperationActivity)
         assert activities[0].action == "lock"
-        assert activities[0].operated_by == "Foo Bar"
-        assert activities[0].operator_image_url == "https://www.image.com/foo.jpeg"
-        assert activities[0].operator_thumbnail_url == "https://www.image.com/foo.jpeg"
+        assert activities[0].operated_by is None
 
         assert isinstance(activities[1], DoorOperationActivity)
         assert activities[1].action == "doorclosed"

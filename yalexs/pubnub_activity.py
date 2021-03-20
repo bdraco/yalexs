@@ -7,7 +7,6 @@ from yalexs.activity import (
     ACTION_DOORBELL_IMAGE_CAPTURE,
     ACTION_DOORBELL_MOTION_DETECTED,
     ACTION_LOCK_LOCK,
-    ACTION_LOCK_ONETOUCHLOCK,
     ACTION_LOCK_UNLOCK,
 )
 from yalexs.api_common import _activity_from_dict
@@ -37,10 +36,6 @@ def activities_from_pubnub_message(device, date_time, message):
         activity_dict["info"] = message.get("info", {})
         if "remoteEvent" in message:
             activity_dict["info"]["remote"] = True
-        user_id = message.get("callingUserID")
-        calling_user = device.get_user(user_id) or {}
-        activity_dict["callingUser"] = calling_user.copy()
-        activity_dict["callingUser"]["UserID"] = user_id
 
         if LOCK_STATUS_KEY in message:
             status = message[LOCK_STATUS_KEY]
@@ -48,8 +43,6 @@ def activities_from_pubnub_message(device, date_time, message):
                 _add_activity(activities, activity_dict, ACTION_BRIDGE_ONLINE)
             elif status == ACTION_BRIDGE_OFFLINE:
                 _add_activity(activities, activity_dict, ACTION_BRIDGE_OFFLINE)
-            elif status == ACTION_LOCK_ONETOUCHLOCK:
-                _add_activity(activities, activity_dict, ACTION_LOCK_ONETOUCHLOCK)
             lock_status = determine_lock_status(status)
             if lock_status == LockStatus.LOCKED:
                 _add_activity(activities, activity_dict, ACTION_LOCK_LOCK)
