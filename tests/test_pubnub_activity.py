@@ -75,7 +75,7 @@ class TestLockDetail(unittest.TestCase):
         assert isinstance(activities[0], LockOperationActivity)
         assert "LockOperationActivity" in str(activities[0])
         assert activities[0].action == "lock"
-        assert activities[0].operated_by == "None None"
+        assert activities[0].operated_by is None
         assert isinstance(activities[1], DoorOperationActivity)
         assert "DoorOperationActivity" in str(activities[1])
         assert activities[1].action == "doorclosed"
@@ -91,7 +91,7 @@ class TestLockDetail(unittest.TestCase):
         )
         assert isinstance(activities[0], LockOperationActivity)
         assert activities[0].action == "lock"
-        assert activities[0].operated_by == "None None"
+        assert activities[0].operated_by is None
         assert isinstance(activities[1], DoorOperationActivity)
         assert activities[1].action == "dooropen"
 
@@ -107,6 +107,9 @@ class TestLockDetail(unittest.TestCase):
         assert isinstance(activities[0], LockOperationActivity)
         assert activities[0].action == "lock"
         assert activities[0].operated_by == "Foo Bar"
+        assert activities[0].operator_image_url == "https://www.image.com/foo.jpeg"
+        assert activities[0].operator_thumbnail_url == "https://www.image.com/foo.jpeg"
+
         assert isinstance(activities[1], DoorOperationActivity)
         assert activities[1].action == "doorclosed"
 

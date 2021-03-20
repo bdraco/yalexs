@@ -197,13 +197,16 @@ class LockOperationActivity(Activity):
         calling_user = data.get("callingUser", {})
 
         info = data.get("info", {})
+        user_id = calling_user.get("UserID")
         self._operated_remote = info.get("remote", False)
         self._operated_keypad = info.get("keypad", False)
-        self._operated_autorelock = calling_user.get("UserID") == "automaticrelock"
-        self._operated_by = "{} {}".format(
-            calling_user.get("FirstName"),
-            calling_user.get("LastName"),
-        )
+        self._operated_autorelock = user_id == "automaticrelock"
+        first_name = calling_user.get("FirstName")
+        last_name = calling_user.get("LastName")
+        if first_name is None and last_name is None:
+            self._operated_by = None
+        else:
+            self._operated_by = f"{first_name} {last_name}"
 
         image_info = calling_user.get("imageInfo", {})
         self._operator_image_url = image_info.get("original", {}).get(
@@ -222,7 +225,8 @@ class LockOperationActivity(Activity):
             f"operated_remote={self.operated_remote} "
             f"operated_keypad={self.operated_keypad} "
             f"operated_autorelock={self.operated_autorelock} "
-            f"operator_image_url={self.operator_image_url}>"
+            f"operator_image_url={self.operator_image_url} "
+            f"operator_thumbnail_url={self.operator_thumbnail_url}>"
         )
 
     @property
