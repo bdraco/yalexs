@@ -60,6 +60,7 @@ class TestLockDetail(unittest.TestCase):
             },
         )
         assert isinstance(activities[0], LockOperationActivity)
+        assert "LockOperationActivity" in str(activities[0])
         assert activities[0].action == "unlock"
 
         activities = activities_from_pubnub_message(
@@ -72,9 +73,11 @@ class TestLockDetail(unittest.TestCase):
             },
         )
         assert isinstance(activities[0], LockOperationActivity)
+        assert "LockOperationActivity" in str(activities[0])
         assert activities[0].action == "lock"
         assert activities[0].operated_by == "None None"
         assert isinstance(activities[1], DoorOperationActivity)
+        assert "DoorOperationActivity" in str(activities[1])
         assert activities[1].action == "doorclosed"
 
         activities = activities_from_pubnub_message(
@@ -179,6 +182,8 @@ class TestDetail(unittest.TestCase):
             },
         )
         assert isinstance(activities[0], DoorbellMotionActivity)
+        assert "DoorbellMotionActivity" in str(activities[0])
+
         assert (
             activities[0].image_url
             == "https://dyu7azbnaoi74.cloudfront.net/zip/images/zip.jpeg"
@@ -260,3 +265,4 @@ class TestDetail(unittest.TestCase):
             },
         )
         assert isinstance(activities[0], DoorbellDingActivity)
+        assert "DoorbellDingActivity" in str(activities[0])
