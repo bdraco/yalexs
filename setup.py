@@ -4,7 +4,6 @@ setup(
     name="yalexs",
     version="1.0.1",
     python_requires=">=3.6",
-    packages=["yalexs"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
