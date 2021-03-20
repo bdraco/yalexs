@@ -1,7 +1,5 @@
 import datetime
 
-import dateutil.parser
-
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
     ACTION_BRIDGE_ONLINE,
@@ -10,14 +8,6 @@ from yalexs.activity import (
     DoorbellMotionActivity,
     DoorOperationActivity,
     LockOperationActivity,
-)
-from yalexs.lock import (
-    DOOR_STATE_KEY,
-    LOCK_STATUS_KEY,
-    LockDoorStatus,
-    LockStatus,
-    determine_door_state,
-    determine_lock_status,
 )
 
 

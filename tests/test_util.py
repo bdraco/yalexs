@@ -140,7 +140,7 @@ class TestLockDetail(unittest.TestCase):
             }
         )
         self.assertTrue(update_lock_detail_from_activity(lock, bridge_offline_activity))
-        assert lock.bridge_is_online == False
+        assert lock.bridge_is_online is False
         bridge_online_activity = BridgeOperationActivity(
             {
                 "action": "associated_bridge_online",
@@ -154,7 +154,7 @@ class TestLockDetail(unittest.TestCase):
             }
         )
         self.assertTrue(update_lock_detail_from_activity(lock, bridge_online_activity))
-        assert lock.bridge_is_online == True
+        assert lock.bridge_is_online is True
 
 
 class TestDetail(unittest.TestCase):
