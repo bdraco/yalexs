@@ -1,22 +1,13 @@
 import datetime
 
-import dateutil.parser
-
 from yalexs.activity import (
+    ACTION_BRIDGE_OFFLINE,
+    ACTION_BRIDGE_ONLINE,
     ACTIVITY_ACTION_STATES,
+    BridgeOperationActivity,
     DoorbellMotionActivity,
     DoorOperationActivity,
     LockOperationActivity,
-)
-from yalexs.bridge import OFFLINE_EVENT, ONLINE_EVENT
-from yalexs.doorbell import DOORBELL_STATUS_KEY
-from yalexs.lock import (
-    DOOR_STATE_KEY,
-    LOCK_STATUS_KEY,
-    LockDoorStatus,
-    LockStatus,
-    determine_door_state,
-    determine_lock_status,
 )
 
 
@@ -35,71 +26,15 @@ def update_lock_detail_from_activity(lock_detail, activity):
             return False
         lock_detail.door_state = ACTIVITY_ACTION_STATES[activity.action]
         lock_detail.door_state_datetime = activity_end_time_utc
+    elif isinstance(activity, BridgeOperationActivity):
+        if activity.action == ACTION_BRIDGE_ONLINE:
+            lock_detail.set_online(True)
+        elif activity.action == ACTION_BRIDGE_OFFLINE:
+            lock_detail.set_online(False)
     else:
         raise ValueError
 
     return True
-
-
-def update_lock_details_from_pubnub_message(lock_detail, date_time, message):
-    """Update lock details from pubnub."""
-    updated = False
-
-    if LOCK_STATUS_KEY in message:
-        if message[LOCK_STATUS_KEY] == ONLINE_EVENT:
-            lock_detail.set_online(True)
-            updated = True
-        elif message[LOCK_STATUS_KEY] == OFFLINE_EVENT:
-            lock_detail.set_online(False)
-            updated = True
-        elif lock_detail.lock_status_datetime < date_time:
-            lock_status = determine_lock_status(message[LOCK_STATUS_KEY])
-            if lock_status != LockStatus.UNKNOWN:
-                lock_detail.lock_status = determine_lock_status(
-                    message[LOCK_STATUS_KEY]
-                )
-                lock_detail.lock_status_datetime = date_time
-                updated = True
-
-    if DOOR_STATE_KEY in message and lock_detail.door_state_datetime < date_time:
-        door_state = determine_door_state(message[DOOR_STATE_KEY])
-        if door_state != LockDoorStatus.UNKNOWN:
-            lock_detail.door_state = determine_door_state(message[DOOR_STATE_KEY])
-            lock_detail.door_state_datetime = date_time
-            updated = True
-
-    return updated
-
-
-def update_doorbell_details_from_pubnub_message(doorbell_detail, date_time, message):
-    """Update doorbell details from pubnub."""
-    if DOORBELL_STATUS_KEY not in message:
-        return False
-
-    if (
-        message[DOORBELL_STATUS_KEY] == "imagecapture"
-        and "data" in message
-        and "result" in message["data"]
-    ):
-        result = message["data"]["result"]
-        if result is None or "created_at" not in result:
-            return False
-
-        image_created_at_datetime = dateutil.parser.parse(result["created_at"])
-        if image_created_at_datetime is None:
-            return False
-
-        image_url = result.get("secure_url")
-
-        if (
-            doorbell_detail.image_created_at_datetime is None
-            or doorbell_detail.image_created_at_datetime < image_created_at_datetime
-        ):
-            doorbell_detail.image_url = image_url
-            doorbell_detail.image_created_at_datetime = image_created_at_datetime
-            return True
-
-    return False
 
 
 def update_doorbell_image_from_activity(doorbell_detail, activity):

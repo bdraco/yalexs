@@ -382,6 +382,29 @@ class TestApi(unittest.TestCase):
             dateutil.parser.parse("2019-12-10T04:48:30.272Z"), lock.door_state_datetime
         )
 
+        assert lock.get_user("cccca94e-373e-aaaa-bbbb-333396827777") == {
+            "FirstName": "Foo",
+            "LastName": "Bar",
+            "UserType": "superuser",
+            "identifiers": ["email:foo@bar.com", "phone:+177777777777"],
+            "imageInfo": {
+                "original": {
+                    "format": "jpg",
+                    "height": 949,
+                    "secure_url": "https://www.image.com/foo.jpeg",
+                    "url": "http://www.image.com/foo.jpeg",
+                    "width": 948,
+                },
+                "thumbnail": {
+                    "format": "jpg",
+                    "height": 128,
+                    "secure_url": "https://www.image.com/foo.jpeg",
+                    "url": "http://www.image.com/foo.jpeg",
+                    "width": 128,
+                },
+            },
+        }
+
     @requests_mock.Mocker()
     def test_get_lock_status_with_locked_response(self, mock):
         lock_id = 1234

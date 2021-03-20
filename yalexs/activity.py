@@ -15,11 +15,22 @@ ACTION_DOORBELL_MOTION_DETECTED = "doorbell_motion_detected"
 ACTION_DOORBELL_CALL_MISSED = "doorbell_call_missed"
 ACTION_DOORBELL_CALL_HANGUP = "doorbell_call_hangup"
 
+ACTION_BRIDGE_ONLINE = "associated_bridge_online"  # pubnub only
+ACTION_BRIDGE_OFFLINE = "associated_bridge_offline"  # pubnub only
+ACTION_DOORBELL_IMAGE_CAPTURE = "imagecapture"  # pubnub only
+ACTION_DOORBELL_BUTTON_PUSHED = "buttonpush"  # pubnub only
+
+ACTIVITY_ACTIONS_BRIDGE_OPERATION = [ACTION_BRIDGE_ONLINE, ACTION_BRIDGE_OFFLINE]
+
 ACTIVITY_ACTIONS_DOORBELL_DING = [
+    ACTION_DOORBELL_BUTTON_PUSHED,
     ACTION_DOORBELL_CALL_MISSED,
     ACTION_DOORBELL_CALL_HANGUP,
 ]
-ACTIVITY_ACTIONS_DOORBELL_MOTION = [ACTION_DOORBELL_MOTION_DETECTED]
+ACTIVITY_ACTIONS_DOORBELL_MOTION = [
+    ACTION_DOORBELL_MOTION_DETECTED,
+    ACTION_DOORBELL_IMAGE_CAPTURE,
+]
 ACTIVITY_ACTIONS_DOORBELL_VIEW = [ACTION_DOORBELL_CALL_INITIATED]
 ACTIVITY_ACTIONS_LOCK_OPERATION = [
     ACTION_LOCK_LOCK,
@@ -47,6 +58,7 @@ class ActivityType(Enum):
     DOORBELL_VIEW = "doorbell_view"
     LOCK_OPERATION = "lock_operation"
     DOOR_OPERATION = "door_operation"
+    BRIDGE_OPERATION = "bridge_operation"
 
 
 class Activity:
@@ -62,6 +74,13 @@ class Activity:
         self._device_id = data.get("deviceID")
         self._device_name = data.get("deviceName")
         self._device_type = data.get("deviceType")
+
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__} action={self.action} activity_type={self.activity_type} "
+            f"activity_start_time={self.activity_start_time} "
+            f"device_name={self.device_name}>"
+        )
 
     @property
     def activity_type(self):
@@ -109,6 +128,14 @@ class DoorbellMotionActivity(Activity):
         self._image_created_at_datetime = None
         if image is not None and "created_at" in image:
             self._image_created_at_datetime = dateutil.parser.parse(image["created_at"])
+
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__} action={self.action} activity_type={self.activity_type} "
+            f"activity_start_time={self.activity_start_time} "
+            f"device_name={self.device_name}"
+            f"image_url={self.image_url}>"
+        )
 
     @property
     def image_url(self):
@@ -186,6 +213,18 @@ class LockOperationActivity(Activity):
             "secure_url", None
         )
 
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__} action={self.action} activity_type={self.activity_type} "
+            f"activity_start_time={self.activity_start_time} "
+            f"device_name={self.device_name} "
+            f"operated_by={self.operated_by} "
+            f"operated_remote={self.operated_remote} "
+            f"operated_keypad={self.operated_keypad} "
+            f"operated_autorelock={self.operated_autorelock} "
+            f"operator_image_url={self.operator_image_url}>"
+        )
+
     @property
     def operated_by(self):
         return self._operated_by
@@ -219,3 +258,8 @@ class LockOperationActivity(Activity):
 class DoorOperationActivity(Activity):
     def __init__(self, data):
         super().__init__(ActivityType.DOOR_OPERATION, data)
+
+
+class BridgeOperationActivity(Activity):
+    def __init__(self, data):
+        super().__init__(ActivityType.BRIDGE_OPERATION, data)

@@ -2,9 +2,6 @@ from enum import Enum
 
 from yalexs.device import DeviceDetail
 
-ONLINE_EVENT = "associated_bridge_online"
-OFFLINE_EVENT = "associated_bridge_offline"
-
 
 class BridgeStatus(Enum):
     OFFLINE = "offline"

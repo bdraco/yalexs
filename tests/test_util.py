@@ -6,25 +6,18 @@ import unittest
 import dateutil.parser
 
 from yalexs.activity import (
+    BridgeOperationActivity,
     DoorbellMotionActivity,
     DoorOperationActivity,
     LockOperationActivity,
 )
 from yalexs.api import _convert_lock_result_to_activities
 from yalexs.doorbell import DoorbellDetail
-from yalexs.lock import (
-    DOOR_STATE_KEY,
-    LOCK_STATUS_KEY,
-    LockDetail,
-    LockDoorStatus,
-    LockStatus,
-)
+from yalexs.lock import LockDetail, LockDoorStatus, LockStatus
 from yalexs.util import (
     as_utc_from_local,
-    update_doorbell_details_from_pubnub_message,
     update_doorbell_image_from_activity,
     update_lock_detail_from_activity,
-    update_lock_details_from_pubnub_message,
 )
 
 
@@ -134,101 +127,33 @@ class TestLockDetail(unittest.TestCase):
         self.assertEqual(LockDoorStatus.CLOSED, lock.door_state)
         self.assertEqual(LockStatus.UNLOCKED, lock.lock_status)
 
-    def test_update_lock_details_from_pubnub_message(self):
-        lock = LockDetail(
-            json.loads(load_fixture("get_lock.online_with_doorsense.json"))
+        bridge_offline_activity = BridgeOperationActivity(
+            {
+                "action": "associated_bridge_offline",
+                "callingUser": {"UserID": None},
+                "dateTime": 1512906510272.0,
+                "deviceName": "Front Door Lock",
+                "deviceType": "lock",
+                "deviceID": lock.device_id,
+                "house": "000000000000",
+                "info": {},
+            }
         )
-        self.assertEqual("ABC", lock.device_id)
-        self.assertEqual(LockStatus.LOCKED, lock.lock_status)
-        self.assertEqual(LockDoorStatus.OPEN, lock.door_state)
-        self.assertEqual(
-            dateutil.parser.parse("2017-12-10T04:48:30.272Z"), lock.lock_status_datetime
-        )
-        self.assertEqual(
-            dateutil.parser.parse("2017-12-10T04:48:30.272Z"), lock.door_state_datetime
-        )
-
-        self.assertTrue(
-            update_lock_details_from_pubnub_message(
-                lock,
-                dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
-                {LOCK_STATUS_KEY: "kAugLockState_Unlocking"},
-            )
-        )
-        self.assertEqual(LockStatus.UNLOCKED, lock.lock_status)
-        self.assertTrue(
-            update_lock_details_from_pubnub_message(
-                lock,
-                dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
-                {DOOR_STATE_KEY: "closed"},
-            )
-        )
-        self.assertEqual(LockDoorStatus.CLOSED, lock.door_state)
-        self.assertFalse(
-            update_lock_details_from_pubnub_message(
-                lock,
-                dateutil.parser.parse("2017-12-10T02:48:30.272Z"),
-                {DOOR_STATE_KEY: "open"},
-            )
-        )
-        self.assertEqual(LockDoorStatus.CLOSED, lock.door_state)
-        self.assertTrue(
-            update_lock_details_from_pubnub_message(
-                lock,
-                dateutil.parser.parse("2017-12-10T10:48:30.272Z"),
-                {DOOR_STATE_KEY: "open", LOCK_STATUS_KEY: "kAugLockState_Locking"},
-            )
-        )
-        self.assertEqual(LockStatus.LOCKED, lock.lock_status)
-        self.assertEqual(LockDoorStatus.OPEN, lock.door_state)
-
-        self.assertFalse(
-            update_lock_details_from_pubnub_message(
-                lock,
-                dateutil.parser.parse("2017-12-10T11:48:30.272Z"),
-                {
-                    LOCK_STATUS_KEY: "DoorStateChanged",
-                    "lockID": "xxx",
-                    "timeStamp": 1615087688187,
-                },
-            )
-        )
-        self.assertFalse(
-            update_lock_details_from_pubnub_message(
-                lock,
-                dateutil.parser.parse("2017-12-10T12:48:30.272Z"),
-                {
-                    DOOR_STATE_KEY: "init",
-                    "lockID": "xxx",
-                    "timeStamp": 1615087688187,
-                },
-            )
-        )
-
-        assert lock.bridge_is_online is True
-        self.assertTrue(
-            update_lock_details_from_pubnub_message(
-                lock,
-                dateutil.parser.parse("2017-12-10T11:48:30.272Z"),
-                {
-                    LOCK_STATUS_KEY: "associated_bridge_offline",
-                    "lockID": "xxx",
-                    "timeStamp": 1615087688187,
-                },
-            )
-        )
+        self.assertTrue(update_lock_detail_from_activity(lock, bridge_offline_activity))
         assert lock.bridge_is_online is False
-        self.assertTrue(
-            update_lock_details_from_pubnub_message(
-                lock,
-                dateutil.parser.parse("2017-12-10T11:48:30.272Z"),
-                {
-                    LOCK_STATUS_KEY: "associated_bridge_online",
-                    "lockID": "xxx",
-                    "timeStamp": 1615087688187,
-                },
-            )
+        bridge_online_activity = BridgeOperationActivity(
+            {
+                "action": "associated_bridge_online",
+                "callingUser": {"UserID": None},
+                "dateTime": 1512906510272.0,
+                "deviceName": "Front Door Lock",
+                "deviceType": "lock",
+                "deviceID": lock.device_id,
+                "house": "000000000000",
+                "info": {},
+            }
         )
+        self.assertTrue(update_lock_detail_from_activity(lock, bridge_online_activity))
         assert lock.bridge_is_online is True
 
 
@@ -312,63 +237,3 @@ class TestDetail(unittest.TestCase):
             doorbell.image_created_at_datetime,
         )
         self.assertEqual("https://my.updated.image/image.jpg", doorbell.image_url)
-
-    def test_update_doorbell_details_from_pubnub_message(self):
-        doorbell = DoorbellDetail(json.loads(load_fixture("get_doorbell.json")))
-        self.assertEqual("K98GiDT45GUL", doorbell.device_id)
-        self.assertEqual(
-            dateutil.parser.parse("2017-12-10T08:01:35Z"),
-            doorbell.image_created_at_datetime,
-        )
-        self.assertEqual(
-            "https://image.com/vmk16naaaa7ibuey7sar.jpg", doorbell.image_url
-        )
-        self.assertTrue(
-            update_doorbell_details_from_pubnub_message(
-                doorbell,
-                dateutil.parser.parse("2021-03-16T01:07:08.817Z"),
-                {
-                    "status": "imagecapture",
-                    "data": {
-                        "event": "imagecapture",
-                        "result": {
-                            "created_at": "2021-03-16T01:07:08.817Z",
-                            "secure_url": "https://dyu7azbnaoi74.cloudfront.net/zip/images/zip.jpeg",
-                        },
-                    },
-                },
-            )
-        )
-        self.assertEqual(
-            "https://dyu7azbnaoi74.cloudfront.net/zip/images/zip.jpeg",
-            doorbell.image_url,
-        )
-        self.assertEqual(
-            dateutil.parser.parse("2021-03-16T01:07:08.817Z"),
-            doorbell.image_created_at_datetime,
-        )
-
-        self.assertFalse(
-            update_doorbell_details_from_pubnub_message(
-                doorbell,
-                dateutil.parser.parse("2021-03-16T01:07:08.817Z"),
-                {
-                    "status": "imagecapture",
-                    "data": {
-                        "event": "imagecapture",
-                        "result": {
-                            "created_at": "2021-03-16T01:07:08.817Z",
-                            "secure_url": "https://dyu7azbnaoi74.cloudfront.net/zip/images/zip.jpeg",
-                        },
-                    },
-                },
-            )
-        )
-        self.assertEqual(
-            "https://dyu7azbnaoi74.cloudfront.net/zip/images/zip.jpeg",
-            doorbell.image_url,
-        )
-        self.assertEqual(
-            dateutil.parser.parse("2021-03-16T01:07:08.817Z"),
-            doorbell.image_created_at_datetime,
-        )
