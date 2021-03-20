@@ -3,6 +3,7 @@ from distutils.core import setup
 setup(
     name="yalexs",
     version="1.0.1",
+    python_requires=">=3.6",
     packages=["yalexs"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -10,16 +11,17 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     url="https://github.com/bdraco/yalexs",
     license="MIT",
     author="bdraco",
     author_email="nick@koston.org",
     description="Python API for Yale Access (formerly August) Smart Lock and Doorbell",
+    packages=find_packages(include=["yalexs", "yalexs.*"]),
     install_requires=[
         "requests",
         "vol",
