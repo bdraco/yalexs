@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name="yalexs",
-    version="1.0.1",
+    version="1.0.2",
     python_requires=">=3.6",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
