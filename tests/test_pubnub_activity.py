@@ -82,6 +82,21 @@ class TestLockDetail(unittest.TestCase):
             dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
             {
                 "status": "locked",
+                "callingUserID": "8918341e-7e68-4079-ad0a-1fa8a45d855b",
+                "doorState": "open",
+            },
+        )
+        assert isinstance(activities[0], LockOperationActivity)
+        assert activities[0].action == "lock"
+        assert activities[0].operated_by == "None None"
+        assert isinstance(activities[1], DoorOperationActivity)
+        assert activities[1].action == "dooropen"
+
+        activities = activities_from_pubnub_message(
+            lock,
+            dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
+            {
+                "status": "locked",
                 "callingUserID": "cccca94e-373e-aaaa-bbbb-333396827777",
                 "doorState": "closed",
             },
