@@ -323,9 +323,6 @@ class TestDetail(unittest.TestCase):
         self.assertEqual(
             "https://image.com/vmk16naaaa7ibuey7sar.jpg", doorbell.image_url
         )
-        doorbell_motion_activity_no_image = DoorbellMotionActivity(
-            json.loads(load_fixture("doorbell_motion_activity_no_image.json"))
-        )
         self.assertTrue(
             update_doorbell_details_from_pubnub_message(
                 doorbell,
