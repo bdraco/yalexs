@@ -6,6 +6,8 @@ import unittest
 import dateutil.parser
 
 from yalexs.activity import (
+    SOURCE_LOG,
+    SOURCE_PUBNUB,
     BridgeOperationActivity,
     DoorbellMotionActivity,
     DoorOperationActivity,
@@ -44,22 +46,24 @@ class TestLockDetail(unittest.TestCase):
         )
 
         lock_operation_activity = LockOperationActivity(
-            json.loads(load_fixture("lock_activity.json"))
+            SOURCE_LOG, json.loads(load_fixture("lock_activity.json"))
         )
         unlock_operation_activity = LockOperationActivity(
-            json.loads(load_fixture("unlock_activity.json"))
+            SOURCE_LOG, json.loads(load_fixture("unlock_activity.json"))
         )
         open_operation_activity = DoorOperationActivity(
-            json.loads(load_fixture("door_open_activity.json"))
+            SOURCE_LOG, json.loads(load_fixture("door_open_activity.json"))
         )
         closed_operation_activity = DoorOperationActivity(
-            json.loads(load_fixture("door_closed_activity.json"))
+            SOURCE_LOG, json.loads(load_fixture("door_closed_activity.json"))
         )
         closed_operation_wrong_deviceid_activity = DoorOperationActivity(
-            json.loads(load_fixture("door_closed_activity_wrong_deviceid.json"))
+            SOURCE_LOG,
+            json.loads(load_fixture("door_closed_activity_wrong_deviceid.json")),
         )
         closed_operation_wrong_houseid_activity = DoorOperationActivity(
-            json.loads(load_fixture("door_closed_activity_wrong_houseid.json"))
+            SOURCE_LOG,
+            json.loads(load_fixture("door_closed_activity_wrong_houseid.json")),
         )
 
         self.assertTrue(
@@ -128,6 +132,7 @@ class TestLockDetail(unittest.TestCase):
         self.assertEqual(LockStatus.UNLOCKED, lock.lock_status)
 
         bridge_offline_activity = BridgeOperationActivity(
+            SOURCE_PUBNUB,
             {
                 "action": "associated_bridge_offline",
                 "callingUser": {"UserID": None},
@@ -137,11 +142,13 @@ class TestLockDetail(unittest.TestCase):
                 "deviceID": lock.device_id,
                 "house": "000000000000",
                 "info": {},
-            }
+            },
         )
+        assert bridge_offline_activity.source == SOURCE_PUBNUB
         self.assertTrue(update_lock_detail_from_activity(lock, bridge_offline_activity))
         assert lock.bridge_is_online is False
         bridge_online_activity = BridgeOperationActivity(
+            SOURCE_PUBNUB,
             {
                 "action": "associated_bridge_online",
                 "callingUser": {"UserID": None},
@@ -151,10 +158,11 @@ class TestLockDetail(unittest.TestCase):
                 "deviceID": lock.device_id,
                 "house": "000000000000",
                 "info": {},
-            }
+            },
         )
         self.assertTrue(update_lock_detail_from_activity(lock, bridge_online_activity))
         assert lock.bridge_is_online is True
+        assert bridge_online_activity.source == SOURCE_PUBNUB
 
 
 class TestDetail(unittest.TestCase):
@@ -169,7 +177,8 @@ class TestDetail(unittest.TestCase):
             "https://image.com/vmk16naaaa7ibuey7sar.jpg", doorbell.image_url
         )
         doorbell_motion_activity_no_image = DoorbellMotionActivity(
-            json.loads(load_fixture("doorbell_motion_activity_no_image.json"))
+            SOURCE_LOG,
+            json.loads(load_fixture("doorbell_motion_activity_no_image.json")),
         )
         self.assertFalse(
             update_doorbell_image_from_activity(
@@ -177,7 +186,7 @@ class TestDetail(unittest.TestCase):
             )
         )
         doorbell_motion_activity = DoorbellMotionActivity(
-            json.loads(load_fixture("doorbell_motion_activity.json"))
+            SOURCE_LOG, json.loads(load_fixture("doorbell_motion_activity.json"))
         )
         self.assertTrue(
             update_doorbell_image_from_activity(doorbell, doorbell_motion_activity)
@@ -188,7 +197,7 @@ class TestDetail(unittest.TestCase):
         )
         self.assertEqual("https://my.updated.image/image.jpg", doorbell.image_url)
         old_doorbell_motion_activity = DoorbellMotionActivity(
-            json.loads(load_fixture("doorbell_motion_activity_old.json"))
+            SOURCE_LOG, json.loads(load_fixture("doorbell_motion_activity_old.json"))
         )
         # returns false we send an older activity
         self.assertFalse(
@@ -200,7 +209,7 @@ class TestDetail(unittest.TestCase):
         )
         self.assertEqual("https://my.updated.image/image.jpg", doorbell.image_url)
         wrong_doorbell_motion_activity = DoorbellMotionActivity(
-            json.loads(load_fixture("doorbell_motion_activity_wrong.json"))
+            SOURCE_LOG, json.loads(load_fixture("doorbell_motion_activity_wrong.json"))
         )
 
         with self.assertRaises(ValueError):
@@ -219,7 +228,8 @@ class TestDetail(unittest.TestCase):
         )
         self.assertEqual(None, doorbell.image_url)
         doorbell_motion_activity_no_image = DoorbellMotionActivity(
-            json.loads(load_fixture("doorbell_motion_activity_no_image.json"))
+            SOURCE_LOG,
+            json.loads(load_fixture("doorbell_motion_activity_no_image.json")),
         )
         self.assertFalse(
             update_doorbell_image_from_activity(
@@ -227,7 +237,7 @@ class TestDetail(unittest.TestCase):
             )
         )
         doorbell_motion_activity = DoorbellMotionActivity(
-            json.loads(load_fixture("doorbell_motion_activity.json"))
+            SOURCE_LOG, json.loads(load_fixture("doorbell_motion_activity.json"))
         )
         self.assertTrue(
             update_doorbell_image_from_activity(doorbell, doorbell_motion_activity)

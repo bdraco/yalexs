@@ -8,6 +8,7 @@ from yalexs.activity import (
     ACTION_DOORBELL_MOTION_DETECTED,
     ACTION_LOCK_LOCK,
     ACTION_LOCK_UNLOCK,
+    SOURCE_PUBNUB,
 )
 from yalexs.api_common import _activity_from_dict
 from yalexs.doorbell import DOORBELL_STATUS_KEY, DoorbellDetail
@@ -77,4 +78,4 @@ def activities_from_pubnub_message(device, date_time, message):
 def _add_activity(activities, activity_dict, action):
     activity_dict = activity_dict.copy()
     activity_dict["action"] = action
-    activities.append(_activity_from_dict(activity_dict))
+    activities.append(_activity_from_dict(SOURCE_PUBNUB, activity_dict))

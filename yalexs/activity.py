@@ -47,6 +47,10 @@ ACTIVITY_ACTION_STATES = {
     ACTION_DOOR_CLOSED: LockDoorStatus.CLOSED,
 }
 
+SOURCE_LOCK_OPERATE = "lock_operate"
+SOURCE_PUBNUB = "pubnub"
+SOURCE_LOG = "log"
+
 
 def epoch_to_datetime(epoch):
     return datetime.fromtimestamp(int(epoch) / 1000.0)
@@ -62,7 +66,8 @@ class ActivityType(Enum):
 
 
 class Activity:
-    def __init__(self, activity_type, data):
+    def __init__(self, source, activity_type, data):
+        self._source = source
         self._activity_type = activity_type
 
         entities = data.get("entities", {})
@@ -81,6 +86,10 @@ class Activity:
             f"activity_start_time={self.activity_start_time} "
             f"device_name={self.device_name}>"
         )
+
+    @property
+    def source(self):
+        return self._source
 
     @property
     def activity_type(self):
@@ -120,8 +129,8 @@ class Activity:
 
 
 class DoorbellMotionActivity(Activity):
-    def __init__(self, data):
-        super().__init__(ActivityType.DOORBELL_MOTION, data)
+    def __init__(self, source, data):
+        super().__init__(source, ActivityType.DOORBELL_MOTION, data)
 
         image = data.get("info", {}).get("image")
         self._image_url = None if image is None else image.get("secure_url")
@@ -147,8 +156,8 @@ class DoorbellMotionActivity(Activity):
 
 
 class DoorbellDingActivity(Activity):
-    def __init__(self, data):
-        super().__init__(ActivityType.DOORBELL_DING, data)
+    def __init__(self, source, data):
+        super().__init__(source, ActivityType.DOORBELL_DING, data)
 
         info = data.get("info", {})
         self._activity_start_time = epoch_to_datetime(info.get("started"))
@@ -169,8 +178,8 @@ class DoorbellDingActivity(Activity):
 
 
 class DoorbellViewActivity(Activity):
-    def __init__(self, data):
-        super().__init__(ActivityType.DOORBELL_VIEW, data)
+    def __init__(self, source, data):
+        super().__init__(source, ActivityType.DOORBELL_VIEW, data)
 
         info = data.get("info", {})
         self._activity_start_time = epoch_to_datetime(info.get("started"))
@@ -191,8 +200,8 @@ class DoorbellViewActivity(Activity):
 
 
 class LockOperationActivity(Activity):
-    def __init__(self, data):
-        super().__init__(ActivityType.LOCK_OPERATION, data)
+    def __init__(self, source, data):
+        super().__init__(source, ActivityType.LOCK_OPERATION, data)
 
         calling_user = data.get("callingUser", {})
 
@@ -260,10 +269,10 @@ class LockOperationActivity(Activity):
 
 
 class DoorOperationActivity(Activity):
-    def __init__(self, data):
-        super().__init__(ActivityType.DOOR_OPERATION, data)
+    def __init__(self, source, data):
+        super().__init__(source, ActivityType.DOOR_OPERATION, data)
 
 
 class BridgeOperationActivity(Activity):
-    def __init__(self, data):
-        super().__init__(ActivityType.BRIDGE_OPERATION, data)
+    def __init__(self, source, data):
+        super().__init__(source, ActivityType.BRIDGE_OPERATION, data)

@@ -9,6 +9,8 @@ from yalexs.activity import (
     ACTIVITY_ACTIONS_DOORBELL_MOTION,
     ACTIVITY_ACTIONS_DOORBELL_VIEW,
     ACTIVITY_ACTIONS_LOCK_OPERATION,
+    SOURCE_LOCK_OPERATE,
+    SOURCE_LOG,
     BridgeOperationActivity,
     DoorbellDingActivity,
     DoorbellMotionActivity,
@@ -95,21 +97,21 @@ def _convert_lock_result_to_activities(lock_json_dict):
     return activities
 
 
-def _activity_from_dict(activity_dict):
+def _activity_from_dict(source, activity_dict):
     action = activity_dict.get("action")
 
     if action in ACTIVITY_ACTIONS_DOORBELL_DING:
-        return DoorbellDingActivity(activity_dict)
+        return DoorbellDingActivity(source, activity_dict)
     if action in ACTIVITY_ACTIONS_DOORBELL_MOTION:
-        return DoorbellMotionActivity(activity_dict)
+        return DoorbellMotionActivity(source, activity_dict)
     if action in ACTIVITY_ACTIONS_DOORBELL_VIEW:
-        return DoorbellViewActivity(activity_dict)
+        return DoorbellViewActivity(source, activity_dict)
     if action in ACTIVITY_ACTIONS_LOCK_OPERATION:
-        return LockOperationActivity(activity_dict)
+        return LockOperationActivity(source, activity_dict)
     if action in ACTIVITY_ACTIONS_DOOR_OPERATION:
-        return DoorOperationActivity(activity_dict)
+        return DoorOperationActivity(source, activity_dict)
     if action in ACTIVITY_ACTIONS_BRIDGE_OPERATION:
-        return BridgeOperationActivity(activity_dict)
+        return BridgeOperationActivity(source, activity_dict)
     return None
 
 
@@ -121,7 +123,7 @@ def _map_lock_result_to_activity(lock_id, activity_epoch, action_text):
         "deviceType": "lock",
         "action": action_text,
     }
-    return _activity_from_dict(mapped_dict)
+    return _activity_from_dict(SOURCE_LOCK_OPERATE, mapped_dict)
 
 
 def _datetime_string_to_epoch(datetime_string):
@@ -131,7 +133,7 @@ def _datetime_string_to_epoch(datetime_string):
 def _process_activity_json(json_dict):
     activities = []
     for activity_json in json_dict:
-        activity = _activity_from_dict(activity_json)
+        activity = _activity_from_dict(SOURCE_LOG, activity_json)
         if activity:
             activities.append(activity)
 

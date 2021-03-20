@@ -5,6 +5,8 @@ import unittest
 import dateutil.parser
 
 from yalexs.activity import (
+    SOURCE_LOG,
+    SOURCE_PUBNUB,
     BridgeOperationActivity,
     DoorbellDingActivity,
     DoorbellMotionActivity,
