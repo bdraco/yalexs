@@ -37,10 +37,6 @@ def activities_from_pubnub_message(device, date_time, message):
         activity_dict["info"] = message.get("info", {})
         if "remoteEvent" in message:
             activity_dict["info"]["remote"] = True
-        user_id = message.get("callingUserID")
-        calling_user = device.get_user(user_id) or {}
-        activity_dict["callingUser"] = calling_user.copy()
-        activity_dict["callingUser"]["UserID"] = user_id
 
         if LOCK_STATUS_KEY in message:
             status = message[LOCK_STATUS_KEY]
