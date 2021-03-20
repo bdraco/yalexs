@@ -27,7 +27,7 @@ def activities_from_pubnub_message(device, date_time, message):
     """Create activities from pubnub."""
     activities = []
     activity_dict = {
-        "device_id": device.device_id,
+        "deviceID": device.device_id,
         "house": device.house_id,
         "dateTime": date_time.timestamp() * 1000,
         "deviceName": device.device_name,

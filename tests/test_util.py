@@ -6,6 +6,7 @@ import unittest
 import dateutil.parser
 
 from yalexs.activity import (
+    BridgeOperationActivity,
     DoorbellMotionActivity,
     DoorOperationActivity,
     LockOperationActivity,
@@ -125,6 +126,35 @@ class TestLockDetail(unittest.TestCase):
             self.assertTrue(update_lock_detail_from_activity(lock, activity))
         self.assertEqual(LockDoorStatus.CLOSED, lock.door_state)
         self.assertEqual(LockStatus.UNLOCKED, lock.lock_status)
+
+        bridge_offline_activity = BridgeOperationActivity(
+            {
+                "action": "associated_bridge_offline",
+                "callingUser": {"UserID": None},
+                "dateTime": 1512906510272.0,
+                "deviceName": "Front Door Lock",
+                "deviceType": "lock",
+                "deviceID": lock.device_id,
+                "house": "000000000000",
+                "info": {},
+            }
+        )
+        self.assertTrue(update_lock_detail_from_activity(lock, bridge_offline_activity))
+        assert lock.bridge_is_online == False
+        bridge_online_activity = BridgeOperationActivity(
+            {
+                "action": "associated_bridge_online",
+                "callingUser": {"UserID": None},
+                "dateTime": 1512906510272.0,
+                "deviceName": "Front Door Lock",
+                "deviceType": "lock",
+                "deviceID": lock.device_id,
+                "house": "000000000000",
+                "info": {},
+            }
+        )
+        self.assertTrue(update_lock_detail_from_activity(lock, bridge_online_activity))
+        assert lock.bridge_is_online == True
 
 
 class TestDetail(unittest.TestCase):
