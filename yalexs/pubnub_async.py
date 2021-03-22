@@ -4,7 +4,7 @@ import datetime
 import logging
 
 from pubnub.callbacks import SubscribeCallback
-from pubnub.enums import PNStatusCategory, PNReconnectionPolicy
+from pubnub.enums import PNReconnectionPolicy, PNStatusCategory
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub_asyncio import PubNubAsyncio
 
