@@ -4,7 +4,7 @@ import datetime
 import logging
 
 from pubnub.callbacks import SubscribeCallback
-from pubnub.enums import PNStatusCategory
+from pubnub.enums import PNStatusCategory, PNReconnectionPolicy
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub_asyncio import PubNubAsyncio
 
@@ -81,6 +81,7 @@ def async_create_pubnub(user_uuid, subscriptions):
     pnconfig = PNConfiguration()
     pnconfig.subscribe_key = AUGUST_CHANNEL
     pnconfig.uuid = f"pn-{str(user_uuid).upper()}"
+    pnconfig.reconnect_policy = PNReconnectionPolicy.EXPONENTIAL
     pubnub = PubNubAsyncio(pnconfig)
     pubnub.add_listener(subscriptions)
     pubnub.subscribe().channels(subscriptions.channels).execute()
