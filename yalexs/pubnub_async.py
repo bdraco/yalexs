@@ -111,7 +111,7 @@ class AugustPubNubAsyncio(PubNubAsyncio):
             return await super()._request_helper(options_func, cancellation_event)
         except asyncio.TimeoutError:
             # reconnects are broken in pubnub https://github.com/pubnub/python/pull/101
-            raise PubNubTimeoutWorkaround
+            raise PubNubTimeoutWorkaround  # pylint: disable=raise-missing-from
 
 
 def async_create_pubnub(user_uuid, subscriptions):
