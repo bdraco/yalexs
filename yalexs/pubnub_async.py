@@ -103,7 +103,7 @@ class AugustPubNubAsyncio(PubNubAsyncio):
     async def _request_helper(self, options_func, cancellation_event):
         """Wrap _request_helper to convert the timeout into PNUnknownCategory."""
         try:
-            return super()._request_helper(options_func, cancellation_event)
+            return await super()._request_helper(options_func, cancellation_event)
         except asyncio.TimeoutError:
             # reconnects are broken in pubnub https://github.com/pubnub/python/pull/101
             raise PubNubTimeoutWorkaround
