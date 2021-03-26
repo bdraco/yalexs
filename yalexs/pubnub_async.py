@@ -25,7 +25,14 @@ class AugustPubNub(SubscribeCallback):
         pass  # handle incoming presence data
 
     def status(self, pubnub, status):
-        _LOGGER.debug("Recieved new status: %s", status)
+        _LOGGER.debug(
+            "Recieved new status: category=%s error_data=%s error=%s status_code=%s operation=%s",
+            status.category,
+            status.error_data,
+            status.error,
+            status.status_code,
+            status.operation,
+        )
 
         if status.category in (
             PNStatusCategory.PNUnknownCategory,
