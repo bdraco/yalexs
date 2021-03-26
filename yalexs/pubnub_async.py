@@ -24,11 +24,12 @@ class AugustPubNub(SubscribeCallback):
         pass  # handle incoming presence data
 
     def status(self, pubnub, status):
-        if status.category == PNStatusCategory.PNUnexpectedDisconnectCategory:
-            self.connected = False
-            pubnub.reconnect()
-
-        elif status.category == PNStatusCategory.PNTimeoutCategory:
+        if status.category in (
+            PNStatusCategory.PNUnknownCategory,
+            PNStatusCategory.PNUnexpectedDisconnectCategory,
+            PNStatusCategory.PNNetworkIssuesCategory,
+            PNStatusCategory.PNTimeoutCategory,
+        ):
             self.connected = False
             pubnub.reconnect()
 
