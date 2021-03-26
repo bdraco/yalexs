@@ -21,9 +21,12 @@ class AugustPubNub(SubscribeCallback):
         self._subscriptions = []
 
     def presence(self, pubnub, presence):
+        _LOGGER.debug("Recieved new presence: %s", presence)
         pass  # handle incoming presence data
 
     def status(self, pubnub, status):
+        _LOGGER.debug("Recieved new status: %s", status)
+
         if status.category in (
             PNStatusCategory.PNUnknownCategory,
             PNStatusCategory.PNUnexpectedDisconnectCategory,
