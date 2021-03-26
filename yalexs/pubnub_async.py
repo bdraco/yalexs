@@ -26,6 +26,11 @@ class AugustPubNub(SubscribeCallback):
     def status(self, pubnub, status):
         if status.category == PNStatusCategory.PNUnexpectedDisconnectCategory:
             self.connected = False
+            pubnub.reconnect()
+
+        elif status.category == PNStatusCategory.PNTimeoutCategory:
+            self.connected = False
+            pubnub.reconnect()
 
         elif status.category in (
             PNStatusCategory.PNReconnectedCategory,
