@@ -22,7 +22,6 @@ class AugustPubNub(SubscribeCallback):
 
     def presence(self, pubnub, presence):
         _LOGGER.debug("Recieved new presence: %s", presence)
-        pass  # handle incoming presence data
 
     def status(self, pubnub, status):
         _LOGGER.debug(
