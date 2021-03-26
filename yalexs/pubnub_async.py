@@ -48,10 +48,15 @@ class AugustPubNub(SubscribeCallback):
             self.connected = False
             pubnub.reconnect()
 
-        elif status.category in (
-            PNStatusCategory.PNReconnectedCategory,
-            PNStatusCategory.PNConnectedCategory,
-        ):
+        elif status.category == PNStatusCategory.PNReconnectedCategory:
+            self.connected = True
+            now = datetime.datetime.utcnow()
+            # Callback with an empty message to force a refresh
+            for callback in self._subscriptions:
+                for device_id in self._device_channels.values():
+                    callback(device_id, now, {})
+
+        elif status.category == PNStatusCategory.PNConnectedCategory:
             self.connected = True
 
     def message(self, pubnub, message):
