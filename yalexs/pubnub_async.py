@@ -1,6 +1,5 @@
 """Connect to pubnub."""
 
-import asyncio
 import datetime
 import logging
 
@@ -12,11 +11,6 @@ from pubnub.pubnub_asyncio import PubNubAsyncio
 AUGUST_CHANNEL = "sub-c-1030e062-0ebe-11e5-a5c2-0619f8945a4f"
 
 _LOGGER = logging.getLogger(__name__)
-
-
-class PubNubTimeoutWorkaround(Exception):
-    # reconnects are broken in pubnub https://github.com/pubnub/python/pull/101
-    pass
 
 
 class AugustPubNub(SubscribeCallback):
@@ -102,25 +96,13 @@ class AugustPubNub(SubscribeCallback):
         return self._device_channels.keys()
 
 
-class AugustPubNubAsyncio(PubNubAsyncio):
-    """A wrapper to fix reconnections."""
-
-    async def _request_helper(self, options_func, cancellation_event):
-        """Wrap _request_helper to convert the timeout into PNUnknownCategory."""
-        try:
-            return await super()._request_helper(options_func, cancellation_event)
-        except asyncio.TimeoutError:
-            # reconnects are broken in pubnub https://github.com/pubnub/python/pull/101
-            raise PubNubTimeoutWorkaround  # pylint: disable=raise-missing-from
-
-
 def async_create_pubnub(user_uuid, subscriptions):
     """Create a pubnub subscription."""
     pnconfig = PNConfiguration()
     pnconfig.subscribe_key = AUGUST_CHANNEL
     pnconfig.uuid = f"pn-{str(user_uuid).upper()}"
     pnconfig.reconnect_policy = PNReconnectionPolicy.EXPONENTIAL
-    pubnub = AugustPubNubAsyncio(pnconfig)
+    pubnub = PubNubAsyncio(pnconfig)
     pubnub.add_listener(subscriptions)
     pubnub.subscribe().channels(subscriptions.channels).execute()
 

@@ -27,6 +27,6 @@ setup(
         "python-dateutil",
         "aiohttp",
         "aiofiles",
-        "pubnub>=5.1.0",
+        "pubnub>=5.1.1",
     ],
 )
