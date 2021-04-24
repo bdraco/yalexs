@@ -17,12 +17,18 @@ def update_lock_detail_from_activity(lock_detail, activity):
     if activity.device_id != lock_detail.device_id:
         raise ValueError
     if isinstance(activity, LockOperationActivity):
-        if lock_detail.lock_status_datetime >= activity_end_time_utc:
+        if (
+            lock_detail.lock_status_datetime
+            and lock_detail.lock_status_datetime >= activity_end_time_utc
+        ):
             return False
         lock_detail.lock_status = ACTIVITY_ACTION_STATES[activity.action]
         lock_detail.lock_status_datetime = activity_end_time_utc
     elif isinstance(activity, DoorOperationActivity):
-        if lock_detail.door_state_datetime >= activity_end_time_utc:
+        if (
+            lock_detail.door_state_datetime
+            and lock_detail.door_state_datetime >= activity_end_time_utc
+        ):
             return False
         lock_detail.door_state = ACTIVITY_ACTION_STATES[activity.action]
         lock_detail.door_state_datetime = activity_end_time_utc
