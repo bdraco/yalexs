@@ -31,6 +31,25 @@ def load_fixture(filename):
 
 
 class TestLockDetail(unittest.TestCase):
+    def test_update_lock_with_activity_has_no_status(self):
+        lock = LockDetail(
+            json.loads(load_fixture("get_lock.nostatus_with_doorsense.json"))
+        )
+        self.assertEqual("ABC", lock.device_id)
+        self.assertEqual(LockStatus.UNKNOWN, lock.lock_status)
+        self.assertEqual(LockDoorStatus.UNKNOWN, lock.door_state)
+        self.assertEqual(None, lock.lock_status_datetime)
+        self.assertEqual(None, lock.door_state_datetime)
+
+        unlock_operation_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("unlock_activity.json"))
+        )
+
+        self.assertTrue(
+            update_lock_detail_from_activity(lock, unlock_operation_activity)
+        )
+        self.assertEqual(LockStatus.UNLOCKED, lock.lock_status)
+
     def test_update_lock_with_activity(self):
         lock = LockDetail(
             json.loads(load_fixture("get_lock.online_with_doorsense.json"))
