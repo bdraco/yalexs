@@ -6,8 +6,11 @@ from yalexs.activity import (
     ACTION_DOORBELL_BUTTON_PUSHED,
     ACTION_DOORBELL_IMAGE_CAPTURE,
     ACTION_DOORBELL_MOTION_DETECTED,
+    ACTION_LOCK_JAMMED,
     ACTION_LOCK_LOCK,
+    ACTION_LOCK_LOCKING,
     ACTION_LOCK_UNLOCK,
+    ACTION_LOCK_UNLOCKING,
     SOURCE_PUBNUB,
 )
 from yalexs.api_common import _activity_from_dict
@@ -49,6 +52,12 @@ def activities_from_pubnub_message(device, date_time, message):
                 _add_activity(activities, activity_dict, ACTION_LOCK_LOCK)
             elif lock_status == LockStatus.UNLOCKED:
                 _add_activity(activities, activity_dict, ACTION_LOCK_UNLOCK)
+            elif lock_status == LockStatus.LOCKING:
+                _add_activity(activities, activity_dict, ACTION_LOCK_LOCKING)
+            elif lock_status == LockStatus.UNLOCKING:
+                _add_activity(activities, activity_dict, ACTION_LOCK_UNLOCKING)
+            elif lock_status == LockStatus.JAMMED:
+                _add_activity(activities, activity_dict, ACTION_LOCK_JAMMED)
         if DOOR_STATE_KEY in message:
             door_state = determine_door_state(message[DOOR_STATE_KEY])
             if door_state == LockDoorStatus.OPEN:

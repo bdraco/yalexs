@@ -7,8 +7,15 @@ from yalexs.bridge import BridgeDetail, BridgeStatus
 from yalexs.device import Device, DeviceDetail
 from yalexs.keypad import KeypadDetail
 
-LOCKED_STATUS = ("locked", "kAugLockState_Locked", "kAugLockState_Locking")
-UNLOCKED_STATUS = ("unlocked", "kAugLockState_Unlocked", "kAugLockState_Unlocking")
+LOCKED_STATUS = ("locked", "kAugLockState_Locked")
+LOCKING_STATUS = ("kAugLockState_Locking",)
+UNLOCKED_STATUS = ("unlocked", "kAugLockState_Unlocked")
+UNLOCKING_STATUS = ("kAugLockState_Unlocking",)
+JAMMED_STATUS = (
+    "kAugLockState_UnknownStaticPosition",
+    "FAILED_BRIDGE_ERROR_LOCK_JAMMED",
+)
+
 CLOSED_STATUS = ("closed", "kAugLockDoorState_Closed", "kAugDoorState_Closed")
 OPEN_STATUS = ("open", "kAugLockDoorState_Open", "kAugDoorState_Open")
 
@@ -190,6 +197,9 @@ class LockStatus(Enum):
     LOCKED = "locked"
     UNLOCKED = "unlocked"
     UNKNOWN = "unknown"
+    LOCKING = "locking"
+    UNLOCKING = "unlocking"
+    JAMMED = "jammed"
 
 
 class LockDoorStatus(Enum):
@@ -203,6 +213,12 @@ def determine_lock_status(status):
         return LockStatus.LOCKED
     if status in UNLOCKED_STATUS:
         return LockStatus.UNLOCKED
+    if status in UNLOCKING_STATUS:
+        return LockStatus.UNLOCKING
+    if status in LOCKING_STATUS:
+        return LockStatus.LOCKING
+    if status in JAMMED_STATUS:
+        return LockStatus.JAMMED
     return LockStatus.UNKNOWN
 
 
