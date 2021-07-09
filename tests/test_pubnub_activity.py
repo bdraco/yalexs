@@ -62,6 +62,87 @@ class TestLockDetail(unittest.TestCase):
         )
         assert isinstance(activities[0], LockOperationActivity)
         assert "LockOperationActivity" in str(activities[0])
+        assert activities[0].action == "unlocking"
+
+        activities = activities_from_pubnub_message(
+            lock,
+            dateutil.parser.parse("2017-12-10T05:48:31.273Z"),
+            {
+                "remoteEvent": 1,
+                "status": "kAugLockState_Locking",
+                "info": {
+                    "action": "unlock",
+                    "startTime": "2021-03-20T18:19:06.374Z",
+                    "context": {
+                        "transactionID": "_oJRZKJsx",
+                        "startDate": "2021-03-20T18:19:06.372Z",
+                        "retryCount": 1,
+                    },
+                    "lockType": "lock_version_1001",
+                    "serialNumber": "M1FBA029QJ",
+                    "rssi": -53,
+                    "wlanRSSI": -55,
+                    "wlanSNR": 44,
+                    "duration": 2534,
+                },
+            },
+        )
+        assert isinstance(activities[0], LockOperationActivity)
+        assert "LockOperationActivity" in str(activities[0])
+        assert activities[0].action == "locking"
+
+        activities = activities_from_pubnub_message(
+            lock,
+            dateutil.parser.parse("2017-12-10T05:48:31.273Z"),
+            {
+                "remoteEvent": 1,
+                "status": "FAILED_BRIDGE_ERROR_LOCK_JAMMED",
+                "info": {
+                    "action": "unlock",
+                    "startTime": "2021-03-20T18:19:06.374Z",
+                    "context": {
+                        "transactionID": "_oJRZKJsx",
+                        "startDate": "2021-03-20T18:19:06.372Z",
+                        "retryCount": 1,
+                    },
+                    "lockType": "lock_version_1001",
+                    "serialNumber": "M1FBA029QJ",
+                    "rssi": -53,
+                    "wlanRSSI": -55,
+                    "wlanSNR": 44,
+                    "duration": 2534,
+                },
+            },
+        )
+        assert isinstance(activities[0], LockOperationActivity)
+        assert "LockOperationActivity" in str(activities[0])
+        assert activities[0].action == "jammed"
+
+        activities = activities_from_pubnub_message(
+            lock,
+            dateutil.parser.parse("2017-12-10T05:48:31.273Z"),
+            {
+                "remoteEvent": 1,
+                "status": "kAugLockState_Unlocked",
+                "info": {
+                    "action": "unlock",
+                    "startTime": "2021-03-20T18:19:06.374Z",
+                    "context": {
+                        "transactionID": "_oJRZKJsx",
+                        "startDate": "2021-03-20T18:19:06.372Z",
+                        "retryCount": 1,
+                    },
+                    "lockType": "lock_version_1001",
+                    "serialNumber": "M1FBA029QJ",
+                    "rssi": -53,
+                    "wlanRSSI": -55,
+                    "wlanSNR": 44,
+                    "duration": 2534,
+                },
+            },
+        )
+        assert isinstance(activities[0], LockOperationActivity)
+        assert "LockOperationActivity" in str(activities[0])
         assert activities[0].action == "unlock"
 
         activities = activities_from_pubnub_message(

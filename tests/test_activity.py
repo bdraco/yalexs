@@ -16,6 +16,9 @@ from yalexs.activity import (
     ACTION_LOCK_LOCK,
     ACTION_LOCK_ONETOUCHLOCK,
     ACTION_LOCK_UNLOCK,
+    ACTION_LOCK_UNLOCKING,
+    ACTION_LOCK_LOCKING,
+    ACTION_LOCK_JAMMED,
     ACTIVITY_ACTION_STATES,
     ACTIVITY_ACTIONS_BRIDGE_OPERATION,
     ACTIVITY_ACTIONS_DOOR_OPERATION,
@@ -65,7 +68,14 @@ class TestActivity(unittest.TestCase):
         )
         self.assertCountEqual(
             ACTIVITY_ACTIONS_LOCK_OPERATION,
-            [ACTION_LOCK_ONETOUCHLOCK, ACTION_LOCK_LOCK, ACTION_LOCK_UNLOCK],
+            [
+                ACTION_LOCK_ONETOUCHLOCK,
+                ACTION_LOCK_LOCK,
+                ACTION_LOCK_UNLOCK,
+                ACTION_LOCK_LOCKING,
+                ACTION_LOCK_UNLOCKING,
+                ACTION_LOCK_JAMMED,
+            ],
         )
         self.assertCountEqual(
             ACTIVITY_ACTIONS_DOOR_OPERATION, [ACTION_DOOR_OPEN, ACTION_DOOR_CLOSED]
