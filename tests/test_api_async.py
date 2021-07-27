@@ -266,6 +266,42 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         )
 
     @aioresponses()
+    async def test_async_get_lock_detail_with_doorsense_disabled_bridge_online(
+        self, mock
+    ):
+        mock.get(
+            API_GET_LOCK_URL.format(lock_id="ABC"),
+            body=load_fixture("get_lock.online_with_doorsense_disabled.json"),
+        )
+
+        api = ApiAsync(ClientSession())
+        lock = await api.async_get_lock_detail(ACCESS_TOKEN, "ABC")
+
+        self.assertEqual("ABC", lock.device_id)
+        self.assertEqual("Online door with doorsense disabled", lock.device_name)
+        self.assertEqual("123", lock.house_id)
+        self.assertEqual("XY", lock.serial_number)
+        self.assertEqual("undefined-4.3.0-1.8.14", lock.firmware_version)
+        self.assertEqual(92, lock.battery_level)
+        self.assertEqual("AUG-MD01", lock.model)
+        self.assertEqual(None, lock.keypad)
+        self.assertIsInstance(lock.bridge, BridgeDetail)
+        self.assertIsInstance(lock.bridge.status, BridgeStatusDetail)
+        self.assertEqual(BridgeStatus.ONLINE, lock.bridge.status.current)
+        self.assertEqual(True, lock.bridge_is_online)
+        self.assertEqual(True, lock.bridge.operative)
+        self.assertEqual(False, lock.doorsense)
+
+        self.assertEqual(LockStatus.LOCKED, lock.lock_status)
+        self.assertEqual(LockDoorStatus.DISABLED, lock.door_state)
+        self.assertEqual(
+            dateutil.parser.parse("2017-12-10T04:48:30.272Z"), lock.lock_status_datetime
+        )
+        self.assertEqual(
+            dateutil.parser.parse("2017-12-10T04:48:30.272Z"), lock.door_state_datetime
+        )
+
+    @aioresponses()
     async def test_async_get_lock_detail_bridge_online(self, mock):
         mock.get(
             API_GET_LOCK_URL.format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
@@ -324,7 +360,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(False, lock.doorsense)
 
         self.assertEqual(LockStatus.UNKNOWN, lock.lock_status)
-        self.assertEqual(LockDoorStatus.UNKNOWN, lock.door_state)
+        self.assertEqual(LockDoorStatus.DISABLED, lock.door_state)
         self.assertEqual(None, lock.lock_status_datetime)
         self.assertEqual(None, lock.door_state_datetime)
 
@@ -356,7 +392,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(False, lock.doorsense)
 
         self.assertEqual(LockStatus.LOCKED, lock.lock_status)
-        self.assertEqual(LockDoorStatus.UNKNOWN, lock.door_state)
+        self.assertEqual(LockDoorStatus.DISABLED, lock.door_state)
         self.assertEqual(
             dateutil.parser.parse("2017-12-10T04:48:30.272Z"), lock.lock_status_datetime
         )

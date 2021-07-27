@@ -328,7 +328,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(False, lock.doorsense)
 
         self.assertEqual(LockStatus.UNKNOWN, lock.lock_status)
-        self.assertEqual(LockDoorStatus.UNKNOWN, lock.door_state)
+        self.assertEqual(LockDoorStatus.DISABLED, lock.door_state)
         self.assertEqual(None, lock.lock_status_datetime)
         self.assertEqual(None, lock.door_state_datetime)
 
@@ -359,7 +359,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(False, lock.doorsense)
 
         self.assertEqual(LockStatus.LOCKED, lock.lock_status)
-        self.assertEqual(LockDoorStatus.UNKNOWN, lock.door_state)
+        self.assertEqual(LockDoorStatus.DISABLED, lock.door_state)
         self.assertEqual(
             dateutil.parser.parse("2017-12-10T04:48:30.272Z"), lock.lock_status_datetime
         )

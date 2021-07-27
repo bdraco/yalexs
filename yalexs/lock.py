@@ -18,6 +18,7 @@ JAMMED_STATUS = (
 
 CLOSED_STATUS = ("closed", "kAugLockDoorState_Closed", "kAugDoorState_Closed")
 OPEN_STATUS = ("open", "kAugLockDoorState_Open", "kAugDoorState_Open")
+DISABLE_STATUS = ("init", "", None)
 
 LOCK_STATUS_KEY = "status"
 DOOR_STATE_KEY = "doorState"
@@ -79,7 +80,7 @@ class LockDetail(DeviceDetail):
 
             if (
                 DOOR_STATE_KEY in lock_status
-                and self._door_state != LockDoorStatus.UNKNOWN
+                and self._door_state != LockDoorStatus.DISABLED
             ):
                 self._doorsense = True
 
@@ -206,6 +207,7 @@ class LockDoorStatus(Enum):
     CLOSED = "closed"
     OPEN = "open"
     UNKNOWN = "unknown"
+    DISABLED = "disabled"
 
 
 def determine_lock_status(status):
@@ -227,6 +229,8 @@ def determine_door_state(status):
         return LockDoorStatus.CLOSED
     if status in OPEN_STATUS:
         return LockDoorStatus.OPEN
+    if status in DISABLE_STATUS:
+        return LockDoorStatus.DISABLED
     return LockDoorStatus.UNKNOWN
 
 

@@ -35,7 +35,7 @@ class TestLockDetail(unittest.TestCase):
         lock = LockDetail(json.loads(load_fixture("get_lock.doorsense_init.json")))
         self.assertEqual("A6697750D607098BAE8D6BAA11EF8063", lock.device_id)
         self.assertEqual(LockStatus.LOCKED, lock.lock_status)
-        self.assertEqual(LockDoorStatus.UNKNOWN, lock.door_state)
+        self.assertEqual(LockDoorStatus.DISABLED, lock.door_state)
 
         activities = activities_from_pubnub_message(
             lock,

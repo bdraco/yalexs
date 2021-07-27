@@ -88,7 +88,7 @@ def _convert_lock_result_to_activities(lock_json_dict):
     activities.append(activity_lock_dict)
 
     door_state = determine_door_state(lock_json_dict.get("doorState"))
-    if door_state != LockDoorStatus.UNKNOWN:
+    if door_state not in (LockDoorStatus.UNKNOWN, LockDoorStatus.DISABLED):
         activity_door_dict = _map_lock_result_to_activity(
             lock_id, activity_epoch, door_state_to_string(door_state)
         )
