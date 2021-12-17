@@ -4,6 +4,7 @@ from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
     ACTION_BRIDGE_ONLINE,
     ACTIVITY_ACTION_STATES,
+    DoorbellImageCaptureActivity,
     BridgeOperationActivity,
     DoorbellMotionActivity,
     DoorOperationActivity,
@@ -47,7 +48,7 @@ def update_doorbell_image_from_activity(doorbell_detail, activity):
     """Update the DoorDetail from an activity with a new image."""
     if activity.device_id != doorbell_detail.device_id:
         raise ValueError
-    if isinstance(activity, DoorbellMotionActivity):
+    if isinstance(activity, (DoorbellImageCaptureActivity, DoorbellMotionActivity)):
         if activity.image_created_at_datetime is None:
             return False
 
