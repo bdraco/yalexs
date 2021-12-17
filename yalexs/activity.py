@@ -30,10 +30,8 @@ ACTIVITY_ACTIONS_DOORBELL_DING = [
     ACTION_DOORBELL_CALL_MISSED,
     ACTION_DOORBELL_CALL_HANGUP,
 ]
-ACTIVITY_ACTIONS_DOORBELL_MOTION = [
-    ACTION_DOORBELL_MOTION_DETECTED,
-    ACTION_DOORBELL_IMAGE_CAPTURE,
-]
+ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE = [ACTION_DOORBELL_IMAGE_CAPTURE]
+ACTIVITY_ACTIONS_DOORBELL_MOTION = [ACTION_DOORBELL_MOTION_DETECTED]
 ACTIVITY_ACTIONS_DOORBELL_VIEW = [ACTION_DOORBELL_CALL_INITIATED]
 ACTIVITY_ACTIONS_LOCK_OPERATION = [
     ACTION_LOCK_LOCK,
@@ -163,6 +161,10 @@ class DoorbellMotionActivity(Activity):
     @property
     def image_created_at_datetime(self):
         return self._image_created_at_datetime
+
+
+class DoorbellImageCaptureActivity(DoorbellMotionActivity):
+    """A motion activity with an image."""
 
 
 class DoorbellDingActivity(Activity):

@@ -6,6 +6,7 @@ from yalexs.activity import (
     ACTIVITY_ACTIONS_BRIDGE_OPERATION,
     ACTIVITY_ACTIONS_DOOR_OPERATION,
     ACTIVITY_ACTIONS_DOORBELL_DING,
+    ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE,
     ACTIVITY_ACTIONS_DOORBELL_MOTION,
     ACTIVITY_ACTIONS_DOORBELL_VIEW,
     ACTIVITY_ACTIONS_LOCK_OPERATION,
@@ -13,6 +14,7 @@ from yalexs.activity import (
     SOURCE_LOG,
     BridgeOperationActivity,
     DoorbellDingActivity,
+    DoorbellImageCaptureActivity,
     DoorbellMotionActivity,
     DoorbellViewActivity,
     DoorOperationActivity,
@@ -104,6 +106,8 @@ def _activity_from_dict(source, activity_dict):
         return DoorbellDingActivity(source, activity_dict)
     if action in ACTIVITY_ACTIONS_DOORBELL_MOTION:
         return DoorbellMotionActivity(source, activity_dict)
+    if action in ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE:
+        return DoorbellImageCaptureActivity(source, activity_dict)
     if action in ACTIVITY_ACTIONS_DOORBELL_VIEW:
         return DoorbellViewActivity(source, activity_dict)
     if action in ACTIVITY_ACTIONS_LOCK_OPERATION:
