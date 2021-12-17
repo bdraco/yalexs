@@ -37,7 +37,9 @@ disable=
   too-few-public-methods,
   abstract-method,
   missing-docstring,
-  no-self-use
+  no-self-use,
+  unspecified-encoding,
+  consider-using-f-string
 
 [EXCEPTIONS]
 overgeneral-exceptions=Exception
