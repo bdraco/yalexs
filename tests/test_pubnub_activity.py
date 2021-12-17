@@ -8,6 +8,7 @@ from yalexs.activity import (
     ActivityType,
     BridgeOperationActivity,
     DoorbellDingActivity,
+    DoorbellImageCaptureActivity,
     DoorbellMotionActivity,
     DoorOperationActivity,
     LockOperationActivity,
@@ -269,8 +270,8 @@ class TestDetail(unittest.TestCase):
                 },
             },
         )
-        assert isinstance(activities[0], DoorbellMotionActivity)
-        assert "DoorbellMotionActivity" in str(activities[0])
+        assert isinstance(activities[0], DoorbellImageCaptureActivity)
+        assert "DoorbellImageCaptureActivity" in str(activities[0])
 
         assert (
             activities[0].image_url
@@ -294,7 +295,7 @@ class TestDetail(unittest.TestCase):
                 },
             },
         )
-        assert isinstance(activities[0], DoorbellMotionActivity)
+        assert isinstance(activities[0], DoorbellImageCaptureActivity)
         assert (
             activities[0].image_url
             == "https://dyu7azbnaoi74.cloudfront.net/zip/images/zip.jpeg"

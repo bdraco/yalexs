@@ -30,10 +30,8 @@ ACTIVITY_ACTIONS_DOORBELL_DING = [
     ACTION_DOORBELL_CALL_MISSED,
     ACTION_DOORBELL_CALL_HANGUP,
 ]
-ACTIVITY_ACTIONS_DOORBELL_MOTION = [
-    ACTION_DOORBELL_MOTION_DETECTED,
-    ACTION_DOORBELL_IMAGE_CAPTURE,
-]
+ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE = [ACTION_DOORBELL_IMAGE_CAPTURE]
+ACTIVITY_ACTIONS_DOORBELL_MOTION = [ACTION_DOORBELL_MOTION_DETECTED]
 ACTIVITY_ACTIONS_DOORBELL_VIEW = [ACTION_DOORBELL_CALL_INITIATED]
 ACTIVITY_ACTIONS_LOCK_OPERATION = [
     ACTION_LOCK_LOCK,
@@ -73,6 +71,7 @@ class ActivityType(Enum):
     LOCK_OPERATION_WITHOUT_OPERATOR = "lock_operation_without_operator"
     DOOR_OPERATION = "door_operation"
     BRIDGE_OPERATION = "bridge_operation"
+    DOORBELL_IMAGE_CAPTURE = "doorbell_image_capture"
 
 
 class Activity:
@@ -138,10 +137,9 @@ class Activity:
         return self._device_type
 
 
-class DoorbellMotionActivity(Activity):
-    def __init__(self, source, data):
-        super().__init__(source, ActivityType.DOORBELL_MOTION, data)
-
+class BaseDoorbellMotionActivity(Activity):
+    def __init__(self, source, activity_type, data):
+        super().__init__(source, activity_type, data)
         image = data.get("info", {}).get("image")
         self._image_url = None if image is None else image.get("secure_url")
         self._image_created_at_datetime = None
@@ -163,6 +161,18 @@ class DoorbellMotionActivity(Activity):
     @property
     def image_created_at_datetime(self):
         return self._image_created_at_datetime
+
+
+class DoorbellMotionActivity(BaseDoorbellMotionActivity):
+    def __init__(self, source, data):
+        super().__init__(source, ActivityType.DOORBELL_MOTION, data)
+
+
+class DoorbellImageCaptureActivity(BaseDoorbellMotionActivity):
+    """A motion activity with an image."""
+
+    def __init__(self, source, data):
+        super().__init__(source, ActivityType.DOORBELL_IMAGE_CAPTURE, data)
 
 
 class DoorbellDingActivity(Activity):

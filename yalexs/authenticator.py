@@ -27,7 +27,7 @@ class Authenticator(AuthenticatorCommon):
         if access_token_cache_file is not None and os.path.exists(
             access_token_cache_file
         ):
-            with open(access_token_cache_file, "r") as file:
+            with open(access_token_cache_file) as file:
                 try:
                     self._authentication = from_authentication_json(json.load(file))
 
