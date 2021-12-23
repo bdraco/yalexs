@@ -24,6 +24,10 @@ class AugustPubNub(SubscribeCallback):
         _LOGGER.debug("Recieved new presence: %s", presence)
 
     def status(self, pubnub, status):
+        if not pubnub:
+            self.connected = False
+            return
+
         _LOGGER.debug(
             "Recieved new status: category=%s error_data=%s error=%s status_code=%s operation=%s",
             status.category,
