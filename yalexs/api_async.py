@@ -3,7 +3,7 @@
 import asyncio
 import logging
 
-from aiohttp import ClientResponseError
+from aiohttp import ClientResponseError, ServerDisconnectedError
 
 from yalexs.api_common import (
     API_LOCK_URL,
@@ -246,7 +246,11 @@ class ApiAsync(ApiCommon):
         attempts = 0
         while attempts < API_RETRY_ATTEMPTS:
             attempts += 1
-            response = await self._aiohttp_session.request(method, url, **api_dict)
+            try:
+                response = await self._aiohttp_session.request(method, url, **api_dict)
+            except ServerDisconnectedError:
+                # Try again if we get disconnected
+                continue
             _LOGGER.debug(
                 "Received API response: %s, %s", response.status, await response.read()
             )
@@ -280,4 +284,6 @@ def _raise_response_exceptions(response):
             raise AugustApiAIOHTTPError(
                 "The operation timed out because the bridge (connect) failed to respond.",
             ) from err
-        raise err
+        raise AugustApiAIOHTTPError(
+            f"The operation failed with error code {err.status}: {err.message}.",
+        ) from err

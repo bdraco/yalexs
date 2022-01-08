@@ -58,8 +58,14 @@ API_GET_LOCKS_URL = API_BASE_URL + "/users/locks/mine"
 API_GET_LOCK_URL = API_BASE_URL + "/locks/{lock_id}"
 API_GET_LOCK_STATUS_URL = API_BASE_URL + "/locks/{lock_id}/status"
 API_GET_PINS_URL = API_BASE_URL + "/locks/{lock_id}/pins"
-API_LOCK_URL = API_BASE_URL + "/remoteoperate/{lock_id}/lock"
-API_UNLOCK_URL = API_BASE_URL + "/remoteoperate/{lock_id}/unlock"
+API_LOCK_URL = (
+    API_BASE_URL
+    + "/remoteoperate/{lock_id}/lock?v=2.2.15&type=async&connection=persistent"
+)
+API_UNLOCK_URL = (
+    API_BASE_URL
+    + "/remoteoperate/{lock_id}/unlock?v=2.2.15&type=async&connection=persistent"
+)
 API_GET_USER_URL = API_BASE_URL + "/users/me"
 
 
