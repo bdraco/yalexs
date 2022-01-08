@@ -161,6 +161,15 @@ class ApiAsync(ApiCommon):
         )
         return await response.json()
 
+    async def _async_call_async_lock_operation(self, url_str, access_token, lock_id):
+        """Call an operation that will queue."""
+        response = await self._async_dict_to_api(
+            self._build_call_lock_operation_request(
+                url_str, access_token, lock_id, self._command_timeout
+            )
+        )
+        return await response.text()
+
     async def _async_lock(self, access_token, lock_id):
         return await self._async_call_lock_operation(
             API_LOCK_URL, access_token, lock_id
@@ -177,7 +186,7 @@ class ApiAsync(ApiCommon):
 
     async def async_lock_async(self, access_token, lock_id):
         """Queue a remote lock operation and get the response via pubnub."""
-        return await self._async_call_lock_operation(
+        return await self._async_call_async_lock_operation(
             API_LOCK_ASYNC_URL, access_token, lock_id
         )
 
@@ -209,7 +218,7 @@ class ApiAsync(ApiCommon):
 
     async def async_unlock_async(self, access_token, lock_id):
         """Queue a remote unlock operation and get the response via pubnub."""
-        return await self._async_call_lock_operation(
+        return await self._async_call_async_lock_operation(
             API_UNLOCK_ASYNC_URL, access_token, lock_id
         )
 
