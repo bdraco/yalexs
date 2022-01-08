@@ -22,10 +22,10 @@ from yalexs.api_common import (
     API_GET_LOCKS_URL,
     API_GET_PINS_URL,
     API_GET_USER_URL,
-    API_LOCK_URL,
-    API_UNLOCK_URL,
     API_LOCK_ASYNC_URL,
+    API_LOCK_URL,
     API_UNLOCK_ASYNC_URL,
+    API_UNLOCK_URL,
     API_VALIDATE_VERIFICATION_CODE_URLS,
 )
 from yalexs.bridge import BridgeDetail, BridgeStatus, BridgeStatusDetail
