@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-from aiohttp import ClientError, ClientResponse, ClientSession
+from aiohttp import ClientResponse, ClientSession
 from aiohttp.helpers import TimerNoop
 from aioresponses import CallbackResult, aioresponses
 import aiounittest
