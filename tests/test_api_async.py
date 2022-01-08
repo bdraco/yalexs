@@ -24,6 +24,8 @@ from yalexs.api_common import (
     API_GET_USER_URL,
     API_LOCK_URL,
     API_UNLOCK_URL,
+    API_LOCK_ASYNC_URL,
+    API_UNLOCK_ASYNC_URL,
     API_VALIDATE_VERIFICATION_CODE_URLS,
 )
 from yalexs.bridge import BridgeDetail, BridgeStatus, BridgeStatusDetail
@@ -676,6 +678,16 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(LockStatus.LOCKED, status)
 
     @aioresponses()
+    async def test_async_lock_async(self, mock):
+        lock_id = 1234
+        mock.put(
+            API_LOCK_ASYNC_URL.format(lock_id=lock_id),
+        )
+
+        api = ApiAsync(ClientSession())
+        await api.async_lock_async(ACCESS_TOKEN, lock_id)
+
+    @aioresponses()
     async def test_async_unlock(self, mock):
         lock_id = 1234
         mock.put(API_UNLOCK_URL.format(lock_id=lock_id), body='{"status": "unlocked"}')
@@ -684,6 +696,14 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         status = await api.async_unlock(ACCESS_TOKEN, lock_id)
 
         self.assertEqual(LockStatus.UNLOCKED, status)
+
+    @aioresponses()
+    async def test_async_unlock_async(self, mock):
+        lock_id = 1234
+        mock.put(API_UNLOCK_ASYNC_URL.format(lock_id=lock_id))
+
+        api = ApiAsync(ClientSession())
+        await api.async_unlock_async(ACCESS_TOKEN, lock_id)
 
     @aioresponses()
     async def test_async_get_pins(self, mock):
