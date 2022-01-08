@@ -809,10 +809,10 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         try:
             _raise_response_exceptions(four_two_eight)
         except Exception as err:
-            self.assertIsInstance(err, ClientError)
-            self.assertNotIsInstance(err, AugustApiAIOHTTPError)
+            self.assertIsInstance(err, AugustApiAIOHTTPError)
 
         ERROR_MAP = {
+            560: "The operation failed with error code 560: 560.",
             422: "The operation failed because the bridge (connect) is offline.",
             423: "The operation failed because the bridge (connect) is in use.",
             408: "The operation timed out because the bridge (connect) failed to respond.",
