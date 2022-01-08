@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-from aiohttp import ClientError, ClientResponse, ClientSession
+from aiohttp import ClientResponse, ClientSession
 from aiohttp.helpers import TimerNoop
 from aioresponses import CallbackResult, aioresponses
 import aiounittest
@@ -22,7 +22,9 @@ from yalexs.api_common import (
     API_GET_LOCKS_URL,
     API_GET_PINS_URL,
     API_GET_USER_URL,
+    API_LOCK_ASYNC_URL,
     API_LOCK_URL,
+    API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
     API_VALIDATE_VERIFICATION_CODE_URLS,
 )
@@ -676,6 +678,16 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(LockStatus.LOCKED, status)
 
     @aioresponses()
+    async def test_async_lock_async(self, mock):
+        lock_id = 1234
+        mock.put(
+            API_LOCK_ASYNC_URL.format(lock_id=lock_id),
+        )
+
+        api = ApiAsync(ClientSession())
+        await api.async_lock_async(ACCESS_TOKEN, lock_id)
+
+    @aioresponses()
     async def test_async_unlock(self, mock):
         lock_id = 1234
         mock.put(API_UNLOCK_URL.format(lock_id=lock_id), body='{"status": "unlocked"}')
@@ -684,6 +696,14 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         status = await api.async_unlock(ACCESS_TOKEN, lock_id)
 
         self.assertEqual(LockStatus.UNLOCKED, status)
+
+    @aioresponses()
+    async def test_async_unlock_async(self, mock):
+        lock_id = 1234
+        mock.put(API_UNLOCK_ASYNC_URL.format(lock_id=lock_id))
+
+        api = ApiAsync(ClientSession())
+        await api.async_unlock_async(ACCESS_TOKEN, lock_id)
 
     @aioresponses()
     async def test_async_get_pins(self, mock):
@@ -789,10 +809,10 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         try:
             _raise_response_exceptions(four_two_eight)
         except Exception as err:
-            self.assertIsInstance(err, ClientError)
-            self.assertNotIsInstance(err, AugustApiAIOHTTPError)
+            self.assertIsInstance(err, AugustApiAIOHTTPError)
 
         ERROR_MAP = {
+            560: "The operation failed with error code 560: 560.",
             422: "The operation failed because the bridge (connect) is offline.",
             423: "The operation failed because the bridge (connect) is in use.",
             408: "The operation timed out because the bridge (connect) failed to respond.",

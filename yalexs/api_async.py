@@ -3,12 +3,14 @@
 import asyncio
 import logging
 
-from aiohttp import ClientResponseError
+from aiohttp import ClientResponseError, ServerDisconnectedError
 
 from yalexs.api_common import (
+    API_LOCK_ASYNC_URL,
     API_LOCK_URL,
     API_RETRY_ATTEMPTS,
     API_RETRY_TIME,
+    API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
     HEADER_AUGUST_ACCESS_TOKEN,
     ApiCommon,
@@ -159,6 +161,15 @@ class ApiAsync(ApiCommon):
         )
         return await response.json()
 
+    async def _async_call_async_lock_operation(self, url_str, access_token, lock_id):
+        """Call an operation that will queue."""
+        response = await self._async_dict_to_api(
+            self._build_call_lock_operation_request(
+                url_str, access_token, lock_id, self._command_timeout
+            )
+        )
+        return await response.text()
+
     async def _async_lock(self, access_token, lock_id):
         return await self._async_call_lock_operation(
             API_LOCK_URL, access_token, lock_id
@@ -171,6 +182,12 @@ class ApiAsync(ApiCommon):
         """
         return determine_lock_status(
             (await self._async_lock(access_token, lock_id)).get("status")
+        )
+
+    async def async_lock_async(self, access_token, lock_id):
+        """Queue a remote lock operation and get the response via pubnub."""
+        return await self._async_call_async_lock_operation(
+            API_LOCK_ASYNC_URL, access_token, lock_id
         )
 
     async def async_lock_return_activities(self, access_token, lock_id):
@@ -197,6 +214,12 @@ class ApiAsync(ApiCommon):
         """
         return determine_lock_status(
             (await self._async_unlock(access_token, lock_id)).get("status")
+        )
+
+    async def async_unlock_async(self, access_token, lock_id):
+        """Queue a remote unlock operation and get the response via pubnub."""
+        return await self._async_call_async_lock_operation(
+            API_UNLOCK_ASYNC_URL, access_token, lock_id
         )
 
     async def async_unlock_return_activities(self, access_token, lock_id):
@@ -246,7 +269,11 @@ class ApiAsync(ApiCommon):
         attempts = 0
         while attempts < API_RETRY_ATTEMPTS:
             attempts += 1
-            response = await self._aiohttp_session.request(method, url, **api_dict)
+            try:
+                response = await self._aiohttp_session.request(method, url, **api_dict)
+            except ServerDisconnectedError:
+                # Try again if we get disconnected
+                continue
             _LOGGER.debug(
                 "Received API response: %s, %s", response.status, await response.read()
             )
@@ -280,4 +307,6 @@ def _raise_response_exceptions(response):
             raise AugustApiAIOHTTPError(
                 "The operation timed out because the bridge (connect) failed to respond.",
             ) from err
-        raise err
+        raise AugustApiAIOHTTPError(
+            f"The operation failed with error code {err.status}: {err.message}.",
+        ) from err
