@@ -10,6 +10,7 @@ from yalexs.api_common import (
     API_LOCK_URL,
     API_RETRY_ATTEMPTS,
     API_RETRY_TIME,
+    API_STATUS_ASYNC_URL,
     API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
     HEADER_AUGUST_ACCESS_TOKEN,
@@ -232,6 +233,12 @@ class ApiAsync(ApiCommon):
         """
         return _convert_lock_result_to_activities(
             await self._async_unlock(access_token, lock_id)
+        )
+
+    async def async_status_async(self, access_token, lock_id):
+        """Queue a remote unlock operation and get the status via pubnub."""
+        return await self._async_call_async_lock_operation(
+            API_STATUS_ASYNC_URL, access_token, lock_id
         )
 
     async def async_refresh_access_token(self, access_token):

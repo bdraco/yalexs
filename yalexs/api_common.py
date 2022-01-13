@@ -68,6 +68,10 @@ API_UNLOCK_ASYNC_URL = (
     API_BASE_URL
     + "/remoteoperate/{lock_id}/unlock?v=2.2.15&type=async&connection=persistent"
 )
+API_STATUS_ASYNC_URL = (
+    API_BASE_URL
+    + "/remoteoperate/{lock_id}/status?v=2.2.15&type=async&connection=persistent&intent=wakeup"
+)
 API_GET_USER_URL = API_BASE_URL + "/users/me"
 
 
