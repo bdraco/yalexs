@@ -24,6 +24,7 @@ from yalexs.api_common import (
     API_GET_USER_URL,
     API_LOCK_ASYNC_URL,
     API_LOCK_URL,
+    API_STATUS_ASYNC_URL,
     API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
     API_VALIDATE_VERIFICATION_CODE_URLS,
@@ -704,6 +705,14 @@ class TestApiAsync(aiounittest.AsyncTestCase):
 
         api = ApiAsync(ClientSession())
         await api.async_unlock_async(ACCESS_TOKEN, lock_id)
+
+    @aioresponses()
+    async def test_async_status_async(self, mock):
+        lock_id = 1234
+        mock.put(API_STATUS_ASYNC_URL.format(lock_id=lock_id))
+
+        api = ApiAsync(ClientSession())
+        await api.async_status_async(ACCESS_TOKEN, lock_id)
 
     @aioresponses()
     async def test_async_get_pins(self, mock):
