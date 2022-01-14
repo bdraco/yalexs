@@ -15,6 +15,7 @@ class BridgeDetail(DeviceDetail):
             data["_id"], None, house_id, None, data["firmwareVersion"], None
         )
 
+        self._hyper_bridge = data.get("hyperBridge", False)
         self._operative = data["operative"]
 
         if "status" in data:
@@ -25,6 +26,10 @@ class BridgeDetail(DeviceDetail):
     @property
     def status(self):
         return self._status
+
+    @property
+    def hyper_bridge(self):
+        return self._hyper_bridge
 
     @property
     def operative(self):

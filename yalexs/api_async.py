@@ -14,6 +14,7 @@ from yalexs.api_common import (
     API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
     HEADER_AUGUST_ACCESS_TOKEN,
+    HYPER_BRIDGE_PARAM,
     ApiCommon,
     _api_headers,
     _convert_lock_result_to_activities,
@@ -185,8 +186,12 @@ class ApiAsync(ApiCommon):
             (await self._async_lock(access_token, lock_id)).get("status")
         )
 
-    async def async_lock_async(self, access_token, lock_id):
+    async def async_lock_async(self, access_token, lock_id, hyper_bridge=True):
         """Queue a remote lock operation and get the response via pubnub."""
+        if hyper_bridge:
+            return await self._async_call_async_lock_operation(
+                f"{API_LOCK_ASYNC_URL}{HYPER_BRIDGE_PARAM}", access_token, lock_id
+            )
         return await self._async_call_async_lock_operation(
             API_LOCK_ASYNC_URL, access_token, lock_id
         )
@@ -217,8 +222,12 @@ class ApiAsync(ApiCommon):
             (await self._async_unlock(access_token, lock_id)).get("status")
         )
 
-    async def async_unlock_async(self, access_token, lock_id):
+    async def async_unlock_async(self, access_token, lock_id, hyper_bridge=True):
         """Queue a remote unlock operation and get the response via pubnub."""
+        if hyper_bridge:
+            return await self._async_call_async_lock_operation(
+                f"{API_UNLOCK_ASYNC_URL}{HYPER_BRIDGE_PARAM}", access_token, lock_id
+            )
         return await self._async_call_async_lock_operation(
             API_UNLOCK_ASYNC_URL, access_token, lock_id
         )
@@ -235,8 +244,12 @@ class ApiAsync(ApiCommon):
             await self._async_unlock(access_token, lock_id)
         )
 
-    async def async_status_async(self, access_token, lock_id):
+    async def async_status_async(self, access_token, lock_id, hyper_bridge=True):
         """Queue a remote unlock operation and get the status via pubnub."""
+        if hyper_bridge:
+            return await self._async_call_async_lock_operation(
+                f"{API_STATUS_ASYNC_URL}{HYPER_BRIDGE_PARAM}", access_token, lock_id
+            )
         return await self._async_call_async_lock_operation(
             API_STATUS_ASYNC_URL, access_token, lock_id
         )
