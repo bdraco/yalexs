@@ -60,18 +60,14 @@ API_GET_LOCK_STATUS_URL = API_BASE_URL + "/locks/{lock_id}/status"
 API_GET_PINS_URL = API_BASE_URL + "/locks/{lock_id}/pins"
 API_LOCK_URL = API_BASE_URL + "/remoteoperate/{lock_id}/lock"
 API_UNLOCK_URL = API_BASE_URL + "/remoteoperate/{lock_id}/unlock"
-API_LOCK_ASYNC_URL = (
-    API_BASE_URL
-    + "/remoteoperate/{lock_id}/lock?v=2.2.15&type=async&connection=persistent"
-)
+API_LOCK_ASYNC_URL = API_BASE_URL + "/remoteoperate/{lock_id}/lock?v=2.2.15&type=async"
 API_UNLOCK_ASYNC_URL = (
-    API_BASE_URL
-    + "/remoteoperate/{lock_id}/unlock?v=2.2.15&type=async&connection=persistent"
+    API_BASE_URL + "/remoteoperate/{lock_id}/unlock?v=2.2.15&type=async"
 )
 API_STATUS_ASYNC_URL = (
-    API_BASE_URL
-    + "/remoteoperate/{lock_id}/status?v=2.2.15&type=async&connection=persistent&intent=wakeup"
+    API_BASE_URL + "/remoteoperate/{lock_id}/status?v=2.2.15&type=async&intent=wakeup"
 )
+HYPER_BRIDGE_PARAM = "&connection=persistent"
 API_GET_USER_URL = API_BASE_URL + "/users/me"
 
 

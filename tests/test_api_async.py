@@ -28,6 +28,7 @@ from yalexs.api_common import (
     API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
     API_VALIDATE_VERIFICATION_CODE_URLS,
+    HYPER_BRIDGE_PARAM,
 )
 from yalexs.bridge import BridgeDetail, BridgeStatus, BridgeStatusDetail
 from yalexs.exceptions import AugustApiAIOHTTPError
@@ -287,6 +288,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual("undefined-4.3.0-1.8.14", lock.firmware_version)
         self.assertEqual(92, lock.battery_level)
         self.assertEqual("AUG-MD01", lock.model)
+        self.assertEqual(lock.bridge.hyper_bridge, True)
         self.assertEqual(None, lock.keypad)
         self.assertIsInstance(lock.bridge, BridgeDetail)
         self.assertIsInstance(lock.bridge.status, BridgeStatusDetail)
@@ -330,6 +332,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(True, lock.bridge_is_online)
         self.assertEqual(True, lock.bridge.operative)
         self.assertEqual(True, lock.doorsense)
+        self.assertEqual(lock.bridge.hyper_bridge, False)
 
         self.assertEqual(LockStatus.LOCKED, lock.lock_status)
         self.assertEqual(LockDoorStatus.CLOSED, lock.door_state)
@@ -339,6 +342,32 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(
             dateutil.parser.parse("2017-12-10T04:48:30.272Z"), lock.door_state_datetime
         )
+
+    @aioresponses()
+    async def test_async_get_v2_lock_detail_bridge_online(self, mock):
+        mock.get(
+            API_GET_LOCK_URL.format(lock_id="snip"),
+            body=load_fixture("get_lock_v2.online.json"),
+        )
+
+        api = ApiAsync(ClientSession())
+        lock = await api.async_get_lock_detail(ACCESS_TOKEN, "snip")
+
+        self.assertEqual("snip", lock.device_id)
+        self.assertEqual("Front Door", lock.device_name)
+        self.assertEqual("snip", lock.house_id)
+        self.assertEqual("snip", lock.serial_number)
+        self.assertEqual("3.0.44-3.0.29", lock.firmware_version)
+        self.assertEqual(96, lock.battery_level)
+        self.assertEqual("AUG-SL02-M02-S02", lock.model)
+        self.assertIsInstance(lock.bridge, BridgeDetail)
+        self.assertEqual(True, lock.bridge_is_online)
+        self.assertEqual(True, lock.bridge.operative)
+        self.assertEqual(False, lock.doorsense)
+        self.assertEqual(lock.bridge.hyper_bridge, False)
+
+        self.assertEqual(LockStatus.LOCKED, lock.lock_status)
+        self.assertEqual(LockDoorStatus.DISABLED, lock.door_state)
 
     @aioresponses()
     async def test_async_get_lock_detail_bridge_offline(self, mock):
@@ -679,11 +708,19 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(LockStatus.LOCKED, status)
 
     @aioresponses()
-    async def test_async_lock_async(self, mock):
+    async def test_async_lock_async_old_bridge(self, mock):
         lock_id = 1234
         mock.put(
             API_LOCK_ASYNC_URL.format(lock_id=lock_id),
         )
+
+        api = ApiAsync(ClientSession())
+        await api.async_lock_async(ACCESS_TOKEN, lock_id, hyper_bridge=False)
+
+    @aioresponses()
+    async def test_async_lock_async_new_bridge(self, mock):
+        lock_id = 1234
+        mock.put(f"{API_LOCK_ASYNC_URL}{HYPER_BRIDGE_PARAM}".format(lock_id=lock_id))
 
         api = ApiAsync(ClientSession())
         await api.async_lock_async(ACCESS_TOKEN, lock_id)
@@ -699,17 +736,33 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(LockStatus.UNLOCKED, status)
 
     @aioresponses()
-    async def test_async_unlock_async(self, mock):
+    async def test_async_unlock_async_old_bridge(self, mock):
         lock_id = 1234
         mock.put(API_UNLOCK_ASYNC_URL.format(lock_id=lock_id))
 
         api = ApiAsync(ClientSession())
-        await api.async_unlock_async(ACCESS_TOKEN, lock_id)
+        await api.async_unlock_async(ACCESS_TOKEN, lock_id, hyper_bridge=False)
 
     @aioresponses()
-    async def test_async_status_async(self, mock):
+    async def test_async_unlock_async_new_bridge(self, mock):
+        lock_id = 1234
+        mock.put(f"{API_UNLOCK_ASYNC_URL}{HYPER_BRIDGE_PARAM}".format(lock_id=lock_id))
+
+        api = ApiAsync(ClientSession())
+        await api.async_unlock_async(ACCESS_TOKEN, lock_id, hyper_bridge=True)
+
+    @aioresponses()
+    async def test_async_status_async_old_bridge(self, mock):
         lock_id = 1234
         mock.put(API_STATUS_ASYNC_URL.format(lock_id=lock_id))
+
+        api = ApiAsync(ClientSession())
+        await api.async_status_async(ACCESS_TOKEN, lock_id, hyper_bridge=False)
+
+    @aioresponses()
+    async def test_async_status_async_new_bridge(self, mock):
+        lock_id = 1234
+        mock.put(f"{API_STATUS_ASYNC_URL}{HYPER_BRIDGE_PARAM}".format(lock_id=lock_id))
 
         api = ApiAsync(ClientSession())
         await api.async_status_async(ACCESS_TOKEN, lock_id)
