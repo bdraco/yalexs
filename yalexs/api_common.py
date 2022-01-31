@@ -33,9 +33,9 @@ HEADER_KEASE_API_KEY = "x-kease-api-key"
 HEADER_CONTENT_TYPE = "Content-Type"
 HEADER_USER_AGENT = "User-Agent"
 
-HEADER_VALUE_API_KEY = "79fd0eb6-381d-4adf-95a0-47721289d1d9"
+HEADER_VALUE_API_KEY = "7cab4bbd-2693-4fc1-b99b-dec0fb20f9d4"
 HEADER_VALUE_CONTENT_TYPE = "application/json"
-HEADER_VALUE_USER_AGENT = "August/2019.12.16.4708 CFNetwork/1121.2.2 Darwin/19.3.0"
+HEADER_VALUE_USER_AGENT = "August/Luna-11.3.0 (Android; SDK 32; gphone64_arm64)"
 HEADER_VALUE_ACCEPT_VERSION = "0.0.1"
 
 API_BASE_URL = "https://api-production.august.com"
