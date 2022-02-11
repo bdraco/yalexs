@@ -229,7 +229,11 @@ class Api(ApiCommon):
                 else request(method, url, **api_dict)
             )
             _LOGGER.debug(
-                "Received API response: %s, %s", response.status_code, response.content
+                "Received API response from url: %s, code: %s, headers: %s, content: %s",
+                url,
+                response.status_code,
+                response.headers,
+                response.content,
             )
             if response.status_code == 429:
                 _LOGGER.debug(
