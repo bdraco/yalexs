@@ -1,4 +1,3 @@
-import base64
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 import json
@@ -6,6 +5,7 @@ import logging
 import uuid
 
 import dateutil.parser
+import jwt
 
 from yalexs.api import HEADER_AUGUST_ACCESS_TOKEN
 
@@ -136,8 +136,7 @@ class AuthenticatorCommon:
         )
 
     def _process_refreshed_access_token(self, refreshed_token):
-        jwt_parts = refreshed_token.split(".")
-        jwt_claims = json.loads(base64.b64decode(jwt_parts[1] + "==="))
+        jwt_claims = jwt.decode(refreshed_token, options={"verify_signature": False})
 
         if "exp" not in jwt_claims:
             _LOGGER.warning("Did not find expected `exp' claim in JWT")
