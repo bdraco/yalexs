@@ -287,6 +287,7 @@ class ApiAsync(ApiCommon):
         )
 
         attempts = 0
+        debug_enabled = _LOGGER.isEnabledFor(logging.DEBUG)
         while attempts < API_RETRY_ATTEMPTS:
             attempts += 1
             try:
@@ -294,9 +295,14 @@ class ApiAsync(ApiCommon):
             except ServerDisconnectedError:
                 # Try again if we get disconnected
                 continue
-            _LOGGER.debug(
-                "Received API response: %s, %s", response.status, await response.read()
-            )
+            if debug_enabled:
+                _LOGGER.debug(
+                    "Received API response from url: %s, code: %s, headers: %s, content: %s",
+                    url,
+                    response.status,
+                    response.headers,
+                    await response.read(),
+                )
             if response.status == 429:
                 _LOGGER.debug(
                     "August sent a 429 (attempt: %d), sleeping and trying again",
