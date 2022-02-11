@@ -22,6 +22,7 @@ setup(
     description="Python API for Yale Access (formerly August) Smart Lock and Doorbell",
     packages=find_packages(include=["yalexs", "yalexs.*"]),
     install_requires=[
+        "pyjwt",
         "requests",
         "vol",
         "python-dateutil",
