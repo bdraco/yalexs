@@ -12,7 +12,7 @@ class BridgeStatus(Enum):
 class BridgeDetail(DeviceDetail):
     def __init__(self, house_id, data):
         super().__init__(
-            data["_id"], None, house_id, None, data["firmwareVersion"], None
+            data["_id"], None, house_id, None, data["firmwareVersion"], None, data
         )
 
         self._hyper_bridge = data.get("hyperBridge", False)

@@ -26,6 +26,7 @@ class DeviceDetail:
         serial_number,
         firmware_version,
         pubsub_channel,
+        data,
     ):
         self._device_id = device_id
         self._device_name = device_name
@@ -33,6 +34,11 @@ class DeviceDetail:
         self._serial_number = serial_number
         self._firmware_version = firmware_version
         self._pubsub_channel = pubsub_channel
+        self._data = data
+
+    @property
+    def raw(self):
+        return self._data
 
     @property
     def device_id(self):

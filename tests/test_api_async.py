@@ -446,6 +446,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(
             dateutil.parser.parse("2019-12-10T04:48:30.272Z"), lock.door_state_datetime
         )
+        assert isinstance(lock.raw, dict)
 
     @aioresponses()
     async def test_async_get_lock_status_with_locked_response(self, mock):
