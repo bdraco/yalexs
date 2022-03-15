@@ -56,6 +56,7 @@ class DoorbellDetail(DeviceDetail):
             data["serialNumber"],
             data["firmwareVersion"],
             data.get("pubsubChannel"),
+            data,
         )
 
         self._status = data["status"]

@@ -52,6 +52,7 @@ class LockDetail(DeviceDetail):
             data["SerialNumber"],
             data["currentFirmwareVersion"],
             data.get("pubsubChannel"),
+            data,
         )
 
         if "Bridge" in data:
