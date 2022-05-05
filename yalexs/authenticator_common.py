@@ -48,6 +48,9 @@ class Authentication:
         self._install_id = str(uuid.uuid4()) if install_id is None else install_id
         self._access_token = access_token
         self._access_token_expires = access_token_expires
+        self._parsed_expiration_time = None
+        if access_token_expires:
+            self._parsed_expiration_time = dateutil.parser.parse(access_token_expires)
 
     @property
     def install_id(self):
@@ -70,10 +73,10 @@ class Authentication:
         self._state = value
 
     def parsed_expiration_time(self):
-        return dateutil.parser.parse(self.access_token_expires)
+        return self._parsed_expiration_time
 
     def is_expired(self):
-        return self.parsed_expiration_time() < datetime.now(timezone.utc)
+        return self._parsed_expiration_time < datetime.now(timezone.utc)
 
 
 class AuthenticationState(Enum):
