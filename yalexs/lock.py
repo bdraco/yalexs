@@ -7,7 +7,7 @@ from yalexs.bridge import BridgeDetail, BridgeStatus
 from yalexs.device import Device, DeviceDetail
 from yalexs.keypad import KeypadDetail
 
-LOCKED_STATUS = ("locked", "kAugLockState_Locked")
+LOCKED_STATUS = ("locked", "kAugLockState_Locked", "kAugLockState_SecureMode")
 LOCKING_STATUS = ("kAugLockState_Locking",)
 UNLOCKED_STATUS = ("unlocked", "kAugLockState_Unlocked")
 UNLOCKING_STATUS = ("kAugLockState_Unlocking",)
