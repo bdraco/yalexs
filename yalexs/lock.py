@@ -1,5 +1,6 @@
 import datetime
 from enum import Enum
+from typing import List, Optional
 
 import dateutil.parser
 
@@ -193,6 +194,28 @@ class LockDetail(DeviceDetail):
     def get_user(self, user_id):
         """Lookup user data by id."""
         return self._data.get("users", {}).get(user_id)
+
+    @property
+    def offline_keys(self) -> dict:
+        return self._data.get("OfflineKeys", {})
+
+    @property
+    def loaded_offline_keys(self) -> List[dict]:
+        return self.offline_keys.get("loaded", [])
+
+    @property
+    def offline_key(self) -> Optional[str]:
+        loaded_offline_keys = self.loaded_offline_keys
+        if loaded_offline_keys and "key" in loaded_offline_keys[0]:
+            return loaded_offline_keys[0]["key"]
+        return None
+
+    @property
+    def offline_slot(self) -> Optional[int]:
+        loaded_offline_keys = self.loaded_offline_keys
+        if loaded_offline_keys and "slot" in loaded_offline_keys[0]:
+            return loaded_offline_keys[0]["slot"]
+        return None
 
 
 class LockStatus(Enum):
