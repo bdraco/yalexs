@@ -368,6 +368,37 @@ class TestApiAsync(aiounittest.AsyncTestCase):
 
         self.assertEqual(LockStatus.LOCKED, lock.lock_status)
         self.assertEqual(LockDoorStatus.DISABLED, lock.door_state)
+        self.assertEqual(
+            lock.offline_keys,
+            {
+                "created": [],
+                "createdhk": [],
+                "deleted": [],
+                "loaded": [
+                    {
+                        "UserID": "XXXXXX",
+                        "created": "2022-01-14T21:14:50.153Z",
+                        "key": "XXXXXX",
+                        "loaded": "2022-01-14T21:14:54.568Z",
+                        "slot": 1,
+                    }
+                ],
+            },
+        )
+        self.assertEqual(
+            lock.loaded_offline_keys,
+            [
+                {
+                    "UserID": "XXXXXX",
+                    "created": "2022-01-14T21:14:50.153Z",
+                    "key": "XXXXXX",
+                    "loaded": "2022-01-14T21:14:54.568Z",
+                    "slot": 1,
+                }
+            ],
+        )
+        self.assertEqual(lock.offline_key, "XXXXXX")
+        self.assertEqual(lock.offline_slot, 1)
 
     @aioresponses()
     async def test_async_get_lock_detail_bridge_offline(self, mock):
