@@ -399,6 +399,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         )
         self.assertEqual(lock.offline_key, "XXXXXX")
         self.assertEqual(lock.offline_slot, 1)
+        self.assertEqual(lock.mac_address, "SNIP")
 
     @aioresponses()
     async def test_async_get_lock_detail_bridge_offline(self, mock):

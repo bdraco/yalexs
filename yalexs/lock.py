@@ -217,6 +217,11 @@ class LockDetail(DeviceDetail):
             return loaded_offline_keys[0]["slot"]
         return None
 
+    @property
+    def mac_address(self) -> Optional[str]:
+        mac = self._data.get("macAddress")
+        return mac.upper() if mac else None
+
 
 class LockStatus(Enum):
     LOCKED = "locked"
