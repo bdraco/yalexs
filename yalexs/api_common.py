@@ -33,7 +33,7 @@ HEADER_KEASE_API_KEY = "x-kease-api-key"
 HEADER_CONTENT_TYPE = "Content-Type"
 HEADER_USER_AGENT = "User-Agent"
 
-HEADER_VALUE_API_KEY = "7cab4bbd-2693-4fc1-b99b-dec0fb20f9d4"
+HEADER_VALUE_API_KEY = "d9984f29-07a6-816e-e1c9-44ec9d1be431"
 HEADER_VALUE_CONTENT_TYPE = "application/json"
 HEADER_VALUE_USER_AGENT = "August/Luna-11.3.0 (Android; SDK 32; gphone64_arm64)"
 HEADER_VALUE_ACCEPT_VERSION = "0.0.1"
