@@ -6,13 +6,26 @@ import dateutil.parser
 from yalexs.lock import LockDoorStatus, LockStatus
 
 ACTION_LOCK_ONETOUCHLOCK = "onetouchlock"
+ACTION_LOCK_ONETOUCHLOCK_2 = "one_touch_lock"
 ACTION_LOCK_LOCK = "lock"
+ACTION_LOCK_BLE_LOCK = "ble_lock"
+ACTION_LOCK_BLE_UNLOCK = "ble_unlock"
+ACTION_LOCK_REMOTE_LOCK = "remote_lock"
+ACTION_LOCK_REMOTE_UNLOCK = "remote_unlock"
+ACTION_LOCK_PIN_UNLOCK = "pin_unlock"
+ACTION_LOCK_MANUAL_LOCK = "manual_lock"
+ACTION_LOCK_MANUAL_UNLOCK = "manual_unlock"
 ACTION_LOCK_LOCKING = "locking"
 ACTION_LOCK_UNLOCK = "unlock"
 ACTION_LOCK_UNLOCKING = "unlocking"
 ACTION_LOCK_JAMMED = "jammed"
+
 ACTION_DOOR_OPEN = "dooropen"
+ACTION_DOOR_OPEN_2 = "door_open"
 ACTION_DOOR_CLOSED = "doorclosed"
+ACTION_DOOR_CLOSE_2 = "door_close"
+
+
 ACTION_DOORBELL_CALL_INITIATED = "doorbell_call_initiated"
 ACTION_DOORBELL_MOTION_DETECTED = "doorbell_motion_detected"
 ACTION_DOORBELL_CALL_MISSED = "doorbell_call_missed"
@@ -23,28 +36,42 @@ ACTION_BRIDGE_OFFLINE = "associated_bridge_offline"  # pubnub only
 ACTION_DOORBELL_IMAGE_CAPTURE = "imagecapture"  # pubnub only
 ACTION_DOORBELL_BUTTON_PUSHED = "buttonpush"  # pubnub only
 
-ACTIVITY_ACTIONS_BRIDGE_OPERATION = [ACTION_BRIDGE_ONLINE, ACTION_BRIDGE_OFFLINE]
+ACTIVITY_ACTIONS_BRIDGE_OPERATION = {ACTION_BRIDGE_ONLINE, ACTION_BRIDGE_OFFLINE}
 
-ACTIVITY_ACTIONS_DOORBELL_DING = [
+ACTIVITY_ACTIONS_DOORBELL_DING = {
     ACTION_DOORBELL_BUTTON_PUSHED,
     ACTION_DOORBELL_CALL_MISSED,
     ACTION_DOORBELL_CALL_HANGUP,
-]
-ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE = [ACTION_DOORBELL_IMAGE_CAPTURE]
-ACTIVITY_ACTIONS_DOORBELL_MOTION = [ACTION_DOORBELL_MOTION_DETECTED]
-ACTIVITY_ACTIONS_DOORBELL_VIEW = [ACTION_DOORBELL_CALL_INITIATED]
-ACTIVITY_ACTIONS_LOCK_OPERATION = [
+}
+ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE = {ACTION_DOORBELL_IMAGE_CAPTURE}
+ACTIVITY_ACTIONS_DOORBELL_MOTION = {ACTION_DOORBELL_MOTION_DETECTED}
+ACTIVITY_ACTIONS_DOORBELL_VIEW = {ACTION_DOORBELL_CALL_INITIATED}
+ACTIVITY_ACTIONS_LOCK_OPERATION = {
     ACTION_LOCK_LOCK,
     ACTION_LOCK_UNLOCK,
     ACTION_LOCK_LOCKING,
     ACTION_LOCK_UNLOCKING,
     ACTION_LOCK_JAMMED,
     ACTION_LOCK_ONETOUCHLOCK,
-]
-ACTIVITY_ACTIONS_DOOR_OPERATION = [ACTION_DOOR_CLOSED, ACTION_DOOR_OPEN]
+    ACTION_LOCK_ONETOUCHLOCK_2,
+    ACTION_LOCK_BLE_LOCK,
+    ACTION_LOCK_BLE_UNLOCK,
+    ACTION_LOCK_REMOTE_LOCK,
+    ACTION_LOCK_REMOTE_UNLOCK,
+    ACTION_LOCK_PIN_UNLOCK,
+    ACTION_LOCK_MANUAL_LOCK,
+    ACTION_LOCK_MANUAL_UNLOCK,
+}
+ACTIVITY_ACTIONS_DOOR_OPERATION = {
+    ACTION_DOOR_CLOSED,
+    ACTION_DOOR_OPEN,
+    ACTION_DOOR_OPEN_2,
+    ACTION_DOOR_CLOSE_2,
+}
 
 ACTIVITY_ACTION_STATES = {
     ACTION_LOCK_ONETOUCHLOCK: LockStatus.LOCKED,
+    ACTION_LOCK_ONETOUCHLOCK_2: LockStatus.LOCKED,
     ACTION_LOCK_LOCK: LockStatus.LOCKED,
     ACTION_LOCK_UNLOCK: LockStatus.UNLOCKED,
     ACTION_LOCK_LOCKING: LockStatus.LOCKING,
@@ -52,6 +79,13 @@ ACTIVITY_ACTION_STATES = {
     ACTION_LOCK_JAMMED: LockStatus.JAMMED,
     ACTION_DOOR_OPEN: LockDoorStatus.OPEN,
     ACTION_DOOR_CLOSED: LockDoorStatus.CLOSED,
+    ACTION_LOCK_BLE_LOCK: LockStatus.LOCKED,
+    ACTION_LOCK_BLE_UNLOCK: LockStatus.UNLOCKED,
+    ACTION_LOCK_REMOTE_LOCK: LockStatus.LOCKED,
+    ACTION_LOCK_REMOTE_UNLOCK: LockStatus.UNLOCKED,
+    ACTION_LOCK_PIN_UNLOCK: LockStatus.UNLOCKED,
+    ACTION_LOCK_MANUAL_LOCK: LockStatus.LOCKED,
+    ACTION_LOCK_MANUAL_UNLOCK: LockStatus.UNLOCKED,
 }
 
 SOURCE_LOCK_OPERATE = "lock_operate"
@@ -83,7 +117,9 @@ class Activity:
         self._activity_id = entities.get("activity")
         self._house_id = entities.get("house")
 
-        self._activity_time = epoch_to_datetime(data.get("dateTime"))
+        self._activity_time = epoch_to_datetime(
+            data.get("dateTime", data.get("timestamp"))
+        )
         self._action = data.get("action")
         self._device_id = data.get("deviceID")
         self._device_name = data.get("deviceName")
@@ -222,7 +258,7 @@ class DoorbellViewActivity(Activity):
 class LockOperationActivity(Activity):
     def __init__(self, source, data):
 
-        calling_user = data.get("callingUser", {})
+        calling_user = data.get("callingUser", data.get("user", {}))
 
         info = data.get("info", {})
         user_id = calling_user.get("UserID")
@@ -240,13 +276,22 @@ class LockOperationActivity(Activity):
 
         super().__init__(source, activity_type, data)
 
-        image_info = calling_user.get("imageInfo", {})
-        self._operator_image_url = image_info.get("original", {}).get(
-            "secure_url", None
-        )
-        self._operator_thumbnail_url = image_info.get("thumbnail", {}).get(
-            "secure_url", None
-        )
+        image_info = calling_user.get("imageInfo") or calling_user
+        original = image_info.get("original", {})
+        if isinstance(original, str):
+            self._operator_image_url = original
+        elif isinstance(original, dict):
+            self._operator_image_url = original.get("secure_url", None)
+        else:
+            self._operator_image_url = None
+
+        thumbnail = image_info.get("thumbnail", {})
+        if isinstance(thumbnail, str):
+            self._operator_thumbnail_url = thumbnail
+        elif isinstance(thumbnail, dict):
+            self._operator_thumbnail_url = thumbnail.get("secure_url", None)
+        else:
+            self._operator_thumbnail_url = None
 
     def __repr__(self):
         return (
