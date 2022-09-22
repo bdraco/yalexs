@@ -1,5 +1,6 @@
 """Api functions common between sync and async."""
 import logging
+
 import dateutil.parser
 
 from yalexs.activity import (
