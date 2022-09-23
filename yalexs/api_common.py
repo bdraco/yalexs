@@ -1,4 +1,5 @@
 """Api functions common between sync and async."""
+import logging
 
 import dateutil.parser
 
@@ -29,14 +30,17 @@ API_RETRY_ATTEMPTS = 10
 HEADER_ACCEPT_VERSION = "Accept-Version"
 HEADER_AUGUST_ACCESS_TOKEN = "x-august-access-token"  # nosec
 HEADER_AUGUST_API_KEY = "x-august-api-key"
-HEADER_KEASE_API_KEY = "x-kease-api-key"
+HEADER_AUGUST_BRANDING = "x-august-branding"
+HEADER_AUGUST_COUNTRY = "x-august-country"
 HEADER_CONTENT_TYPE = "Content-Type"
 HEADER_USER_AGENT = "User-Agent"
 
 HEADER_VALUE_API_KEY = "7cab4bbd-2693-4fc1-b99b-dec0fb20f9d4"
-HEADER_VALUE_CONTENT_TYPE = "application/json"
-HEADER_VALUE_USER_AGENT = "August/Luna-11.3.0 (Android; SDK 32; gphone64_arm64)"
+HEADER_VALUE_CONTENT_TYPE = "application/json; charset=UTF-8"
+HEADER_VALUE_USER_AGENT = "August/Luna-22.17.0 (Android; SDK 31; gphone64_arm64)"
 HEADER_VALUE_ACCEPT_VERSION = "0.0.1"
+HEADER_VALUE_AUGUST_BRANDING = "august"
+HEADER_VALUE_AUGUST_COUNTRY = "US"
 
 API_BASE_URL = "https://api-production.august.com"
 API_GET_SESSION_URL = API_BASE_URL + "/session"
@@ -60,24 +64,27 @@ API_GET_LOCK_STATUS_URL = API_BASE_URL + "/locks/{lock_id}/status"
 API_GET_PINS_URL = API_BASE_URL + "/locks/{lock_id}/pins"
 API_LOCK_URL = API_BASE_URL + "/remoteoperate/{lock_id}/lock"
 API_UNLOCK_URL = API_BASE_URL + "/remoteoperate/{lock_id}/unlock"
-API_LOCK_ASYNC_URL = API_BASE_URL + "/remoteoperate/{lock_id}/lock?v=2.2.15&type=async"
+API_LOCK_ASYNC_URL = API_BASE_URL + "/remoteoperate/{lock_id}/lock?v=2.3.1&type=async"
 API_UNLOCK_ASYNC_URL = (
-    API_BASE_URL + "/remoteoperate/{lock_id}/unlock?v=2.2.15&type=async"
+    API_BASE_URL + "/remoteoperate/{lock_id}/unlock?v=2.3.1&type=async"
 )
 API_STATUS_ASYNC_URL = (
-    API_BASE_URL + "/remoteoperate/{lock_id}/status?v=2.2.15&type=async&intent=wakeup"
+    API_BASE_URL + "/remoteoperate/{lock_id}/status?v=2.3.1&type=async&intent=wakeup"
 )
 HYPER_BRIDGE_PARAM = "&connection=persistent"
 API_GET_USER_URL = API_BASE_URL + "/users/me"
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def _api_headers(access_token=None):
     headers = {
         HEADER_ACCEPT_VERSION: HEADER_VALUE_ACCEPT_VERSION,
         HEADER_AUGUST_API_KEY: HEADER_VALUE_API_KEY,
-        HEADER_KEASE_API_KEY: HEADER_VALUE_API_KEY,
         HEADER_CONTENT_TYPE: HEADER_VALUE_CONTENT_TYPE,
         HEADER_USER_AGENT: HEADER_VALUE_USER_AGENT,
+        HEADER_AUGUST_BRANDING: HEADER_VALUE_AUGUST_BRANDING,
+        HEADER_AUGUST_COUNTRY: HEADER_VALUE_AUGUST_COUNTRY,
     }
 
     if access_token:
@@ -108,6 +115,7 @@ def _convert_lock_result_to_activities(lock_json_dict):
 
 
 def _activity_from_dict(source, activity_dict):
+    _LOGGER.debug("Processing activity: %s", activity_dict)
     action = activity_dict.get("action")
 
     if action in ACTIVITY_ACTIONS_DOORBELL_DING:
@@ -143,6 +151,8 @@ def _datetime_string_to_epoch(datetime_string):
 
 
 def _process_activity_json(json_dict):
+    if "events" in json_dict:
+        json_dict = json_dict["events"]
     activities = []
     for activity_json in json_dict:
         activity = _activity_from_dict(SOURCE_LOG, activity_json)
@@ -177,11 +187,16 @@ class ApiCommon:
     def _build_send_verification_code_request(
         self, access_token, login_method, username
     ):
+        if login_method == "phone":
+            json = {"smsHashString": "anY0ZsRmXw+", "value": username}
+        else:
+            json = {"value": username}
+
         return {
             "method": "post",
             "url": API_SEND_VERIFICATION_CODE_URLS[login_method],
             "access_token": access_token,
-            "json": {"value": username},
+            "json": json,
         }
 
     def _build_validate_verification_code_request(
@@ -229,6 +244,7 @@ class ApiCommon:
         return {
             "method": "get",
             "url": API_GET_HOUSE_ACTIVITIES_URL.format(house_id=house_id),
+            "version": "4.0.0",
             "access_token": access_token,
             "params": {"limit": limit},
         }

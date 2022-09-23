@@ -13,6 +13,7 @@ from yalexs.api_common import (
     API_STATUS_ASYNC_URL,
     API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
+    HEADER_ACCEPT_VERSION,
     HEADER_AUGUST_ACCESS_TOKEN,
     HYPER_BRIDGE_PARAM,
     ApiCommon,
@@ -275,6 +276,10 @@ class ApiAsync(ApiCommon):
 
         if "headers" not in api_dict:
             api_dict["headers"] = _api_headers(access_token=access_token)
+
+        if "version" in api_dict:
+            api_dict["headers"][HEADER_ACCEPT_VERSION] = api_dict["version"]
+            del api_dict["version"]
 
         if "timeout" not in api_dict:
             api_dict["timeout"] = self._timeout
