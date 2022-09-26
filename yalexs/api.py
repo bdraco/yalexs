@@ -12,6 +12,7 @@ from yalexs.api_common import (
     API_RETRY_ATTEMPTS,
     API_RETRY_TIME,
     API_UNLOCK_URL,
+    HEADER_ACCEPT_VERSION,
     HEADER_AUGUST_ACCESS_TOKEN,
     ApiCommon,
     _api_headers,
@@ -209,6 +210,10 @@ class Api(ApiCommon):
 
         if "headers" not in api_dict:
             api_dict["headers"] = _api_headers(access_token=access_token)
+
+        if "version" in api_dict:
+            api_dict["headers"][HEADER_ACCEPT_VERSION] = api_dict["version"]
+            del api_dict["version"]
 
         if "timeout" not in api_dict:
             api_dict["timeout"] = self._timeout
