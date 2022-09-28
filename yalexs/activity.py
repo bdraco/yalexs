@@ -191,10 +191,14 @@ class BaseDoorbellMotionActivity(Activity):
     def __init__(self, source, activity_type, data):
         super().__init__(source, activity_type, data)
         image = data.get("info", {}).get("image")
-        self._image_url = None if image is None else image.get("secure_url")
+        self._image_url = (
+            None if image is None else image.get("secure_url")
+        ) or data.get("attachment")
         self._image_created_at_datetime = None
         if image is not None and "created_at" in image:
             self._image_created_at_datetime = dateutil.parser.parse(image["created_at"])
+        if not self._image_created_at_datetime:
+            self._image_created_at_datetime = self._activity_time
 
     def __repr__(self):
         return (
@@ -225,48 +229,42 @@ class DoorbellImageCaptureActivity(BaseDoorbellMotionActivity):
         super().__init__(source, ActivityType.DOORBELL_IMAGE_CAPTURE, data)
 
 
-class DoorbellDingActivity(Activity):
+class DoorbellBaseActionActivity(Activity):
+    def __init__(self, source, activity_type, data):
+        super().__init__(source, activity_type, data)
+
+        info = data.get("info", {})
+        if "started" in info:
+            self._activity_start_time = epoch_to_datetime(info["started"])
+        else:
+            self._activity_start_time = self._activity_time
+        if "ended" in info:
+            self._activity_end_time = epoch_to_datetime(info["ended"])
+        else:
+            self._activity_end_time = self._activity_time
+        self._image_url = info.get("image") or info.get("attachment")
+
+    @property
+    def image_url(self):
+        return self._image_url
+
+    @property
+    def activity_start_time(self):
+        return self._activity_start_time
+
+    @property
+    def activity_end_time(self):
+        return self._activity_end_time
+
+
+class DoorbellDingActivity(DoorbellBaseActionActivity):
     def __init__(self, source, data):
         super().__init__(source, ActivityType.DOORBELL_DING, data)
 
-        info = data.get("info", {})
-        self._activity_start_time = epoch_to_datetime(info.get("started"))
-        self._activity_end_time = epoch_to_datetime(info.get("ended"))
-        self._image_url = info.get("image")
 
-    @property
-    def image_url(self):
-        return self._image_url
-
-    @property
-    def activity_start_time(self):
-        return self._activity_start_time
-
-    @property
-    def activity_end_time(self):
-        return self._activity_end_time
-
-
-class DoorbellViewActivity(Activity):
+class DoorbellViewActivity(DoorbellBaseActionActivity):
     def __init__(self, source, data):
         super().__init__(source, ActivityType.DOORBELL_VIEW, data)
-
-        info = data.get("info", {})
-        self._activity_start_time = epoch_to_datetime(info.get("started"))
-        self._activity_end_time = epoch_to_datetime(info.get("ended"))
-        self._image_url = info.get("image")
-
-    @property
-    def image_url(self):
-        return self._image_url
-
-    @property
-    def activity_start_time(self):
-        return self._activity_start_time
-
-    @property
-    def activity_end_time(self):
-        return self._activity_end_time
 
 
 class LockOperationActivity(Activity):
