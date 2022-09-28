@@ -195,9 +195,11 @@ class BaseDoorbellMotionActivity(Activity):
             None if image is None else image.get("secure_url")
         ) or data.get("attachment")
         self._image_created_at_datetime = None
-        if image is not None and "created_at" in image:
+        if image is None:
+            return
+        if "created_at" in image:
             self._image_created_at_datetime = dateutil.parser.parse(image["created_at"])
-        if not self._image_created_at_datetime:
+        else:
             self._image_created_at_datetime = self._activity_time
 
     def __repr__(self):
