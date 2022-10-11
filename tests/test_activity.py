@@ -166,7 +166,7 @@ class TestActivity(unittest.TestCase):
         auto_lock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("auto_lock_activity.json"))
         )
-        assert auto_lock_activity.operated_by is None
+        assert auto_lock_activity.operated_by == "Auto Lock"
         assert auto_lock_activity.operated_remote is False
         assert auto_lock_activity.operated_keypad is False
         assert (
@@ -275,7 +275,7 @@ class TestActivity(unittest.TestCase):
         manual_lock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("manual_lock_activity.json"))
         )
-        assert manual_lock_activity.operated_by is None
+        assert manual_lock_activity.operated_by == "Manual Lock"
         assert manual_lock_activity.operated_remote is False
         assert manual_lock_activity.operated_keypad is False
         assert (
@@ -291,7 +291,7 @@ class TestActivity(unittest.TestCase):
         manual_unlock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("manual_unlock_activity.json"))
         )
-        assert manual_unlock_activity.operated_by is None
+        assert manual_unlock_activity.operated_by == "Manual Unlock"
         assert manual_unlock_activity.operated_remote is False
         assert manual_unlock_activity.operated_keypad is False
         assert (

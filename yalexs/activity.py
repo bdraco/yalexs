@@ -71,6 +71,22 @@ ACTIVITY_ACTIONS_LOCK_OPERATION = {
     ACTION_LOCK_MANUAL_LOCK,
     ACTION_LOCK_MANUAL_UNLOCK,
 }
+
+
+ACTIVITY_TO_FIRST_LAST_NAME = {
+    ACTION_RF_SECURE: ("Radio Frequency", "Secure"),
+    ACTION_RF_LOCK: ("Radio Frequency", "Lock"),
+    ACTION_RF_UNLOCK: ("Radio Frequency", "Unlock"),
+    ACTION_LOCK_AUTO_LOCK: ("Auto", "Lock"),
+    ACTION_LOCK_ONETOUCHLOCK: ("One-Touch", "Lock"),
+    ACTION_LOCK_ONETOUCHLOCK_2: ("One-Touch", "Lock"),
+    ACTION_LOCK_BLE_LOCK: ("Bluetooth", "Lock"),
+    ACTION_LOCK_BLE_UNLOCK: ("Bluetooth", "Unlock"),
+    ACTION_LOCK_MANUAL_LOCK: ("Manual", "Lock"),
+    ACTION_LOCK_MANUAL_UNLOCK: ("Manual", "Unlock"),
+}
+
+
 ACTIVITY_ACTIONS_DOOR_OPERATION = {
     ACTION_DOOR_CLOSED,
     ACTION_DOOR_OPEN,
@@ -299,6 +315,15 @@ class LockOperationActivity(Activity):
         if yale_user and first_name is None and last_name is None:
             first_name = yale_user.first_name
             last_name = yale_user.last_name
+
+        # For legacy compatibility, we need to set the first_name and last_name
+        # if its a physical or rf lock operation
+        if (
+            first_name is None
+            and last_name is None
+            and action in ACTIVITY_TO_FIRST_LAST_NAME
+        ):
+            first_name, last_name = ACTIVITY_TO_FIRST_LAST_NAME[action]
 
         if first_name is None and last_name is None:
             self._operated_by = None
