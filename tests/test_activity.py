@@ -2,6 +2,10 @@ import json
 import os
 import unittest
 
+from aiohttp import ClientSession
+from aioresponses import aioresponses
+import aiounittest
+
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
     ACTION_BRIDGE_ONLINE,
@@ -45,7 +49,11 @@ from yalexs.activity import (
     ActivityType,
     LockOperationActivity,
 )
+from yalexs.api_async import ApiAsync
+from yalexs.api_common import API_GET_LOCK_URL
 from yalexs.lock import LockDoorStatus, LockStatus
+
+ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
 
 
 def load_fixture(filename):
@@ -148,6 +156,56 @@ class TestActivity(unittest.TestCase):
         assert keypad_lock_activity.operated_by == "My Name"
         assert keypad_lock_activity.operated_remote is False
         assert keypad_lock_activity.operated_keypad is True
+        assert keypad_lock_activity.operator_image_url is None
+        assert keypad_lock_activity.operator_thumbnail_url is None
+
+    def test_auto_lock_activity(self):
+        auto_lock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("auto_lock_activity.json"))
+        )
+        assert auto_lock_activity.operated_by is None
+        assert auto_lock_activity.operated_remote is False
+        assert auto_lock_activity.operated_keypad is False
+        assert (
+            auto_lock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/auto_lock@3x.png"
+        )
+        assert (
+            auto_lock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/auto_lock@3x.png"
+        )
+
+    def test_pin_unlock_activity(self):
+        keypad_lock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("pin_unlock_activity.json"))
+        )
+        assert keypad_lock_activity.operated_by == "Sample Person"
+        assert keypad_lock_activity.operated_remote is False
+        assert keypad_lock_activity.operated_keypad is True
+        assert (
+            keypad_lock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/pin_unlock@3x.png"
+        )
+        assert (
+            keypad_lock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/pin_unlock@3x.png"
+        )
+
+    def test_pin_unlock_activity_with_image(self):
+        keypad_lock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("pin_unlock_activity_with_image.json"))
+        )
+        assert keypad_lock_activity.operated_by == "Zip Zoo"
+        assert keypad_lock_activity.operated_remote is False
+        assert keypad_lock_activity.operated_keypad is True
+        assert (
+            keypad_lock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/user/abc.jpg"
+        )
+        assert (
+            keypad_lock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/user/abc.jpg"
+        )
 
     def test_remote_lock_activity(self):
         remote_lock_activity = LockOperationActivity(
@@ -156,6 +214,38 @@ class TestActivity(unittest.TestCase):
         assert remote_lock_activity.operated_by == "My Name"
         assert remote_lock_activity.operated_remote is True
         assert remote_lock_activity.operated_keypad is False
+
+    def test_remote_lock_activity_v4(self):
+        remote_lock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("remote_lock_activity_v4.json"))
+        )
+        assert remote_lock_activity.operated_by == "89 House"
+        assert remote_lock_activity.operated_remote is True
+        assert remote_lock_activity.operated_keypad is False
+        assert (
+            remote_lock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_lock@3x.png"
+        )
+        assert (
+            remote_lock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_lock@3x.png"
+        )
+
+    def test_remote_unlock_activity_v4(self):
+        remote_lock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("remote_unlock_activity_v4.json"))
+        )
+        assert remote_lock_activity.operated_by == "89 House"
+        assert remote_lock_activity.operated_remote is True
+        assert remote_lock_activity.operated_keypad is False
+        assert (
+            remote_lock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_unlock@3x.png"
+        )
+        assert (
+            remote_lock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_unlock@3x.png"
+        )
 
     def test_lock_activity(self):
         lock_operation_activity = LockOperationActivity(
@@ -185,3 +275,32 @@ class TestActivity(unittest.TestCase):
         assert auto_relock_operation_activity.operated_remote is False
         assert auto_relock_operation_activity.operated_autorelock is True
         assert auto_relock_operation_activity.operated_keypad is False
+
+
+class TestActivityApiAsync(aiounittest.AsyncTestCase):
+    @aioresponses()
+    async def test_async_get_lock_detail_bridge_online(self, mock):
+        mock.get(
+            API_GET_LOCK_URL.format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
+            body=load_fixture("get_lock.online.json"),
+        )
+
+        api = ApiAsync(ClientSession())
+        await api.async_get_lock_detail(
+            ACCESS_TOKEN, "A6697750D607098BAE8D6BAA11EF8063"
+        )
+
+        keypad_lock_activity = LockOperationActivity(
+            SOURCE_LOG,
+            json.loads(load_fixture("pin_unlock_activity_missing_image.json")),
+        )
+        assert keypad_lock_activity.operated_by == "Zip Zoo"
+        assert keypad_lock_activity.operated_remote is False
+        assert keypad_lock_activity.operated_keypad is True
+        assert (
+            keypad_lock_activity.operator_image_url == "https://www.image.com/foo.jpeg"
+        )
+        assert (
+            keypad_lock_activity.operator_thumbnail_url
+            == "https://www.image.com/foo.jpeg"
+        )

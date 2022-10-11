@@ -4,6 +4,7 @@ from enum import Enum
 import dateutil.parser
 
 from yalexs.lock import LockDoorStatus, LockStatus
+from yalexs.users import get_user_info
 
 ACTION_LOCK_ONETOUCHLOCK = "onetouchlock"
 ACTION_LOCK_ONETOUCHLOCK_2 = "one_touch_lock"
@@ -76,6 +77,17 @@ ACTIVITY_ACTIONS_DOOR_OPERATION = {
     ACTION_DOOR_OPEN_2,
     ACTION_DOOR_CLOSE_2,
 }
+
+KEYPAD_ACTIONS = {
+    ACTION_LOCK_ONETOUCHLOCK,
+    ACTION_LOCK_ONETOUCHLOCK_2,
+    ACTION_LOCK_PIN_UNLOCK,
+}
+REMOTE_ACTIONS = {
+    ACTION_LOCK_REMOTE_LOCK,
+    ACTION_LOCK_REMOTE_UNLOCK,
+}
+AUTO_RELOCK_ACTIONS = {ACTION_LOCK_AUTO_LOCK}
 
 ACTIVITY_ACTION_STATES = {
     ACTION_RF_SECURE: LockStatus.LOCKED,
@@ -273,14 +285,21 @@ class LockOperationActivity(Activity):
     def __init__(self, source, data):
 
         calling_user = data.get("callingUser", data.get("user", {}))
-
+        action = data.get("action")
         info = data.get("info", {})
         user_id = calling_user.get("UserID")
-        self._operated_remote = info.get("remote", False)
-        self._operated_keypad = info.get("keypad", False)
-        self._operated_autorelock = user_id == "automaticrelock"
+        self._operated_remote = info.get("remote", action in REMOTE_ACTIONS)
+        self._operated_keypad = info.get("keypad", action in KEYPAD_ACTIONS)
+        self._operated_autorelock = (
+            user_id == "automaticrelock" or action in AUTO_RELOCK_ACTIONS
+        )
         first_name = calling_user.get("FirstName")
         last_name = calling_user.get("LastName")
+        yale_user = get_user_info(user_id)
+        if yale_user and first_name is None and last_name is None:
+            first_name = yale_user.first_name
+            last_name = yale_user.last_name
+
         if first_name is None and last_name is None:
             self._operated_by = None
             activity_type = ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR
@@ -306,6 +325,24 @@ class LockOperationActivity(Activity):
             self._operator_thumbnail_url = thumbnail.get("secure_url", None)
         else:
             self._operator_thumbnail_url = None
+
+        if (
+            yale_user
+            and self._operator_image_url is None
+            and self._operator_thumbnail_url is None
+        ):
+            self._operator_image_url = yale_user.image_url
+            self._operator_thumbnail_url = yale_user.thumbnail_url
+
+        if not self._operator_thumbnail_url:
+            icon = data.get("icon")
+            if icon:
+                self._operator_thumbnail_url = icon
+
+        if self._operator_image_url and not self._operator_thumbnail_url:
+            self._operator_thumbnail_url = self._operator_image_url
+        if self._operator_thumbnail_url and not self._operator_image_url:
+            self._operator_image_url = self._operator_thumbnail_url
 
     def __repr__(self):
         return (

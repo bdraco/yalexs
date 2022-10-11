@@ -8,6 +8,8 @@ from yalexs.bridge import BridgeDetail, BridgeStatus
 from yalexs.device import Device, DeviceDetail
 from yalexs.keypad import KeypadDetail
 
+from .users import cache_user_info
+
 LOCKED_STATUS = ("locked", "kAugLockState_Locked", "kAugLockState_SecureMode")
 LOCKING_STATUS = ("kAugLockState_Locking",)
 UNLOCKED_STATUS = ("unlocked", "kAugLockState_Unlocked")
@@ -95,6 +97,10 @@ class LockDetail(DeviceDetail):
             self._keypad_detail = None
 
         self._battery_level = int(100 * data["battery"])
+
+        if "users" in data:
+            for uuid, user_data in data["users"].items():
+                cache_user_info(uuid, user_data)
 
         if "skuNumber" in data:
             self._model = data["skuNumber"]
