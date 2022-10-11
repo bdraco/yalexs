@@ -247,6 +247,38 @@ class TestActivity(unittest.TestCase):
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_unlock@3x.png"
         )
 
+    def test_manual_lock_activity_v4(self):
+        manual_lock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("manual_lock_activity.json"))
+        )
+        assert manual_lock_activity.operated_by is None
+        assert manual_lock_activity.operated_remote is False
+        assert manual_lock_activity.operated_keypad is False
+        assert (
+            manual_lock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png"
+        )
+        assert (
+            manual_lock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png"
+        )
+
+    def test_manual_unlock_activity_v4(self):
+        manual_unlock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("manual_unlock_activity.json"))
+        )
+        assert manual_unlock_activity.operated_by is None
+        assert manual_unlock_activity.operated_remote is False
+        assert manual_unlock_activity.operated_keypad is False
+        assert (
+            manual_unlock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_unlock@3x.png"
+        )
+        assert (
+            manual_unlock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_unlock@3x.png"
+        )
+
     def test_lock_activity(self):
         lock_operation_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("lock_activity.json"))
