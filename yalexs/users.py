@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 USER_CACHE = {}
 
@@ -6,7 +6,7 @@ USER_CACHE = {}
 class YaleUser:
     """Represent a yale access user."""
 
-    def __init__(self, uuid: str, data: dict[str, Any]) -> None:
+    def __init__(self, uuid: str, data: Dict[str, Any]) -> None:
         """Initialize the YaleUser."""
         self._uuid = uuid
         self._data = data
@@ -36,6 +36,6 @@ def get_user_info(uuid: str) -> Optional[YaleUser]:
     return USER_CACHE.get(uuid)
 
 
-def cache_user_info(uuid: str, data: dict[str, Any]):
+def cache_user_info(uuid: str, data: Dict[str, Any]) -> None:
     if uuid not in USER_CACHE:
         USER_CACHE[uuid] = YaleUser(uuid, data)
