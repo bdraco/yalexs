@@ -1,4 +1,3 @@
-from datetime import datetime
 import json
 import os
 import unittest
@@ -255,9 +254,6 @@ class TestActivity(unittest.TestCase):
         )
         assert remote_unlock_activity.activity_type == ActivityType.LOCK_OPERATION
         assert remote_unlock_activity.operated_by == "Zipper Zoomer"
-        assert remote_unlock_activity.activity_start_time == datetime(
-            2022, 10, 11, 12, 58, 23, 770000
-        )
         assert remote_unlock_activity.operated_remote is True
         assert remote_unlock_activity.operated_keypad is False
         assert (
