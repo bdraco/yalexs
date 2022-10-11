@@ -1,13 +1,10 @@
-from datetime import datetime
 import json
 import os
-from time import timezone
 import unittest
 
 from aiohttp import ClientSession
 from aioresponses import aioresponses
 import aiounittest
-from dateutil.tz import tzlocal, tzutc
 
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
@@ -166,7 +163,7 @@ class TestActivity(unittest.TestCase):
         auto_lock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("auto_lock_activity.json"))
         )
-        assert auto_lock_activity.operated_by is None
+        assert auto_lock_activity.operated_by == "Auto Lock"
         assert auto_lock_activity.operated_remote is False
         assert auto_lock_activity.operated_keypad is False
         assert (
@@ -257,9 +254,6 @@ class TestActivity(unittest.TestCase):
         )
         assert remote_unlock_activity.activity_type == ActivityType.LOCK_OPERATION
         assert remote_unlock_activity.operated_by == "Zipper Zoomer"
-        assert remote_unlock_activity.activity_start_time == datetime(
-            2022, 10, 11, 12, 58, 23, 770000
-        )
         assert remote_unlock_activity.operated_remote is True
         assert remote_unlock_activity.operated_keypad is False
         assert (
@@ -275,7 +269,7 @@ class TestActivity(unittest.TestCase):
         manual_lock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("manual_lock_activity.json"))
         )
-        assert manual_lock_activity.operated_by is None
+        assert manual_lock_activity.operated_by == "Manual Lock"
         assert manual_lock_activity.operated_remote is False
         assert manual_lock_activity.operated_keypad is False
         assert (
@@ -291,7 +285,7 @@ class TestActivity(unittest.TestCase):
         manual_unlock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("manual_unlock_activity.json"))
         )
-        assert manual_unlock_activity.operated_by is None
+        assert manual_unlock_activity.operated_by == "Manual Unlock"
         assert manual_unlock_activity.operated_remote is False
         assert manual_unlock_activity.operated_keypad is False
         assert (
