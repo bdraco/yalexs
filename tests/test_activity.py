@@ -1,13 +1,11 @@
 from datetime import datetime
 import json
 import os
-from time import timezone
 import unittest
 
 from aiohttp import ClientSession
 from aioresponses import aioresponses
 import aiounittest
-from dateutil.tz import tzlocal, tzutc
 
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
