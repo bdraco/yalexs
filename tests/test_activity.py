@@ -1,10 +1,13 @@
+from datetime import datetime
 import json
 import os
+from time import timezone
 import unittest
 
 from aiohttp import ClientSession
 from aioresponses import aioresponses
 import aiounittest
+from dateutil.tz import tzlocal, tzutc
 
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
@@ -232,19 +235,40 @@ class TestActivity(unittest.TestCase):
         )
 
     def test_remote_unlock_activity_v4(self):
-        remote_lock_activity = LockOperationActivity(
+        remote_unlock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("remote_unlock_activity_v4.json"))
         )
-        assert remote_lock_activity.operated_by == "89 House"
-        assert remote_lock_activity.operated_remote is True
-        assert remote_lock_activity.operated_keypad is False
+        assert remote_unlock_activity.activity_type == ActivityType.LOCK_OPERATION
+        assert remote_unlock_activity.operated_by == "89 House"
+        assert remote_unlock_activity.operated_remote is True
+        assert remote_unlock_activity.operated_keypad is False
         assert (
-            remote_lock_activity.operator_image_url
+            remote_unlock_activity.operator_image_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_unlock@3x.png"
         )
         assert (
-            remote_lock_activity.operator_thumbnail_url
+            remote_unlock_activity.operator_thumbnail_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_unlock@3x.png"
+        )
+
+    def test_remote_unlock_activity_v4_2(self):
+        remote_unlock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("remote_unlock_activity_v4_2.json"))
+        )
+        assert remote_unlock_activity.activity_type == ActivityType.LOCK_OPERATION
+        assert remote_unlock_activity.operated_by == "Zipper Zoomer"
+        assert remote_unlock_activity.activity_start_time == datetime(
+            2022, 10, 11, 12, 58, 23, 770000
+        )
+        assert remote_unlock_activity.operated_remote is True
+        assert remote_unlock_activity.operated_keypad is False
+        assert (
+            remote_unlock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/user/a45daa08-f4b0-4251-aacd-7bf5475851e5.jpg"
+        )
+        assert (
+            remote_unlock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/user/a45daa08-f4b0-4251-aacd-7bf5475851e5.jpg"
         )
 
     def test_manual_lock_activity_v4(self):
