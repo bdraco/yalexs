@@ -132,6 +132,8 @@ def _activity_from_dict(source, activity_dict):
         return DoorOperationActivity(source, activity_dict)
     if action in ACTIVITY_ACTIONS_BRIDGE_OPERATION:
         return BridgeOperationActivity(source, activity_dict)
+
+    _LOGGER.debug("Unknown activity: %s", activity_dict)
     return None
 
 
