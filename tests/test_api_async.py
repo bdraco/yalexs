@@ -1,10 +1,11 @@
 from datetime import datetime
 import os
-import pytest
+
 from asynctest import mock
 import dateutil.parser
 from dateutil.tz import tzlocal, tzutc
 from httpx import Response
+import pytest
 from yarl import URL
 
 import yalexs.activity
@@ -34,6 +35,7 @@ from yalexs.lock import LockDoorStatus, LockStatus
 ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
 
 pytestmark = pytest.mark.asyncio
+
 
 def load_fixture(filename):
     """Load a fixture."""
@@ -74,6 +76,7 @@ async def test_async_get_doorbells(self, httpx_client, respx_mock):
     self.assertEqual("https://image.com/vmk16naaaa7ibuey7sar.jpg", second.image_url)
     self.assertEqual("3dd2accaea08", second.house_id)
 
+
 async def test_async_get_doorbell_detail(self, httpx_client, respx_mock):
     expected_doorbell_image_url = "https://image.com/vmk16naaaa7ibuey7sar.jpg"
     respx_mock.get(
@@ -106,9 +109,8 @@ async def test_async_get_doorbell_detail(self, httpx_client, respx_mock):
         b"doorbell_image_mocked",
     )
 
-async def test_async_get_doorbell_detail_missing_image(
-    self, httpx_client, respx_mock
-):
+
+async def test_async_get_doorbell_detail_missing_image(self, httpx_client, respx_mock):
     respx_mock.get(
         API_GET_DOORBELL_URL.format(doorbell_id="K98GiDT45GUL"),
         body=load_fixture("get_doorbell_missing_image.json"),
@@ -129,6 +131,7 @@ async def test_async_get_doorbell_detail_missing_image(
     self.assertEqual(None, doorbell.image_created_at_datetime)
     self.assertEqual(True, doorbell.has_subscription)
     self.assertEqual(None, doorbell.image_url)
+
 
 async def test_async_get_doorbell_offline(self, httpx_client, respx_mock):
     respx_mock.get(
@@ -156,6 +159,7 @@ async def test_async_get_doorbell_offline(self, httpx_client, respx_mock):
     self.assertEqual("https://res.cloudinary.com/x.jpg", doorbell.image_url)
     self.assertEqual("hydra1", doorbell.model)
 
+
 async def test_async_get_doorbell_gen2_full_battery_detail(
     self, httpx_client, respx_mock
 ):
@@ -168,6 +172,7 @@ async def test_async_get_doorbell_gen2_full_battery_detail(
     doorbell = await api.async_get_doorbell_detail(ACCESS_TOKEN, "did")
 
     self.assertEqual(100, doorbell.battery_level)
+
 
 async def test_async_get_doorbell_gen2_medium_battery_detail(
     self, httpx_client, respx_mock
@@ -182,6 +187,7 @@ async def test_async_get_doorbell_gen2_medium_battery_detail(
 
     self.assertEqual(75, doorbell.battery_level)
 
+
 async def test_async_get_doorbell_gen2_low_battery_detail(
     self, httpx_client, respx_mock
 ):
@@ -195,13 +201,12 @@ async def test_async_get_doorbell_gen2_low_battery_detail(
 
     self.assertEqual(10, doorbell.battery_level)
 
+
 async def test_async_get_locks(self, httpx_client, respx_mock):
     respx_mock.get(API_GET_LOCKS_URL, body=load_fixture("get_locks.json"))
 
     api = ApiAsync(httpx_client)
-    locks = sorted(
-        await api.async_get_locks(ACCESS_TOKEN), key=lambda d: d.device_id
-    )
+    locks = sorted(await api.async_get_locks(ACCESS_TOKEN), key=lambda d: d.device_id)
 
     self.assertEqual(2, len(locks))
 
@@ -217,6 +222,7 @@ async def test_async_get_locks(self, httpx_client, respx_mock):
     self.assertEqual("000000000011", second.house_id)
     self.assertEqual(False, second.is_operable)
 
+
 async def test_async_get_operable_locks(self, httpx_client, respx_mock):
     respx_mock.get(API_GET_LOCKS_URL, body=load_fixture("get_locks.json"))
 
@@ -230,6 +236,7 @@ async def test_async_get_operable_locks(self, httpx_client, respx_mock):
     self.assertEqual("Front Door Lock", first.device_name)
     self.assertEqual("000000000000", first.house_id)
     self.assertEqual(True, first.is_operable)
+
 
 async def test_async_get_lock_detail_with_doorsense_bridge_online(
     self, httpx_client, respx_mock
@@ -265,6 +272,7 @@ async def test_async_get_lock_detail_with_doorsense_bridge_online(
     self.assertEqual(
         dateutil.parser.parse("2017-12-10T04:48:30.272Z"), lock.door_state_datetime
     )
+
 
 async def test_async_get_lock_detail_with_doorsense_disabled_bridge_online(
     self, httpx_client, respx_mock
@@ -302,6 +310,7 @@ async def test_async_get_lock_detail_with_doorsense_disabled_bridge_online(
         dateutil.parser.parse("2017-12-10T04:48:30.272Z"), lock.door_state_datetime
     )
 
+
 async def test_async_get_lock_detail_bridge_online(self, httpx_client, respx_mock):
     respx_mock.get(
         API_GET_LOCK_URL.format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
@@ -338,9 +347,8 @@ async def test_async_get_lock_detail_bridge_online(self, httpx_client, respx_moc
         dateutil.parser.parse("2017-12-10T04:48:30.272Z"), lock.door_state_datetime
     )
 
-async def test_async_get_v2_lock_detail_bridge_online(
-    self, httpx_client, respx_mock
-):
+
+async def test_async_get_v2_lock_detail_bridge_online(self, httpx_client, respx_mock):
     respx_mock.get(
         API_GET_LOCK_URL.format(lock_id="snip"),
         body=load_fixture("get_lock_v2.online.json"),
@@ -397,6 +405,7 @@ async def test_async_get_v2_lock_detail_bridge_online(
     self.assertEqual(lock.offline_slot, 1)
     self.assertEqual(lock.mac_address, "SNIP")
 
+
 async def test_async_get_lock_detail_bridge_offline(self, httpx_client, respx_mock):
     respx_mock.get(
         API_GET_LOCK_URL.format(lock_id="ABC"),
@@ -422,6 +431,7 @@ async def test_async_get_lock_detail_bridge_offline(self, httpx_client, respx_mo
     self.assertEqual(LockDoorStatus.DISABLED, lock.door_state)
     self.assertEqual(None, lock.lock_status_datetime)
     self.assertEqual(None, lock.door_state_datetime)
+
 
 async def test_async_get_lock_detail_doorsense_init_state(
     self, httpx_client, respx_mock
@@ -476,6 +486,7 @@ async def test_async_get_lock_detail_doorsense_init_state(
     )
     assert isinstance(lock.raw, dict)
 
+
 async def test_async_get_lock_status_with_locked_response(
     self, httpx_client, respx_mock
 ):
@@ -490,6 +501,7 @@ async def test_async_get_lock_status_with_locked_response(
 
     self.assertEqual(LockStatus.LOCKED, status)
 
+
 async def test_async_get_lock_and_door_status_with_locked_response(
     self, httpx_client, respx_mock
 ):
@@ -501,12 +513,11 @@ async def test_async_get_lock_and_door_status_with_locked_response(
     )
 
     api = ApiAsync(httpx_client)
-    status, door_status = await api.async_get_lock_status(
-        ACCESS_TOKEN, lock_id, True
-    )
+    status, door_status = await api.async_get_lock_status(ACCESS_TOKEN, lock_id, True)
 
     self.assertEqual(LockStatus.LOCKED, status)
     self.assertEqual(LockDoorStatus.CLOSED, door_status)
+
 
 async def test_async_get_lock_status_with_unlocked_response(
     self, httpx_client, respx_mock
@@ -522,6 +533,7 @@ async def test_async_get_lock_status_with_unlocked_response(
 
     self.assertEqual(LockStatus.UNLOCKED, status)
 
+
 async def test_async_get_lock_status_with_unknown_status_response(
     self, httpx_client, respx_mock
 ):
@@ -535,6 +547,7 @@ async def test_async_get_lock_status_with_unknown_status_response(
     status = await api.async_get_lock_status(ACCESS_TOKEN, lock_id)
 
     self.assertEqual(LockStatus.UNKNOWN, status)
+
 
 async def test_async_get_lock_door_status_with_closed_response(
     self, httpx_client, respx_mock
@@ -550,6 +563,7 @@ async def test_async_get_lock_door_status_with_closed_response(
 
     self.assertEqual(LockDoorStatus.CLOSED, door_status)
 
+
 async def test_async_get_lock_door_status_with_open_response(
     self, httpx_client, respx_mock
 ):
@@ -563,6 +577,7 @@ async def test_async_get_lock_door_status_with_open_response(
     door_status = await api.async_get_lock_door_status(ACCESS_TOKEN, lock_id)
 
     self.assertEqual(LockDoorStatus.OPEN, door_status)
+
 
 async def test_async_get_lock_and_door_status_with_open_response(
     self, httpx_client, respx_mock
@@ -582,6 +597,7 @@ async def test_async_get_lock_and_door_status_with_open_response(
     self.assertEqual(LockDoorStatus.OPEN, door_status)
     self.assertEqual(LockStatus.UNLOCKED, status)
 
+
 async def test_async_get_lock_door_status_with_unknown_response(
     self, httpx_client, respx_mock
 ):
@@ -596,16 +612,16 @@ async def test_async_get_lock_door_status_with_unknown_response(
 
     self.assertEqual(LockDoorStatus.UNKNOWN, door_status)
 
+
 async def test_async_lock_from_fixture(self, httpx_client, respx_mock):
     lock_id = 1234
-    respx_mock.put(
-        API_LOCK_URL.format(lock_id=lock_id), body=load_fixture("lock.json")
-    )
+    respx_mock.put(API_LOCK_URL.format(lock_id=lock_id), body=load_fixture("lock.json"))
 
     api = ApiAsync(httpx_client)
     status = await api.async_lock(ACCESS_TOKEN, lock_id)
 
     self.assertEqual(LockStatus.LOCKED, status)
+
 
 async def test_async_unlock_from_fixture(self, httpx_client, respx_mock):
     lock_id = 1234
@@ -619,13 +635,12 @@ async def test_async_unlock_from_fixture(self, httpx_client, respx_mock):
 
     self.assertEqual(LockStatus.UNLOCKED, status)
 
+
 async def test_async_lock_return_activities_from_fixture(
     self, httpx_client, respx_mock
 ):
     lock_id = 1234
-    respx_mock.put(
-        API_LOCK_URL.format(lock_id=lock_id), body=load_fixture("lock.json")
-    )
+    respx_mock.put(API_LOCK_URL.format(lock_id=lock_id), body=load_fixture("lock.json"))
 
     api = ApiAsync(httpx_client)
     activities = await api.async_lock_return_activities(ACCESS_TOKEN, lock_id)
@@ -648,6 +663,7 @@ async def test_async_lock_return_activities_from_fixture(
     self.assertEqual(activities[1].action, "doorclosed")
     self.assertEqual(activities[0].activity_start_time, expected_lock_dt)
     self.assertEqual(activities[0].activity_end_time, expected_lock_dt)
+
 
 async def test_async_unlock_return_activities_from_fixture(
     self, httpx_client, respx_mock
@@ -680,6 +696,7 @@ async def test_async_unlock_return_activities_from_fixture(
     self.assertEqual(activities[1].activity_start_time, expected_unlock_dt)
     self.assertEqual(activities[1].activity_end_time, expected_unlock_dt)
 
+
 async def test_async_lock_return_activities_from_fixture_with_no_doorstate(
     self, httpx_client, respx_mock
 ):
@@ -704,6 +721,7 @@ async def test_async_lock_return_activities_from_fixture_with_no_doorstate(
     self.assertEqual(activities[0].action, "lock")
     self.assertEqual(activities[0].activity_start_time, expected_lock_dt)
     self.assertEqual(activities[0].activity_end_time, expected_lock_dt)
+
 
 async def test_async_unlock_return_activities_from_fixture_with_no_doorstate(
     self, httpx_client, respx_mock
@@ -730,6 +748,7 @@ async def test_async_unlock_return_activities_from_fixture_with_no_doorstate(
     self.assertEqual(activities[0].activity_start_time, expected_unlock_dt)
     self.assertEqual(activities[0].activity_end_time, expected_unlock_dt)
 
+
 async def test_async_lock(self, httpx_client, respx_mock):
     lock_id = 1234
     respx_mock.put(
@@ -745,6 +764,7 @@ async def test_async_lock(self, httpx_client, respx_mock):
 
     self.assertEqual(LockStatus.LOCKED, status)
 
+
 async def test_async_lock_async_old_bridge(self, httpx_client, respx_mock):
     lock_id = 1234
     respx_mock.put(
@@ -754,14 +774,14 @@ async def test_async_lock_async_old_bridge(self, httpx_client, respx_mock):
     api = ApiAsync(httpx_client)
     await api.async_lock_async(ACCESS_TOKEN, lock_id, hyper_bridge=False)
 
+
 async def test_async_lock_async_new_bridge(self, httpx_client, respx_mock):
     lock_id = 1234
-    respx_mock.put(
-        f"{API_LOCK_ASYNC_URL}{HYPER_BRIDGE_PARAM}".format(lock_id=lock_id)
-    )
+    respx_mock.put(f"{API_LOCK_ASYNC_URL}{HYPER_BRIDGE_PARAM}".format(lock_id=lock_id))
 
     api = ApiAsync(httpx_client)
     await api.async_lock_async(ACCESS_TOKEN, lock_id)
+
 
 async def test_async_unlock(self, httpx_client, respx_mock):
     lock_id = 1234
@@ -774,12 +794,14 @@ async def test_async_unlock(self, httpx_client, respx_mock):
 
     self.assertEqual(LockStatus.UNLOCKED, status)
 
+
 async def test_async_unlock_async_old_bridge(self, httpx_client, respx_mock):
     lock_id = 1234
     respx_mock.put(API_UNLOCK_ASYNC_URL.format(lock_id=lock_id))
 
     api = ApiAsync(httpx_client)
     await api.async_unlock_async(ACCESS_TOKEN, lock_id, hyper_bridge=False)
+
 
 async def test_async_unlock_async_new_bridge(self, httpx_client, respx_mock):
     lock_id = 1234
@@ -790,12 +812,14 @@ async def test_async_unlock_async_new_bridge(self, httpx_client, respx_mock):
     api = ApiAsync(httpx_client)
     await api.async_unlock_async(ACCESS_TOKEN, lock_id, hyper_bridge=True)
 
+
 async def test_async_status_async_old_bridge(self, httpx_client, respx_mock):
     lock_id = 1234
     respx_mock.put(API_STATUS_ASYNC_URL.format(lock_id=lock_id))
 
     api = ApiAsync(httpx_client)
     await api.async_status_async(ACCESS_TOKEN, lock_id, hyper_bridge=False)
+
 
 async def test_async_status_async_new_bridge(self, httpx_client, respx_mock):
     lock_id = 1234
@@ -805,6 +829,7 @@ async def test_async_status_async_new_bridge(self, httpx_client, respx_mock):
 
     api = ApiAsync(httpx_client)
     await api.async_status_async(ACCESS_TOKEN, lock_id)
+
 
 async def test_async_get_pins(self, httpx_client, respx_mock):
     lock_id = 1234
@@ -836,6 +861,7 @@ async def test_async_get_pins(self, httpx_client, respx_mock):
     self.assertEqual(utc_of(2018, 12, 1, 1, 1, 1, 563000), first.access_end_time)
     self.assertEqual(utc_of(2018, 11, 5, 10, 2, 41, 684000), first.access_times)
 
+
 async def test_async_get_house_activities(self, httpx_client, respx_mock):
     house_id = 1234
     respx_mock.get(
@@ -859,6 +885,7 @@ async def test_async_get_house_activities(self, httpx_client, respx_mock):
     self.assertIsInstance(activities[8], yalexs.activity.LockOperationActivity)
     self.assertIsInstance(activities[9], yalexs.activity.LockOperationActivity)
 
+
 async def test_async_refresh_access_token(self, httpx_client, respx_mock):
     respx_mock.get(
         API_GET_HOUSES_URL, body="{}", headers={"x-august-access-token": "xyz"}
@@ -868,6 +895,7 @@ async def test_async_refresh_access_token(self, httpx_client, respx_mock):
     new_token = await api.async_refresh_access_token("token")
     assert new_token == "xyz"
 
+
 async def test_async_validate_verification_code(self, httpx_client, respx_mock):
     last_args = {}
 
@@ -875,15 +903,14 @@ async def test_async_validate_verification_code(self, httpx_client, respx_mock):
         last_args.update(kwargs)
         return CallbackResult(status=200, body="{}")
 
-    mock.post(
-        API_VALIDATE_VERIFICATION_CODE_URLS["email"], callback=response_callback
-    )
+    mock.post(API_VALIDATE_VERIFICATION_CODE_URLS["email"], callback=response_callback)
 
     api = ApiAsync(httpx_client)
     await api.async_validate_verification_code(
         ACCESS_TOKEN, "email", "emailaddress", 123456
     )
     assert last_args["json"] == {"code": "123456", "email": "emailaddress"}
+
 
 def test__raise_response_exceptions(self):
     loop = mock.Mock()
@@ -910,6 +937,7 @@ def test__raise_response_exceptions(self):
             _raise_response_exceptions(mocked_response)
         except AugustApiAIOHTTPError as err:
             self.assertEqual(str(err), ERROR_MAP[status_code])
+
 
 async def test_async_get_usern(self, httpx_client, respx_mock):
     respx_mock.get(API_GET_USER_URL, body='{"UserID": "abc"}')
