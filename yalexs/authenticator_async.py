@@ -16,9 +16,14 @@ from yalexs.authenticator_common import (
 )
 
 _LOGGER = logging.getLogger(__name__)
+from .api_async import ApiAsync
+from .util import response_json
 
 
 class AuthenticatorAsync(AuthenticatorCommon):
+
+    _api: ApiAsync
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

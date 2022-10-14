@@ -42,7 +42,7 @@ class ApiAsync(ApiCommon):
         self._command_timeout = command_timeout
         self._httpx_client = httpx_client
 
-    async def async_get_session(self, install_id, identifier, password):
+    async def async_get_session(self, install_id, identifier, password) -> Response:
         return await self._async_dict_to_api(
             self._build_get_session_request(install_id, identifier, password)
         )
