@@ -4,7 +4,6 @@ import unittest
 
 import aiounittest
 
-
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
     ACTION_BRIDGE_ONLINE,
