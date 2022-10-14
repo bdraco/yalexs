@@ -172,7 +172,7 @@ class ApiAsync(ApiCommon):
                 url_str, access_token, lock_id, self._command_timeout
             )
         )
-        return await response.text()
+        return response.text()
 
     async def _async_lock(self, access_token, lock_id):
         return await self._async_call_lock_operation(
