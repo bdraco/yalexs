@@ -140,7 +140,7 @@ class DoorbellDetail(DeviceDetail):
 
     async def async_get_doorbell_image(self, httpx_client: AsyncClient, timeout=10):
         response = await httpx_client.request("get", self._image_url, timeout=timeout)
-        return await response.read()
+        return response.read()
 
     def get_doorbell_image(self, timeout=10):
         return requests.get(self._image_url, timeout=timeout).content

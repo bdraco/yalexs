@@ -307,7 +307,7 @@ class ApiAsync(ApiCommon):
                     url,
                     response.status_code,
                     response.headers,
-                    await response.read(),
+                    response.read(),
                 )
             if response.status_code == 429:
                 _LOGGER.debug(
