@@ -27,6 +27,7 @@ setup(
         "vol",
         "python-dateutil",
         "httpx",
+        "h2>=4.1.0",
         "aiofiles",
         "pubnub>=5.5.0",
     ],
