@@ -1,10 +1,8 @@
 from datetime import datetime, timedelta, timezone
-import json
 
 from dateutil.tz import tzutc
 from httpx import RequestError, Response
 import pytest
-import respx
 
 from yalexs.api_async import ApiAsync
 from yalexs.api_common import (

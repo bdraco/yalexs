@@ -8,6 +8,7 @@ mock
 pylint
 pytest
 pytest-cov
+pytest-asyncio
 requests_mock
 respx
 aiounittest

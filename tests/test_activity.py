@@ -3,8 +3,7 @@ import os
 import unittest
 
 import aiounittest
-import httpx
-import pytest
+
 
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
