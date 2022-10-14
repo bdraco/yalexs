@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 import os
 
 from asynctest import mock
@@ -6,7 +7,6 @@ import dateutil.parser
 from dateutil.tz import tzlocal, tzutc
 from httpx import Response
 import pytest
-from yarl import URL
 
 import yalexs.activity
 from yalexs.api_async import ApiAsync, _raise_response_exceptions
@@ -48,33 +48,35 @@ def utc_of(year, month, day, hour, minute, second, microsecond):
     return datetime(year, month, day, hour, minute, second, microsecond, tzinfo=tzutc())
 
 
-async def test_async_get_doorbells(self, httpx_client, respx_mock):
-    respx_mock.get(API_GET_DOORBELLS_URL, body=load_fixture("get_doorbells.json"))
+async def test_async_get_doorbells(httpx_client, respx_mock):
+    respx_mock.get(API_GET_DOORBELLS_URL).mock(
+        Response(200, json=json.loads(load_fixture("get_doorbells.json")))
+    )
 
     api = ApiAsync(httpx_client)
     doorbells = sorted(
         await api.async_get_doorbells(ACCESS_TOKEN), key=lambda d: d.device_id
     )
 
-    self.assertEqual(2, len(doorbells))
+    assert len(doorbells) == 2
 
     first = doorbells[0]
-    self.assertEqual("1KDAbJH89XYZ", first.device_id)
-    self.assertEqual("aaaaR08888", first.serial_number)
-    self.assertEqual("Back Door", first.device_name)
-    self.assertEqual("doorbell_call_status_offline", first.status)
-    self.assertEqual(False, first.has_subscription)
-    self.assertEqual(None, first.image_url)
-    self.assertEqual("3dd2accadddd", first.house_id)
+    assert first.device_id == "1KDAbJH89XYZ"
+    assert first.serial_number == "aaaaR08888"
+    assert first.device_name == "Back Door"
+    assert first.status == "doorbell_call_status_offline"
+    assert first.has_subscription is False
+    assert first.image_url is None
+    assert first.house_id == "3dd2accadddd"
 
     second = doorbells[1]
-    self.assertEqual("K98GiDT45GUL", second.device_id)
-    self.assertEqual("tBXZR0Z35E", second.serial_number)
-    self.assertEqual("Front Door", second.device_name)
-    self.assertEqual("doorbell_call_status_online", second.status)
-    self.assertEqual(True, second.has_subscription)
-    self.assertEqual("https://image.com/vmk16naaaa7ibuey7sar.jpg", second.image_url)
-    self.assertEqual("3dd2accaea08", second.house_id)
+    assert second.device_id == "K98GiDT45GUL"
+    assert second.serial_number == "tBXZR0Z35E"
+    assert second.device_name == "Front Door"
+    assert second.status == "doorbell_call_status_online"
+    assert second.has_subscription is True
+    assert second.image_url == "https://image.com/vmk16naaaa7ibuey7sar.jpg"
+    assert second.house_id == "3dd2accaea08"
 
 
 async def test_async_get_doorbell_detail(self, httpx_client, respx_mock):
