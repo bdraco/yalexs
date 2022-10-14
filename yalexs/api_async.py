@@ -5,6 +5,7 @@ import logging
 from typing import Any, Dict
 
 from httpx import AsyncClient, HTTPStatusError, RemoteProtocolError, Response
+import orjson
 
 from yalexs.api_common import (
     API_LOCK_ASYNC_URL,
@@ -30,6 +31,9 @@ from yalexs.lock import LockDetail, determine_door_state, determine_lock_status
 from yalexs.pin import Pin
 
 _LOGGER = logging.getLogger(__name__)
+
+
+from .util import response_json
 
 
 class ApiAsync(ApiCommon):
@@ -63,13 +67,13 @@ class ApiAsync(ApiCommon):
         response = await self._async_dict_to_api(
             self._build_get_doorbells_request(access_token)
         )
-        return _process_doorbells_json(response.json())
+        return _process_doorbells_json(response_json(response))
 
     async def async_get_doorbell_detail(self, access_token, doorbell_id):
         response = await self._async_dict_to_api(
             self._build_get_doorbell_detail_request(access_token, doorbell_id)
         )
-        return DoorbellDetail(response.json())
+        return DoorbellDetail(response_json(response))
 
     async def async_wakeup_doorbell(self, access_token, doorbell_id):
         await self._async_dict_to_api(
@@ -81,7 +85,7 @@ class ApiAsync(ApiCommon):
         response = await self._async_dict_to_api(
             self._build_get_user_request(access_token)
         )
-        return response.json()
+        return response_json(response)
 
     async def async_get_houses(self, access_token):
         return await self._async_dict_to_api(
@@ -92,7 +96,7 @@ class ApiAsync(ApiCommon):
         response = await self._async_dict_to_api(
             self._build_get_house_request(access_token, house_id)
         )
-        return response.json()
+        return response_json(response)
 
     async def async_get_house_activities(self, access_token, house_id, limit=8):
         response = await self._async_dict_to_api(
@@ -100,13 +104,13 @@ class ApiAsync(ApiCommon):
                 access_token, house_id, limit=limit
             )
         )
-        return _process_activity_json(response.json())
+        return _process_activity_json(response_json(response))
 
     async def async_get_locks(self, access_token):
         response = await self._async_dict_to_api(
             self._build_get_locks_request(access_token)
         )
-        return _process_locks_json(response.json())
+        return _process_locks_json(response_json(response))
 
     async def async_get_operable_locks(self, access_token):
         locks = await self.async_get_locks(access_token)
@@ -117,13 +121,13 @@ class ApiAsync(ApiCommon):
         response = await self._async_dict_to_api(
             self._build_get_lock_detail_request(access_token, lock_id)
         )
-        return LockDetail(response.json())
+        return LockDetail(response_json(response))
 
     async def async_get_lock_status(self, access_token, lock_id, door_status=False):
         response = await self._async_dict_to_api(
             self._build_get_lock_status_request(access_token, lock_id)
         )
-        json_dict = response.json()
+        json_dict = response_json(response)
 
         if door_status:
             return (
@@ -139,7 +143,7 @@ class ApiAsync(ApiCommon):
         response = await self._async_dict_to_api(
             self._build_get_lock_status_request(access_token, lock_id)
         )
-        json_dict = response.json()
+        json_dict = response_json(response)
 
         if lock_status:
             return (
@@ -153,7 +157,7 @@ class ApiAsync(ApiCommon):
         response = await self._async_dict_to_api(
             self._build_get_pins_request(access_token, lock_id)
         )
-        json_dict = response.json()
+        json_dict = response_json(response)
 
         return [Pin(pin_json) for pin_json in json_dict.get("loaded", [])]
 
@@ -163,7 +167,7 @@ class ApiAsync(ApiCommon):
                 url_str, access_token, lock_id, self._command_timeout
             )
         )
-        return response.json()
+        return response_json(response)
 
     async def _async_call_async_lock_operation(self, url_str, access_token, lock_id):
         """Call an operation that will queue."""

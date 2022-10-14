@@ -78,7 +78,7 @@ class AuthenticatorAsync(AuthenticatorCommon):
             install_id, identifier, self._password
         )
 
-        json_dict = response.json()
+        json_dict = response_json(response)
         authentication = self._authentication_from_session_response(
             install_id, response.headers, json_dict
         )

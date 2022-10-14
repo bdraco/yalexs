@@ -1,4 +1,8 @@
 import datetime
+from typing import Any
+
+from httpx import Response
+import orjson
 
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
@@ -10,6 +14,10 @@ from yalexs.activity import (
     DoorOperationActivity,
     LockOperationActivity,
 )
+
+
+def response_json(response: Response) -> Any:
+    return orjson.loads(response.text)
 
 
 def update_lock_detail_from_activity(lock_detail, activity):
