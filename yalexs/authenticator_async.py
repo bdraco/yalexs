@@ -4,7 +4,7 @@ import logging
 import os
 
 import aiofiles
-from aiohttp import ClientError
+from httpx import RequestError
 
 from yalexs.authenticator_common import (
     Authentication,
@@ -78,7 +78,7 @@ class AuthenticatorAsync(AuthenticatorCommon):
             install_id, identifier, self._password
         )
 
-        json_dict = await response.json()
+        json_dict = response.json()
         authentication = self._authentication_from_session_response(
             install_id, response.headers, json_dict
         )
@@ -99,7 +99,7 @@ class AuthenticatorAsync(AuthenticatorCommon):
                 self._username,
                 verification_code,
             )
-        except ClientError:
+        except RequestError:
             return ValidationResult.INVALID_VERIFICATION_CODE
 
         return ValidationResult.VALIDATED

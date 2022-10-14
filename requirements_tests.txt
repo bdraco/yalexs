@@ -9,8 +9,8 @@ pylint
 pytest
 pytest-cov
 requests_mock
-aioresponses
+respx
 aiounittest
 aiofiles
-aiohttp
+httpx[http2]
 tox

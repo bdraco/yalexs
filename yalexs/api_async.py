@@ -2,8 +2,9 @@
 
 import asyncio
 import logging
+from typing import Any, Dict
 
-from aiohttp import ClientResponseError, ServerDisconnectedError
+from httpx import AsyncClient, HTTPStatusError, RemoteProtocolError, Response
 
 from yalexs.api_common import (
     API_LOCK_ASYNC_URL,
@@ -32,10 +33,10 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class ApiAsync(ApiCommon):
-    def __init__(self, aiohttp_session, timeout=10, command_timeout=60):
+    def __init__(self, httpx_client: AsyncClient, timeout=10, command_timeout=60):
         self._timeout = timeout
         self._command_timeout = command_timeout
-        self._aiohttp_session = aiohttp_session
+        self._httpx_client = httpx_client
 
     async def async_get_session(self, install_id, identifier, password):
         return await self._async_dict_to_api(
@@ -62,13 +63,13 @@ class ApiAsync(ApiCommon):
         response = await self._async_dict_to_api(
             self._build_get_doorbells_request(access_token)
         )
-        return _process_doorbells_json(await response.json())
+        return _process_doorbells_json(response.json())
 
     async def async_get_doorbell_detail(self, access_token, doorbell_id):
         response = await self._async_dict_to_api(
             self._build_get_doorbell_detail_request(access_token, doorbell_id)
         )
-        return DoorbellDetail(await response.json())
+        return DoorbellDetail(response.json())
 
     async def async_wakeup_doorbell(self, access_token, doorbell_id):
         await self._async_dict_to_api(
@@ -80,7 +81,7 @@ class ApiAsync(ApiCommon):
         response = await self._async_dict_to_api(
             self._build_get_user_request(access_token)
         )
-        return await response.json()
+        return response.json()
 
     async def async_get_houses(self, access_token):
         return await self._async_dict_to_api(
@@ -91,7 +92,7 @@ class ApiAsync(ApiCommon):
         response = await self._async_dict_to_api(
             self._build_get_house_request(access_token, house_id)
         )
-        return await response.json()
+        return response.json()
 
     async def async_get_house_activities(self, access_token, house_id, limit=8):
         response = await self._async_dict_to_api(
@@ -99,13 +100,13 @@ class ApiAsync(ApiCommon):
                 access_token, house_id, limit=limit
             )
         )
-        return _process_activity_json(await response.json())
+        return _process_activity_json(response.json())
 
     async def async_get_locks(self, access_token):
         response = await self._async_dict_to_api(
             self._build_get_locks_request(access_token)
         )
-        return _process_locks_json(await response.json())
+        return _process_locks_json(response.json())
 
     async def async_get_operable_locks(self, access_token):
         locks = await self.async_get_locks(access_token)
@@ -116,13 +117,13 @@ class ApiAsync(ApiCommon):
         response = await self._async_dict_to_api(
             self._build_get_lock_detail_request(access_token, lock_id)
         )
-        return LockDetail(await response.json())
+        return LockDetail(response.json())
 
     async def async_get_lock_status(self, access_token, lock_id, door_status=False):
         response = await self._async_dict_to_api(
             self._build_get_lock_status_request(access_token, lock_id)
         )
-        json_dict = await response.json()
+        json_dict = response.json()
 
         if door_status:
             return (
@@ -138,7 +139,7 @@ class ApiAsync(ApiCommon):
         response = await self._async_dict_to_api(
             self._build_get_lock_status_request(access_token, lock_id)
         )
-        json_dict = await response.json()
+        json_dict = response.json()
 
         if lock_status:
             return (
@@ -152,7 +153,7 @@ class ApiAsync(ApiCommon):
         response = await self._async_dict_to_api(
             self._build_get_pins_request(access_token, lock_id)
         )
-        json_dict = await response.json()
+        json_dict = response.json()
 
         return [Pin(pin_json) for pin_json in json_dict.get("loaded", [])]
 
@@ -162,7 +163,7 @@ class ApiAsync(ApiCommon):
                 url_str, access_token, lock_id, self._command_timeout
             )
         )
-        return await response.json()
+        return response.json()
 
     async def _async_call_async_lock_operation(self, url_str, access_token, lock_id):
         """Call an operation that will queue."""
@@ -263,7 +264,7 @@ class ApiAsync(ApiCommon):
             )
         ).headers[HEADER_AUGUST_ACCESS_TOKEN]
 
-    async def _async_dict_to_api(self, api_dict):
+    async def _async_dict_to_api(self, api_dict: Dict[str, Any]):
         url = api_dict["url"]
         method = api_dict["method"]
         access_token = api_dict.get("access_token", None)
@@ -296,19 +297,19 @@ class ApiAsync(ApiCommon):
         while attempts < API_RETRY_ATTEMPTS:
             attempts += 1
             try:
-                response = await self._aiohttp_session.request(method, url, **api_dict)
-            except ServerDisconnectedError:
+                response = await self._httpx_client.request(method, url, **api_dict)
+            except RemoteProtocolError:
                 # Try again if we get disconnected
                 continue
             if debug_enabled:
                 _LOGGER.debug(
                     "Received API response from url: %s, code: %s, headers: %s, content: %s",
                     url,
-                    response.status,
+                    response.status_code,
                     response.headers,
                     await response.read(),
                 )
-            if response.status == 429:
+            if response.status_code == 429:
                 _LOGGER.debug(
                     "August sent a 429 (attempt: %d), sleeping and trying again",
                     attempts,
@@ -322,19 +323,19 @@ class ApiAsync(ApiCommon):
         return response
 
 
-def _raise_response_exceptions(response):
+def _raise_response_exceptions(response: Response) -> None:
     try:
         response.raise_for_status()
-    except ClientResponseError as err:
-        if err.status == 422:
+    except HTTPStatusError as err:
+        if err.response.status_code == 422:
             raise AugustApiAIOHTTPError(
                 "The operation failed because the bridge (connect) is offline.",
             ) from err
-        if err.status == 423:
+        if err.response.status_code == 423:
             raise AugustApiAIOHTTPError(
                 "The operation failed because the bridge (connect) is in use.",
             ) from err
-        if err.status == 408:
+        if err.response.status_code == 408:
             raise AugustApiAIOHTTPError(
                 "The operation timed out because the bridge (connect) failed to respond.",
             ) from err

@@ -1,5 +1,5 @@
 requests
 aiofiles
-aiohttp
+httpx[http2]
 vol
 python-dateutil

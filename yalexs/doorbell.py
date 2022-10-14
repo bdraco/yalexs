@@ -1,6 +1,7 @@
 import datetime
 
 import dateutil.parser
+from httpx import AsyncClient
 import requests
 
 from yalexs.device import Device, DeviceDetail
@@ -137,10 +138,8 @@ class DoorbellDetail(DeviceDetail):
     def has_subscription(self):
         return self._has_subscription
 
-    async def async_get_doorbell_image(self, aiohttp_session, timeout=10):
-        response = await aiohttp_session.request(
-            "get", self._image_url, timeout=timeout
-        )
+    async def async_get_doorbell_image(self, httpx_client: AsyncClient, timeout=10):
+        response = await httpx_client.request("get", self._image_url, timeout=timeout)
         return await response.read()
 
     def get_doorbell_image(self, timeout=10):

@@ -2,9 +2,9 @@ import json
 import os
 import unittest
 
-from aiohttp import ClientSession
-from aioresponses import aioresponses
 import aiounittest
+import httpx
+import pytest
 
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
@@ -328,14 +328,13 @@ class TestActivity(unittest.TestCase):
 
 
 class TestActivityApiAsync(aiounittest.AsyncTestCase):
-    @aioresponses()
-    async def test_async_get_lock_detail_bridge_online(self, mock):
-        mock.get(
+    async def test_async_get_lock_detail_bridge_online(self, respx_mock, httpx_client):
+        respx_mock.get(
             API_GET_LOCK_URL.format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
             body=load_fixture("get_lock.online.json"),
         )
 
-        api = ApiAsync(ClientSession())
+        api = ApiAsync(httpx_client)
         await api.async_get_lock_detail(
             ACCESS_TOKEN, "A6697750D607098BAE8D6BAA11EF8063"
         )

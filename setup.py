@@ -26,7 +26,7 @@ setup(
         "requests",
         "vol",
         "python-dateutil",
-        "aiohttp",
+        "httpx",
         "aiofiles",
         "pubnub>=5.5.0",
     ],
