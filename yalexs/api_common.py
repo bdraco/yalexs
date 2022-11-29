@@ -117,6 +117,7 @@ def _convert_lock_result_to_activities(lock_json_dict):
 def _activity_from_dict(source, activity_dict):
     _LOGGER.debug("Processing activity: %s", activity_dict)
     action = activity_dict.get("action")
+    user = activity_dict.get("user")
 
     if action in ACTIVITY_ACTIONS_DOORBELL_DING:
         return DoorbellDingActivity(source, activity_dict)
@@ -126,7 +127,7 @@ def _activity_from_dict(source, activity_dict):
         return DoorbellImageCaptureActivity(source, activity_dict)
     if action in ACTIVITY_ACTIONS_DOORBELL_VIEW:
         return DoorbellViewActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_LOCK_OPERATION:
+    if action in ACTIVITY_ACTIONS_LOCK_OPERATION and user:
         return LockOperationActivity(source, activity_dict)
     if action in ACTIVITY_ACTIONS_DOOR_OPERATION:
         return DoorOperationActivity(source, activity_dict)
