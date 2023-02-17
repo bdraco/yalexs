@@ -1,4 +1,4 @@
 """Init file for yalexs."""
 __author__ = """J. Nick Koston"""
 __email__ = "nick@koston.org"
-__version__ = "1.2.6"
+__version__ = "1.2.7"
