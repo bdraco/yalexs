@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+from unittest import mock
 
 from aiohttp import ClientResponse, ClientSession
 from aiohttp.helpers import TimerNoop
@@ -7,7 +8,6 @@ from aioresponses import CallbackResult, aioresponses
 import aiounittest
 import dateutil.parser
 from dateutil.tz import tzlocal, tzutc
-from unitest import mock
 from yarl import URL
 
 import yalexs.activity
