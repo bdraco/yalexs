@@ -1,11 +1,11 @@
 from datetime import datetime
 import os
+from unittest import mock
 
 from aiohttp import ClientResponse, ClientSession
 from aiohttp.helpers import TimerNoop
 from aioresponses import CallbackResult, aioresponses
 import aiounittest
-from asynctest import mock
 import dateutil.parser
 from dateutil.tz import tzlocal, tzutc
 from yarl import URL

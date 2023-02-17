@@ -1,6 +1,5 @@
 isort
 black
-asynctest
 bandit
 python-dateutil
 flake8
