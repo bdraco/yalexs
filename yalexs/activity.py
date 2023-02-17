@@ -135,8 +135,8 @@ SOURCE_PUBNUB = "pubnub"
 SOURCE_LOG = "log"
 
 
-def epoch_to_datetime(epoch):
-    return datetime.fromtimestamp(int(epoch) / 1000.0)
+def epoch_to_datetime(epoch: str | int | float) -> datetime:
+    return datetime.fromtimestamp(float(epoch) / 1000.0)
 
 
 class ActivityType(Enum):
@@ -299,7 +299,6 @@ class DoorbellViewActivity(DoorbellBaseActionActivity):
 
 class LockOperationActivity(Activity):
     def __init__(self, source, data):
-
         calling_user = data.get("callingUser", data.get("user", {}))
         action = data.get("action")
         info = data.get("info", {})
