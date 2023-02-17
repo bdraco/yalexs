@@ -5,7 +5,7 @@ from aiohttp import ClientResponse, ClientSession
 from aiohttp.helpers import TimerNoop
 from aioresponses import CallbackResult, aioresponses
 import aiounittest
-from asynctest import mock
+from unitest import mock
 import dateutil.parser
 from dateutil.tz import tzlocal, tzutc
 from yarl import URL
