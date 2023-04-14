@@ -193,10 +193,8 @@ class TestLockDetail(unittest.TestCase):
         )
         assert isinstance(activities[0], LockOperationActivity)
         assert activities[0].action == "lock"
-        assert activities[0].operated_by == 'Foo Bar'
-        assert (
-            activities[0].activity_type == ActivityType.LOCK_OPERATION
-        )
+        assert activities[0].operated_by == "Foo Bar"
+        assert activities[0].activity_type == ActivityType.LOCK_OPERATION
         assert isinstance(activities[1], DoorOperationActivity)
         assert activities[1].action == "doorclosed"
 
@@ -263,7 +261,7 @@ class TestLockDetail(unittest.TestCase):
         assert isinstance(activities[0], LockOperationActivity)
         assert "LockOperationActivity" in str(activities[0])
         assert activities[0].action == "unlock"
-        assert activities[0].operated_by == 'bob smith'
+        assert activities[0].operated_by == "bob smith"
 
 
 class TestDetail(unittest.TestCase):
