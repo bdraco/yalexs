@@ -22,6 +22,7 @@ from yalexs.lock import (
     LockStatus,
 )
 from yalexs.pubnub_activity import activities_from_pubnub_message
+from yalexs.users import cache_user_info, get_user_info
 
 
 def load_fixture(filename):
@@ -243,6 +244,26 @@ class TestLockDetail(unittest.TestCase):
         )
         assert isinstance(activities[0], BridgeOperationActivity)
         assert activities[0].action == "associated_bridge_online"
+
+        cache_user_info(
+            "5309b78d-de0c-4ec5-b878-02784c3b598a",
+            {"FirstName": "bob", "LastName": "smith"},
+        )
+        assert get_user_info("5309b78d-de0c-4ec5-b878-02784c3b598a") is not None
+
+        activities = activities_from_pubnub_message(
+            lock,
+            dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
+            {
+                "status": "unlocked",
+                "callingUserID": "5309b78d-de0c-4ec5-b878-02784c3b598a",
+                "doorState": "closed",
+            },
+        )
+        assert isinstance(activities[0], LockOperationActivity)
+        assert "LockOperationActivity" in str(activities[0])
+        assert activities[0].action == "unlock"
+        assert activities[0].operated_by is None
 
 
 class TestDetail(unittest.TestCase):

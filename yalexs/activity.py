@@ -304,7 +304,7 @@ class LockOperationActivity(Activity):
         calling_user = data.get("callingUser", data.get("user", {}))
         action = data.get("action")
         info = data.get("info", {})
-        user_id = calling_user.get("UserID", data.get("callingUserID"))
+        user_id = calling_user.get("UserID")
         self._operated_remote = info.get("remote", action in REMOTE_ACTIONS)
         self._operated_keypad = info.get("keypad", action in KEYPAD_ACTIONS)
         self._operated_autorelock = (

@@ -1,5 +1,6 @@
 """Api functions common between sync and async."""
 import logging
+from typing import Any
 
 import dateutil.parser
 
@@ -114,7 +115,7 @@ def _convert_lock_result_to_activities(lock_json_dict):
     return activities
 
 
-def _activity_from_dict(source, activity_dict):
+def _activity_from_dict(source: str, activity_dict: dict[str, Any]):
     _LOGGER.debug("Processing activity: %s", activity_dict)
     action = activity_dict.get("action")
 

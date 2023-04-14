@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Any, Dict
+
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
     ACTION_BRIDGE_ONLINE,
@@ -25,8 +28,12 @@ from yalexs.lock import (
     determine_lock_status,
 )
 
+from .device import Device
 
-def activities_from_pubnub_message(device, date_time, message):
+
+def activities_from_pubnub_message(
+    device: Device, date_time: datetime, message: Dict[str, Any]
+):
     """Create activities from pubnub."""
     activities = []
     activity_dict = {
@@ -38,6 +45,9 @@ def activities_from_pubnub_message(device, date_time, message):
     if isinstance(device, LockDetail):
         activity_dict["deviceType"] = "lock"
         activity_dict["info"] = message.get("info", {})
+        calling_user_id = message.get("callingUserID")
+        if calling_user_id:
+            activity_dict["callingUser"] = {"UserID": calling_user_id}
         if "remoteEvent" in message:
             activity_dict["info"]["remote"] = True
 
