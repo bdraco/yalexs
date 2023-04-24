@@ -3,6 +3,7 @@ import os
 import unittest
 
 import dateutil.parser
+from dateutil.tz import tzlocal
 
 from yalexs.activity import (
     ActivityType,
@@ -117,6 +118,9 @@ class TestLockDetail(unittest.TestCase):
             },
         )
         assert isinstance(activities[0], LockOperationActivity)
+        assert activities[0].activity_start_time == dateutil.parser.parse(
+            "2021-03-20T18:19:06.372Z"
+        ).astimezone(tz=tzlocal()).replace(tzinfo=None)
         assert "LockOperationActivity" in str(activities[0])
         assert activities[0].action == "jammed"
 
@@ -145,6 +149,9 @@ class TestLockDetail(unittest.TestCase):
         )
         assert isinstance(activities[0], LockOperationActivity)
         assert "LockOperationActivity" in str(activities[0])
+        assert activities[0].activity_start_time == dateutil.parser.parse(
+            "2021-03-20T18:19:06.372Z"
+        ).astimezone(tz=tzlocal()).replace(tzinfo=None)
         assert activities[0].action == "unlock"
 
         activities = activities_from_pubnub_message(
