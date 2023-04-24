@@ -119,8 +119,8 @@ class TestLockDetail(unittest.TestCase):
             },
         )
         assert isinstance(activities[0], LockOperationActivity)
-        assert activities[0].activity_start_time == datetime.datetime(
-            2021, 3, 20, 13, 19, 6, 372000
+        assert activities[0].activity_start_time == dateutil.parser.parse(
+            "2021-03-20T18:19:06.372Z"
         ).astimezone(tz=tzlocal()).replace(tzinfo=None)
         assert "LockOperationActivity" in str(activities[0])
         assert activities[0].action == "jammed"
@@ -150,8 +150,8 @@ class TestLockDetail(unittest.TestCase):
         )
         assert isinstance(activities[0], LockOperationActivity)
         assert "LockOperationActivity" in str(activities[0])
-        assert activities[0].activity_start_time == datetime.datetime(
-            2021, 3, 20, 13, 19, 6, 372000
+        assert activities[0].activity_start_time == dateutil.parser.parse(
+            "2021-03-20T18:19:06.372Z"
         ).astimezone(tz=tzlocal()).replace(tzinfo=None)
         assert activities[0].action == "unlock"
 
