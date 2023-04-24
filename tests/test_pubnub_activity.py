@@ -200,8 +200,10 @@ class TestLockDetail(unittest.TestCase):
         )
         assert isinstance(activities[0], LockOperationActivity)
         assert activities[0].action == "lock"
-        assert activities[0].operated_by == "Foo Bar"
-        assert activities[0].activity_type == ActivityType.LOCK_OPERATION
+        assert activities[0].operated_by is None
+        assert (
+            activities[0].activity_type == ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR
+        )
         assert isinstance(activities[1], DoorOperationActivity)
         assert activities[1].action == "doorclosed"
 
@@ -263,6 +265,21 @@ class TestLockDetail(unittest.TestCase):
                 "status": "unlocked",
                 "callingUserID": "5309b78d-de0c-4ec5-b878-02784c3b598a",
                 "doorState": "closed",
+                "info": {
+                    "action": "unlock",
+                    "startTime": "2017-12-10T05:48:30.272Z",
+                    "context": {
+                        "transactionID": "_oJRZKJsx",
+                        "startDate": "2017-12-10T05:48:30.272Z",
+                        "retryCount": 1,
+                    },
+                    "lockType": "lock_version_1001",
+                    "serialNumber": "M1FBA029QJ",
+                    "rssi": -53,
+                    "wlanRSSI": -55,
+                    "wlanSNR": 44,
+                    "duration": 2534,
+                },
             },
         )
         assert isinstance(activities[0], LockOperationActivity)
