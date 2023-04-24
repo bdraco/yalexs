@@ -28,6 +28,7 @@ from yalexs.lock import (
     determine_lock_status,
 )
 
+from .api_common import _datetime_string_to_epoch
 from .device import Device
 
 
@@ -39,12 +40,20 @@ def activities_from_pubnub_message(
     activity_dict = {
         "deviceID": device.device_id,
         "house": device.house_id,
-        "dateTime": date_time.timestamp() * 1000,
         "deviceName": device.device_name,
     }
+    info = message.get("info", {})
+    context = info.get("context", {})
+    if "startDate" in context:
+        activity_dict["dateTime"] = _datetime_string_to_epoch(context["startDate"])
+    elif "startTime" in info:
+        activity_dict["dateTime"] = _datetime_string_to_epoch(info["startTime"])
+    else:
+        activity_dict["dateTime"] = date_time.timestamp() * 1000
+
     if isinstance(device, LockDetail):
         activity_dict["deviceType"] = "lock"
-        activity_dict["info"] = message.get("info", {})
+        activity_dict["info"] = info
         calling_user_id = message.get("callingUserID")
         if calling_user_id:
             activity_dict["callingUser"] = {"UserID": calling_user_id}

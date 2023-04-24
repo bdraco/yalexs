@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 import unittest
@@ -117,6 +118,9 @@ class TestLockDetail(unittest.TestCase):
             },
         )
         assert isinstance(activities[0], LockOperationActivity)
+        assert activities[0].activity_start_time == datetime.datetime(
+            2021, 3, 20, 13, 19, 6, 372000
+        )
         assert "LockOperationActivity" in str(activities[0])
         assert activities[0].action == "jammed"
 
@@ -145,6 +149,9 @@ class TestLockDetail(unittest.TestCase):
         )
         assert isinstance(activities[0], LockOperationActivity)
         assert "LockOperationActivity" in str(activities[0])
+        assert activities[0].activity_start_time == datetime.datetime(
+            2021, 3, 20, 13, 19, 6, 372000
+        )
         assert activities[0].action == "unlock"
 
         activities = activities_from_pubnub_message(
