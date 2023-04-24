@@ -22,6 +22,7 @@ from yalexs.activity import (
     ACTION_LOCK_AUTO_LOCK,
     ACTION_LOCK_BLE_LOCK,
     ACTION_LOCK_BLE_UNLOCK,
+    ACTION_LOCK_DOORBELL_BUTTON_PUSHED,
     ACTION_LOCK_JAMMED,
     ACTION_LOCK_LOCK,
     ACTION_LOCK_LOCKING,
@@ -80,6 +81,7 @@ class TestActivity(unittest.TestCase):
                 ACTION_DOORBELL_BUTTON_PUSHED,
                 ACTION_DOORBELL_CALL_MISSED,
                 ACTION_DOORBELL_CALL_HANGUP,
+                ACTION_LOCK_DOORBELL_BUTTON_PUSHED,
             ],
         )
         self.assertCountEqual(
