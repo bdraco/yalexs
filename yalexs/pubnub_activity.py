@@ -44,13 +44,10 @@ def activities_from_pubnub_message(
     }
     info = message.get("info", {})
     context = info.get("context", {})
-    accept_user = False
     if "startDate" in context:
         activity_dict["dateTime"] = _datetime_string_to_epoch(context["startDate"])
-        accept_user = True
     elif "startTime" in info:
         activity_dict["dateTime"] = _datetime_string_to_epoch(info["startTime"])
-        accept_user = True
     else:
         activity_dict["dateTime"] = date_time.timestamp() * 1000
 
@@ -58,10 +55,7 @@ def activities_from_pubnub_message(
         activity_dict["deviceType"] = "lock"
         activity_dict["info"] = info
         calling_user_id = message.get("callingUserID")
-        # Only accept a UserID if we have a date/time
-        # as otherwise it is a duplicate of the previous
-        # activity
-        if accept_user and calling_user_id:
+        if calling_user_id:
             activity_dict["callingUser"] = {"UserID": calling_user_id}
         if "remoteEvent" in message:
             activity_dict["info"]["remote"] = True
