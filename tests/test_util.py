@@ -16,8 +16,10 @@ from yalexs.activity import (
 from yalexs.api import _convert_lock_result_to_activities
 from yalexs.doorbell import DoorbellDetail
 from yalexs.lock import LockDetail, LockDoorStatus, LockStatus
+from yalexs.pubnub_activity import activities_from_pubnub_message
 from yalexs.util import (
     as_utc_from_local,
+    get_latest_activity,
     update_doorbell_image_from_activity,
     update_lock_detail_from_activity,
 )
@@ -28,6 +30,124 @@ def load_fixture(filename):
     path = os.path.join(os.path.dirname(__file__), "fixtures", filename)
     with open(path) as fptr:
         return fptr.read()
+
+
+def test_get_latest_activity():
+    """Test when two activities happen at the same time we prefer the one that is not moving."""
+    lock = LockDetail(json.loads(load_fixture("get_lock.doorsense_init.json")))
+    unlocking_activities = activities_from_pubnub_message(
+        lock,
+        dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
+        {
+            "remoteEvent": 1,
+            "status": "kAugLockState_Unlocking",
+            "info": {
+                "action": "unlock",
+                "startTime": "2021-03-20T18:19:05.373Z",
+                "context": {
+                    "transactionID": "_oJRZKJsx",
+                    "startDate": "2021-03-20T18:19:05.371Z",
+                    "retryCount": 1,
+                },
+                "lockType": "lock_version_1001",
+                "serialNumber": "M1FBA029QJ",
+                "rssi": -53,
+                "wlanRSSI": -55,
+                "wlanSNR": 44,
+                "duration": 2534,
+            },
+        },
+    )
+    unlocked_activities = activities_from_pubnub_message(
+        lock,
+        dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
+        {
+            "remoteEvent": 1,
+            "status": "kAugLockState_Unlocked",
+            "info": {
+                "action": "unlock",
+                "startTime": "2021-03-20T18:19:05.373Z",
+                "context": {
+                    "transactionID": "_oJRZKJsx",
+                    "startDate": "2021-03-20T18:19:05.371Z",
+                    "retryCount": 1,
+                },
+                "lockType": "lock_version_1001",
+                "serialNumber": "M1FBA029QJ",
+                "rssi": -53,
+                "wlanRSSI": -55,
+                "wlanSNR": 44,
+                "duration": 2534,
+            },
+        },
+    )
+    assert get_latest_activity(unlocking_activities[0], None) == unlocking_activities[0]
+    assert get_latest_activity(None, unlocked_activities[0]) == unlocked_activities[0]
+    assert (
+        get_latest_activity(unlocking_activities[0], unlocked_activities[0])
+        == unlocked_activities[0]
+    )
+    assert (
+        get_latest_activity(unlocked_activities[0], unlocking_activities[0])
+        == unlocked_activities[0]
+    )
+
+
+def test_update_lock_detail_from_activity():
+    """Test when two activities happen at the same time we prefer the one that is not moving."""
+    lock = LockDetail(json.loads(load_fixture("get_lock.doorsense_init.json")))
+    unlocking_activities = activities_from_pubnub_message(
+        lock,
+        dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
+        {
+            "remoteEvent": 1,
+            "status": "kAugLockState_Unlocking",
+            "info": {
+                "action": "unlock",
+                "startTime": "2021-03-20T18:19:05.373Z",
+                "context": {
+                    "transactionID": "_oJRZKJsx",
+                    "startDate": "2021-03-20T18:19:05.371Z",
+                    "retryCount": 1,
+                },
+                "lockType": "lock_version_1001",
+                "serialNumber": "M1FBA029QJ",
+                "rssi": -53,
+                "wlanRSSI": -55,
+                "wlanSNR": 44,
+                "duration": 2534,
+            },
+        },
+    )
+    unlocked_activities = activities_from_pubnub_message(
+        lock,
+        dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
+        {
+            "remoteEvent": 1,
+            "status": "kAugLockState_Unlocked",
+            "info": {
+                "action": "unlock",
+                "startTime": "2021-03-20T18:19:05.373Z",
+                "context": {
+                    "transactionID": "_oJRZKJsx",
+                    "startDate": "2021-03-20T18:19:05.371Z",
+                    "retryCount": 1,
+                },
+                "lockType": "lock_version_1001",
+                "serialNumber": "M1FBA029QJ",
+                "rssi": -53,
+                "wlanRSSI": -55,
+                "wlanSNR": 44,
+                "duration": 2534,
+            },
+        },
+    )
+    update_lock_detail_from_activity(lock, unlocking_activities[0])
+    assert lock.lock_status == LockStatus.UNLOCKING
+    update_lock_detail_from_activity(lock, unlocked_activities[0])
+    assert lock.lock_status == LockStatus.UNLOCKED
+    update_lock_detail_from_activity(lock, unlocking_activities[0])
+    assert lock.lock_status == LockStatus.UNLOCKED
 
 
 class TestLockDetail(unittest.TestCase):

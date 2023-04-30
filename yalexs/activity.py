@@ -138,6 +138,10 @@ SOURCE_LOCK_OPERATE = "lock_operate"
 SOURCE_PUBNUB = "pubnub"
 SOURCE_LOG = "log"
 
+# If we get a lock operation activity with the same time stamp as a moving
+# activity we want to use the non-moving activity since its the completed state.
+MOVING_STATES = {LockStatus.UNLOCKING, LockStatus.LOCKING}
+
 
 def epoch_to_datetime(epoch: str | int | float) -> datetime:
     return datetime.fromtimestamp(float(epoch) / 1000.0)

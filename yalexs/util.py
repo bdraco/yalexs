@@ -1,26 +1,61 @@
 import datetime
+from typing import Optional, Union
 
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
     ACTION_BRIDGE_ONLINE,
     ACTIVITY_ACTION_STATES,
+    MOVING_STATES,
     BridgeOperationActivity,
     DoorbellImageCaptureActivity,
     DoorbellMotionActivity,
     DoorOperationActivity,
     LockOperationActivity,
 )
+from yalexs.lock import LockDetail
 
 
-def update_lock_detail_from_activity(lock_detail, activity):
+def get_latest_activity(
+    activity1: Optional[
+        Union[LockOperationActivity, DoorOperationActivity, BridgeOperationActivity]
+    ],
+    activity2: Optional[
+        Union[LockOperationActivity, DoorOperationActivity, BridgeOperationActivity]
+    ],
+) -> Optional[
+    Union[LockOperationActivity, DoorOperationActivity, BridgeOperationActivity]
+]:
+    """Return the latest activity."""
+    if not activity1:
+        return activity2
+    if not activity2:
+        return activity1
+    if (
+        activity2.activity_start_time > activity1.activity_start_time
+        or activity1.activity_start_time == activity2.activity_start_time
+        and ACTIVITY_ACTION_STATES.get(activity2.action) not in MOVING_STATES
+    ):
+        return activity2
+    return activity1
+
+
+def update_lock_detail_from_activity(
+    lock_detail: LockDetail,
+    activity: Union[
+        LockOperationActivity, DoorOperationActivity, BridgeOperationActivity
+    ],
+) -> bool:
     """Update the LockDetail from an activity."""
     activity_end_time_utc = as_utc_from_local(activity.activity_end_time)
     if activity.device_id != lock_detail.device_id:
         raise ValueError
     if isinstance(activity, LockOperationActivity):
-        if (
-            lock_detail.lock_status_datetime
-            and lock_detail.lock_status_datetime >= activity_end_time_utc
+        if lock_detail.lock_status_datetime and (
+            lock_detail.lock_status_datetime > activity_end_time_utc
+            or (
+                lock_detail.lock_status_datetime == activity_end_time_utc
+                and lock_detail.lock_status not in MOVING_STATES
+            )
         ):
             return False
         lock_detail.lock_status = ACTIVITY_ACTION_STATES[activity.action]
@@ -69,6 +104,6 @@ def update_doorbell_image_from_activity(doorbell_detail, activity):
     return True
 
 
-def as_utc_from_local(dtime):
+def as_utc_from_local(dtime: datetime.datetime) -> datetime.datetime:
     """Converts the datetime returned from an activity to UTC."""
     return dtime.astimezone(tz=datetime.timezone.utc)
