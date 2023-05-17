@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 from unittest import mock
+from unittest.mock import patch
 
 from aiohttp import ClientOSError, ClientResponse, ClientSession
 from aiohttp.helpers import TimerNoop
@@ -11,6 +12,7 @@ from dateutil.tz import tzlocal, tzutc
 import pytest
 from yarl import URL
 
+from yalexs import api_async
 import yalexs.activity
 from yalexs.api_async import ApiAsync, _raise_response_exceptions
 from yalexs.api_common import (
@@ -992,7 +994,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         )
 
         api = ApiAsync(ClientSession())
-        with pytest.raises(AugustApiAIOHTTPError):
+        with patch.object(api_async, "API_EXCEPTION_RETRY_TIME", 0), pytest.raises(
+            AugustApiAIOHTTPError
+        ):
             await api.async_get_house_activities(ACCESS_TOKEN, house_id)
 
     @aioresponses()

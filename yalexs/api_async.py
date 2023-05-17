@@ -383,7 +383,7 @@ class ApiAsync(ApiCommon):
                 # transient disconnect/SSL error
                 if attempts == API_RETRY_ATTEMPTS:
                     raise AugustApiAIOHTTPError(
-                        f"Failed to connect to August API: {ex}"
+                        f"Failed to connect to August API: {ex}", ex
                     ) from ex
                 await asyncio.sleep(API_EXCEPTION_RETRY_TIME)
                 continue
