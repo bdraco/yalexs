@@ -32,7 +32,7 @@ from yalexs.api_common import (
     ApiCommon,
 )
 from yalexs.bridge import BridgeDetail, BridgeStatus, BridgeStatusDetail
-from yalexs.const import DEFAULT_BRAND
+from yalexs.const import DEFAULT_BRAND, Brand
 from yalexs.exceptions import AugustApiAIOHTTPError
 from yalexs.lock import LockDoorStatus, LockStatus
 
@@ -222,6 +222,32 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         )
 
         api = ApiAsync(ClientSession())
+        locks = sorted(
+            await api.async_get_locks(ACCESS_TOKEN), key=lambda d: d.device_id
+        )
+
+        self.assertEqual(2, len(locks))
+
+        first = locks[0]
+        self.assertEqual("A6697750D607098BAE8D6BAA11EF8063", first.device_id)
+        self.assertEqual("Front Door Lock", first.device_name)
+        self.assertEqual("000000000000", first.house_id)
+        self.assertEqual(True, first.is_operable)
+
+        second = locks[1]
+        self.assertEqual("A6697750D607098BAE8D6BAA11EF9999", second.device_id)
+        self.assertEqual("Back Door Lock", second.device_name)
+        self.assertEqual("000000000011", second.house_id)
+        self.assertEqual(False, second.is_operable)
+
+    @aioresponses()
+    async def test_async_get_locks_yale_home_brand(self, mock):
+        mock.get(
+            ApiCommon(Brands.YALE_HOME).get_brand_url(API_GET_LOCKS_URL),
+            body=load_fixture("get_locks.json"),
+        )
+
+        api = ApiAsync(ClientSession(), brand=Brands.YALE_HOME)
         locks = sorted(
             await api.async_get_locks(ACCESS_TOKEN), key=lambda d: d.device_id
         )
