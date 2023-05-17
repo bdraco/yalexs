@@ -1,6 +1,6 @@
 """Constants."""
 
-from .enum import StrEnum
+from .backports.enum import StrEnum
 
 
 class Brand(StrEnum):
@@ -8,6 +8,8 @@ class Brand(StrEnum):
     yale_access = "yale_access"
     yale_home = "yale_home"
 
+
+DEFAULT_BRAND = Brand.august
 
 BASE_URLS = {
     Brand.august: "https://api-production.august.com",
