@@ -1036,9 +1036,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
 
         ERROR_MAP = {
             560: "The operation failed with error code 560: 560.",
-            422: "The operation failed because the bridge (connect) is offline.",
-            423: "The operation failed because the bridge (connect) is in use.",
-            408: "The operation timed out because the bridge (connect) failed to respond.",
+            422: "The operation failed because the bridge (connect) is offline: 422",
+            423: "The operation failed because the bridge (connect) is in use: 423",
+            408: "The operation timed out because the bridge (connect) failed to respond: 408",
         }
 
         for status_code in ERROR_MAP:
