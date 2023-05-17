@@ -2,11 +2,12 @@ from datetime import datetime, timedelta, timezone
 import json
 import logging
 import os
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import aiofiles
 from aiohttp import ClientError
 
+from .api_async import ApiAsync
 from .authenticator_common import (
     Authentication,
     AuthenticationState,
@@ -17,9 +18,6 @@ from .authenticator_common import (
 )
 
 _LOGGER = logging.getLogger(__name__)
-
-if TYPE_CHECKING:
-    from .api_async import ApiAsync
 
 
 class AuthenticatorAsync(AuthenticatorCommon):
