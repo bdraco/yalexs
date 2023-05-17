@@ -4,21 +4,21 @@ from .backports.enum import StrEnum
 
 
 class Brand(StrEnum):
-    august = "august"
-    yale_access = "yale_access"
-    yale_home = "yale_home"
+    AUGUST = "august"
+    YALE_ACCESS = "yale_access"
+    YALE_HOME = "yale_home"
 
 
-DEFAULT_BRAND = Brand.august
+DEFAULT_BRAND = Brand.AUGUST
 
 BASE_URLS = {
-    Brand.august: "https://api-production.august.com",
-    Brand.yale_access: "https://api-production.august.com",
-    Brand.yale_home: "https://api.aaecosystem.com",
+    Brand.AUGUST: "https://api-production.august.com",
+    Brand.YALE_ACCESS: "https://api-production.august.com",
+    Brand.YALE_HOME: "https://api.aaecosystem.com",
 }
 
 BRANDS = {
-    Brand.august: "August",
-    Brand.yale_access: "Yale Access",
-    Brand.yale_home: "Yale Home",
+    Brand.AUGUST: "August",
+    Brand.YALE_ACCESS: "Yale Access",
+    Brand.YALE_HOME: "Yale Home",
 }

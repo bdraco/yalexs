@@ -28,5 +28,6 @@ setup(
         "aiohttp",
         "aiofiles",
         "pubnub>=7.1.0",
+        "typing_extensions>=4.5.0"
     ],
 )
