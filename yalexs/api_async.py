@@ -3,7 +3,7 @@
 import asyncio
 import logging
 
-from aiohttp import ClientResponseError, ServerDisconnectedError
+from aiohttp import ClientResponseError, ClientSession, ServerDisconnectedError
 
 from yalexs.api_common import (
     API_LOCK_ASYNC_URL,
@@ -33,8 +33,12 @@ _LOGGER = logging.getLogger(__name__)
 
 class ApiAsync(ApiCommon):
     def __init__(
-        self, aiohttp_session, timeout=10, command_timeout=60, eco_system="august"
-    ):
+        self,
+        aiohttp_session: ClientSession,
+        timeout=10,
+        command_timeout=60,
+        eco_system="august",
+    ) -> None:
         self._timeout = timeout
         self._command_timeout = command_timeout
         self._aiohttp_session = aiohttp_session

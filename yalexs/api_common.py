@@ -48,38 +48,35 @@ BASE_URLS = {
     "yale_home": "https://api.aaecosystem.com",
 }
 
-API_BASE_URL = "{base_url}"
 
-API_GET_SESSION_URL = API_BASE_URL + "/session"
+API_GET_SESSION_URL = "/session"
 API_SEND_VERIFICATION_CODE_URLS = {
-    "phone": API_BASE_URL + "/validation/phone",
-    "email": API_BASE_URL + "/validation/email",
+    "phone": "/validation/phone",
+    "email": "/validation/email",
 }
 API_VALIDATE_VERIFICATION_CODE_URLS = {
-    "phone": API_BASE_URL + "/validate/phone",
-    "email": API_BASE_URL + "/validate/email",
+    "phone": "/validate/phone",
+    "email": "/validate/email",
 }
-API_GET_HOUSE_ACTIVITIES_URL = API_BASE_URL + "/houses/{house_id}/activities"
-API_GET_DOORBELLS_URL = API_BASE_URL + "/users/doorbells/mine"
-API_GET_DOORBELL_URL = API_BASE_URL + "/doorbells/{doorbell_id}"
-API_WAKEUP_DOORBELL_URL = API_BASE_URL + "/doorbells/{doorbell_id}/wakeup"
-API_GET_HOUSES_URL = API_BASE_URL + "/users/houses/mine"
-API_GET_HOUSE_URL = API_BASE_URL + "/houses/{house_id}"
-API_GET_LOCKS_URL = API_BASE_URL + "/users/locks/mine"
-API_GET_LOCK_URL = API_BASE_URL + "/locks/{lock_id}"
-API_GET_LOCK_STATUS_URL = API_BASE_URL + "/locks/{lock_id}/status"
-API_GET_PINS_URL = API_BASE_URL + "/locks/{lock_id}/pins"
-API_LOCK_URL = API_BASE_URL + "/remoteoperate/{lock_id}/lock"
-API_UNLOCK_URL = API_BASE_URL + "/remoteoperate/{lock_id}/unlock"
-API_LOCK_ASYNC_URL = API_BASE_URL + "/remoteoperate/{lock_id}/lock?v=2.3.1&type=async"
-API_UNLOCK_ASYNC_URL = (
-    API_BASE_URL + "/remoteoperate/{lock_id}/unlock?v=2.3.1&type=async"
-)
+API_GET_HOUSE_ACTIVITIES_URL = "/houses/{house_id}/activities"
+API_GET_DOORBELLS_URL = "/users/doorbells/mine"
+API_GET_DOORBELL_URL = "/doorbells/{doorbell_id}"
+API_WAKEUP_DOORBELL_URL = "/doorbells/{doorbell_id}/wakeup"
+API_GET_HOUSES_URL = "/users/houses/mine"
+API_GET_HOUSE_URL = "/houses/{house_id}"
+API_GET_LOCKS_URL = "/users/locks/mine"
+API_GET_LOCK_URL = "/locks/{lock_id}"
+API_GET_LOCK_STATUS_URL = "/locks/{lock_id}/status"
+API_GET_PINS_URL = "/locks/{lock_id}/pins"
+API_LOCK_URL = "/remoteoperate/{lock_id}/lock"
+API_UNLOCK_URL = "/remoteoperate/{lock_id}/unlock"
+API_LOCK_ASYNC_URL = "/remoteoperate/{lock_id}/lock?v=2.3.1&type=async"
+API_UNLOCK_ASYNC_URL = "/remoteoperate/{lock_id}/unlock?v=2.3.1&type=async"
 API_STATUS_ASYNC_URL = (
-    API_BASE_URL + "/remoteoperate/{lock_id}/status?v=2.3.1&type=async&intent=wakeup"
+    "/remoteoperate/{lock_id}/status?v=2.3.1&type=async&intent=wakeup"
 )
 HYPER_BRIDGE_PARAM = "&connection=persistent"
-API_GET_USER_URL = API_BASE_URL + "/users/me"
+API_GET_USER_URL = "/users/me"
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -182,13 +179,13 @@ def _process_locks_json(json_dict):
 class ApiCommon:
     """Api dict shared between async and sync."""
 
-    def __init__(self, eco_system="august") -> None:
+    def __init__(self, eco_system: str) -> None:
         """Init."""
         self._base_url = BASE_URLS[eco_system]
 
     def _get_url(self, url_str: str) -> str:
         """Get url."""
-        return url_str.format(base_url=self._base_url)
+        return self._base_url + url_str
 
     def _build_get_session_request(self, install_id, identifier, password):
         return {
