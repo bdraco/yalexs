@@ -29,12 +29,12 @@ from yalexs.api_common import (
     API_UNLOCK_URL,
     API_VALIDATE_VERIFICATION_CODE_URLS,
     HYPER_BRIDGE_PARAM,
-    ApiCommon
+    ApiCommon,
 )
 from yalexs.bridge import BridgeDetail, BridgeStatus, BridgeStatusDetail
+from yalexs.const import DEFAULT_BRAND
 from yalexs.exceptions import AugustApiAIOHTTPError
 from yalexs.lock import LockDoorStatus, LockStatus
-from yalexs.const import DEFAULT_BRAND
 
 ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
 
@@ -84,7 +84,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_get_doorbell_detail(self, mock):
         expected_doorbell_image_url = "https://image.com/vmk16naaaa7ibuey7sar.jpg"
         mock.get(
-            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELL_URL).format(doorbell_id="K98GiDT45GUL"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_DOORBELL_URL)
+            .format(doorbell_id="K98GiDT45GUL"),
             body=load_fixture("get_doorbell.json"),
         )
         mock.get(expected_doorbell_image_url, body="doorbell_image_mocked")
@@ -116,7 +118,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_doorbell_detail_missing_image(self, mock):
         mock.get(
-            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELL_URL).format(doorbell_id="K98GiDT45GUL"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_DOORBELL_URL)
+            .format(doorbell_id="K98GiDT45GUL"),
             body=load_fixture("get_doorbell_missing_image.json"),
         )
 
@@ -139,7 +143,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_doorbell_offline(self, mock):
         mock.get(
-            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELL_URL).format(doorbell_id="231ee2168dd0"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_DOORBELL_URL)
+            .format(doorbell_id="231ee2168dd0"),
             body=load_fixture("get_doorbell.offline.json"),
         )
 
@@ -166,7 +172,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_doorbell_gen2_full_battery_detail(self, mock):
         mock.get(
-            API_GET_DOORBELL_URL.format(doorbell_id="did"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_DOORBELL_URL)
+            .format(doorbell_id="did"),
             body=load_fixture("get_doorbell.battery_full.json"),
         )
 
@@ -178,7 +186,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_doorbell_gen2_medium_battery_detail(self, mock):
         mock.get(
-            API_GET_DOORBELL_URL.format(doorbell_id="did"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_DOORBELL_URL)
+            .format(doorbell_id="did"),
             body=load_fixture("get_doorbell.battery_medium.json"),
         )
 
@@ -190,7 +200,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_doorbell_gen2_low_battery_detail(self, mock):
         mock.get(
-            API_GET_DOORBELL_URL.format(doorbell_id="did"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_DOORBELL_URL)
+            .format(doorbell_id="did"),
             body=load_fixture("get_doorbell.battery_low.json"),
         )
 
@@ -201,7 +213,10 @@ class TestApiAsync(aiounittest.AsyncTestCase):
 
     @aioresponses()
     async def test_async_get_locks(self, mock):
-        mock.get(API_GET_LOCKS_URL, body=load_fixture("get_locks.json"))
+        mock.get(
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_LOCKS_URL),
+            body=load_fixture("get_locks.json"),
+        )
 
         api = ApiAsync(ClientSession())
         locks = sorted(
@@ -240,7 +255,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_lock_detail_with_doorsense_bridge_online(self, mock):
         mock.get(
-            API_GET_LOCK_URL.format(lock_id="ABC"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCKS_URL)
+            .format(lock_id="ABC"),
             body=load_fixture("get_lock.online_with_doorsense.json"),
         )
 
@@ -276,7 +293,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self, mock
     ):
         mock.get(
-            API_GET_LOCK_URL.format(lock_id="ABC"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCKS_URL)
+            .format(lock_id="ABC"),
             body=load_fixture("get_lock.online_with_doorsense_disabled.json"),
         )
 
@@ -311,7 +330,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_lock_detail_bridge_online(self, mock):
         mock.get(
-            API_GET_LOCK_URL.format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_URL)
+            .format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
             body=load_fixture("get_lock.online.json"),
         )
 
@@ -348,7 +369,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_v2_lock_detail_bridge_online(self, mock):
         mock.get(
-            API_GET_LOCK_URL.format(lock_id="snip"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_URL)
+            .format(lock_id="snip"),
             body=load_fixture("get_lock_v2.online.json"),
         )
 
@@ -406,7 +429,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_lock_detail_bridge_offline(self, mock):
         mock.get(
-            API_GET_LOCK_URL.format(lock_id="ABC"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_URL)
+            .format(lock_id="ABC"),
             body=load_fixture("get_lock.offline.json"),
         )
 
@@ -433,7 +458,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_lock_detail_doorsense_init_state(self, mock):
         mock.get(
-            API_GET_LOCK_URL.format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCKS_URL)
+            .format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
             body=load_fixture("get_lock.doorsense_init.json"),
         )
 
@@ -486,7 +513,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_get_lock_status_with_locked_response(self, mock):
         lock_id = 1234
         mock.get(
-            API_GET_LOCK_STATUS_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_STATUS_URL)
+            .format(lock_id=lock_id),
             body='{"status": "kAugLockState_Locked"}',
         )
 
@@ -499,7 +528,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_get_lock_and_door_status_with_locked_response(self, mock):
         lock_id = 1234
         mock.get(
-            API_GET_LOCK_STATUS_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_STATUS_URL)
+            .format(lock_id=lock_id),
             body='{"status": "kAugLockState_Locked"'
             ',"doorState": "kAugLockDoorState_Closed"}',
         )
@@ -516,7 +547,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_get_lock_status_with_unlocked_response(self, mock):
         lock_id = 1234
         mock.get(
-            API_GET_LOCK_STATUS_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_STATUS_URL)
+            .format(lock_id=lock_id),
             body='{"status": "kAugLockState_Unlocked"}',
         )
 
@@ -529,7 +562,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_get_lock_status_with_unknown_status_response(self, mock):
         lock_id = 1234
         mock.get(
-            API_GET_LOCK_STATUS_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_STATUS_URL)
+            .format(lock_id=lock_id),
             body='{"status": "not_advertising"}',
         )
 
@@ -542,7 +577,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_get_lock_door_status_with_closed_response(self, mock):
         lock_id = 1234
         mock.get(
-            API_GET_LOCK_STATUS_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_STATUS_URL)
+            .format(lock_id=lock_id),
             body='{"doorState": "kAugLockDoorState_Closed"}',
         )
 
@@ -555,7 +592,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_get_lock_door_status_with_open_response(self, mock):
         lock_id = 1234
         mock.get(
-            API_GET_LOCK_STATUS_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_STATUS_URL)
+            .format(lock_id=lock_id),
             body='{"doorState": "kAugLockDoorState_Open"}',
         )
 
@@ -585,7 +624,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_get_lock_door_status_with_unknown_response(self, mock):
         lock_id = 1234
         mock.get(
-            API_GET_LOCK_STATUS_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_STATUS_URL)
+            .format(lock_id=lock_id),
             body='{"doorState": "not_advertising"}',
         )
 
@@ -608,7 +649,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_unlock_from_fixture(self, mock):
         lock_id = 1234
         mock.put(
-            API_UNLOCK_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_UNLOCK_URL)
+            .format(lock_id=lock_id),
             body=load_fixture("unlock.json"),
         )
 
@@ -620,7 +663,12 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_lock_return_activities_from_fixture(self, mock):
         lock_id = 1234
-        mock.put(API_LOCK_URL.format(lock_id=lock_id), body=load_fixture("lock.json"))
+        mock.put(
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_UNLOCK_URL)
+            .format(lock_id=lock_id),
+            body=load_fixture("lock.json"),
+        )
 
         api = ApiAsync(ClientSession())
         activities = await api.async_lock_return_activities(ACCESS_TOKEN, lock_id)
@@ -648,7 +696,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_unlock_return_activities_from_fixture(self, mock):
         lock_id = 1234
         mock.put(
-            API_UNLOCK_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_UNLOCK_URL)
+            .format(lock_id=lock_id),
             body=load_fixture("unlock.json"),
         )
 
@@ -680,7 +730,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     ):
         lock_id = 1234
         mock.put(
-            API_LOCK_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_LOCK_URL)
+            .format(lock_id=lock_id),
             body=load_fixture("lock_without_doorstate.json"),
         )
 
@@ -706,7 +758,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     ):
         lock_id = 1234
         mock.put(
-            API_UNLOCK_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_UNLOCK_URL)
+            .format(lock_id=lock_id),
             body=load_fixture("unlock_without_doorstate.json"),
         )
 
@@ -730,7 +784,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_lock(self, mock):
         lock_id = 1234
         mock.put(
-            API_LOCK_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_LOCK_URL)
+            .format(lock_id=lock_id),
             body='{"status":"locked",'
             '"dateTime":"2017-12-10T07:43:39.056Z",'
             '"isLockStatusChanged":false,'
@@ -746,7 +802,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_lock_async_old_bridge(self, mock):
         lock_id = 1234
         mock.put(
-            API_LOCK_ASYNC_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_LOCK_ASYNC_URL)
+            .format(lock_id=lock_id),
         )
 
         api = ApiAsync(ClientSession())
@@ -755,7 +813,8 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_lock_async_new_bridge(self, mock):
         lock_id = 1234
-        mock.put(f"{API_LOCK_ASYNC_URL}{HYPER_BRIDGE_PARAM}".format(lock_id=lock_id))
+        base_url = ApiCommon(DEFAULT_BRAND).get_brand_url(API_LOCK_ASYNC_URL)
+        mock.put(f"{base_url}{HYPER_BRIDGE_PARAM}".format(lock_id=lock_id))
 
         api = ApiAsync(ClientSession())
         await api.async_lock_async(ACCESS_TOKEN, lock_id)
@@ -763,7 +822,12 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_unlock(self, mock):
         lock_id = 1234
-        mock.put(API_UNLOCK_URL.format(lock_id=lock_id), body='{"status": "unlocked"}')
+        mock.put(
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_UNLOCK_URL)
+            .format(lock_id=lock_id),
+            body='{"status": "unlocked"}',
+        )
 
         api = ApiAsync(ClientSession())
         status = await api.async_unlock(ACCESS_TOKEN, lock_id)
@@ -773,7 +837,12 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_unlock_async_old_bridge(self, mock):
         lock_id = 1234
-        mock.put(API_UNLOCK_ASYNC_URL.format(lock_id=lock_id))
+
+        mock.put(
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_UNLOCK_ASYNC_URL)
+            .format(lock_id=lock_id)
+        )
 
         api = ApiAsync(ClientSession())
         await api.async_unlock_async(ACCESS_TOKEN, lock_id, hyper_bridge=False)
@@ -781,7 +850,8 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_unlock_async_new_bridge(self, mock):
         lock_id = 1234
-        mock.put(f"{API_UNLOCK_ASYNC_URL}{HYPER_BRIDGE_PARAM}".format(lock_id=lock_id))
+        base_url = ApiCommon(DEFAULT_BRAND).get_brand_url(API_UNLOCK_ASYNC_URL)
+        mock.put(f"{base_url}{HYPER_BRIDGE_PARAM}".format(lock_id=lock_id))
 
         api = ApiAsync(ClientSession())
         await api.async_unlock_async(ACCESS_TOKEN, lock_id, hyper_bridge=True)
@@ -789,7 +859,12 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_status_async_old_bridge(self, mock):
         lock_id = 1234
-        mock.put(API_STATUS_ASYNC_URL.format(lock_id=lock_id))
+
+        mock.put(
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_STATUS_ASYNC_URL)
+            .format(lock_id=lock_id)
+        )
 
         api = ApiAsync(ClientSession())
         await api.async_status_async(ACCESS_TOKEN, lock_id, hyper_bridge=False)
@@ -797,7 +872,8 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_status_async_new_bridge(self, mock):
         lock_id = 1234
-        mock.put(f"{API_STATUS_ASYNC_URL}{HYPER_BRIDGE_PARAM}".format(lock_id=lock_id))
+        base_url = ApiCommon(DEFAULT_BRAND).get_brand_url(API_STATUS_ASYNC_URL)
+        mock.put(f"{base_url}{HYPER_BRIDGE_PARAM}".format(lock_id=lock_id))
 
         api = ApiAsync(ClientSession())
         await api.async_status_async(ACCESS_TOKEN, lock_id)
@@ -806,7 +882,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_get_pins(self, mock):
         lock_id = 1234
         mock.get(
-            API_GET_PINS_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_PINS_URL)
+            .format(lock_id=lock_id),
             body=load_fixture("get_pins.json"),
         )
 
@@ -836,8 +914,12 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_house_activities(self, mock):
         house_id = 1234
+
         mock.get(
-            API_GET_HOUSE_ACTIVITIES_URL.format(house_id=house_id) + "?limit=8",
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_HOUSE_ACTIVITIES_URL)
+            .format(house_id=house_id)
+            + "?limit=8",
             body=load_fixture("get_house_activities.json"),
         )
 
@@ -860,7 +942,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_refresh_access_token(self, mock):
         mock.get(
-            API_GET_HOUSES_URL, body="{}", headers={"x-august-access-token": "xyz"}
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_HOUSES_URL),
+            body="{}",
+            headers={"x-august-access-token": "xyz"},
         )
 
         api = ApiAsync(ClientSession())
@@ -936,7 +1020,10 @@ class TestApiAsync(aiounittest.AsyncTestCase):
 
     @aioresponses()
     async def test_async_get_usern(self, mock):
-        mock.get(API_GET_USER_URL, body='{"UserID": "abc"}')
+        mock.get(
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_USER_URL),
+            body='{"UserID": "abc"}',
+        )
 
         api = ApiAsync(ClientSession())
         user_details = await api.async_get_user("token")
