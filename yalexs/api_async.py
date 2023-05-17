@@ -32,10 +32,13 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class ApiAsync(ApiCommon):
-    def __init__(self, aiohttp_session, timeout=10, command_timeout=60):
+    def __init__(
+        self, aiohttp_session, timeout=10, command_timeout=60, eco_system="august"
+    ):
         self._timeout = timeout
         self._command_timeout = command_timeout
         self._aiohttp_session = aiohttp_session
+        super().__init__(eco_system)
 
     async def async_get_session(self, install_id, identifier, password):
         return await self._async_dict_to_api(

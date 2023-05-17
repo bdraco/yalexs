@@ -30,10 +30,17 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Api(ApiCommon):
-    def __init__(self, timeout=10, command_timeout=60, http_session: Session = None):
+    def __init__(
+        self,
+        timeout=10,
+        command_timeout=60,
+        http_session: Session = None,
+        ecosystem="august",
+    ):
         self._timeout = timeout
         self._command_timeout = command_timeout
         self._http_session = http_session
+        super().__init__(ecosystem)
 
     def get_session(self, install_id, identifier, password):
         return self._dict_to_api(
