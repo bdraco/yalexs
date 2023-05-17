@@ -80,7 +80,7 @@ class TestApi(unittest.TestCase):
         expected_doorbell_image_url = "https://image.com/vmk16naaaa7ibuey7sar.jpg"
         mock.register_uri(
             "get",
-            API_GET_DOORBELL_URL.format(doorbell_id="K98GiDT45GUL"),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELL_URL).format(doorbell_id="K98GiDT45GUL"),
             text=load_fixture("get_doorbell.json"),
         )
         mock.register_uri(
@@ -115,7 +115,7 @@ class TestApi(unittest.TestCase):
     def test_get_doorbell_detail_missing_image(self, mock):
         mock.register_uri(
             "get",
-            API_GET_DOORBELL_URL.format(doorbell_id="K98GiDT45GUL"),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELL_URL).format(doorbell_id="K98GiDT45GUL"),
             text=load_fixture("get_doorbell_missing_image.json"),
         )
 
@@ -139,7 +139,7 @@ class TestApi(unittest.TestCase):
     def test_get_doorbell_offline(self, mock):
         mock.register_uri(
             "get",
-            API_GET_DOORBELL_URL.format(doorbell_id="231ee2168dd0"),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELL_URL).format(doorbell_id="231ee2168dd0"),
             text=load_fixture("get_doorbell.offline.json"),
         )
 
@@ -167,7 +167,7 @@ class TestApi(unittest.TestCase):
     def test_get_doorbell_gen2_full_battery_detail(self, mock):
         mock.register_uri(
             "get",
-            API_GET_DOORBELL_URL.format(doorbell_id="did"),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELL_URL).format(doorbell_id="did"),
             text=load_fixture("get_doorbell.battery_full.json"),
         )
 
@@ -180,7 +180,7 @@ class TestApi(unittest.TestCase):
     def test_get_doorbell_gen2_medium_battery_detail(self, mock):
         mock.register_uri(
             "get",
-            API_GET_DOORBELL_URL.format(doorbell_id="did"),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELL_URL).format(doorbell_id="did"),
             text=load_fixture("get_doorbell.battery_medium.json"),
         )
 
@@ -193,7 +193,7 @@ class TestApi(unittest.TestCase):
     def test_get_doorbell_gen2_low_battery_detail(self, mock):
         mock.register_uri(
             "get",
-            API_GET_DOORBELL_URL.format(doorbell_id="did"),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELL_URL).format(doorbell_id="did"),
             text=load_fixture("get_doorbell.battery_low.json"),
         )
 
@@ -204,7 +204,7 @@ class TestApi(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_get_locks(self, mock):
-        mock.register_uri("get", API_GET_LOCKS_URL, text=load_fixture("get_locks.json"))
+        mock.register_uri("get", ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_LOCKS_URL), text=load_fixture("get_locks.json"))
 
         api = Api()
         locks = sorted(api.get_locks(ACCESS_TOKEN), key=lambda d: d.device_id)
@@ -225,7 +225,7 @@ class TestApi(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_get_operable_locks(self, mock):
-        mock.register_uri("get", API_GET_LOCKS_URL, text=load_fixture("get_locks.json"))
+        mock.register_uri("get", ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_LOCKS_URL), text=load_fixture("get_locks.json"))
 
         api = Api()
         locks = api.get_operable_locks(ACCESS_TOKEN)
@@ -242,7 +242,7 @@ class TestApi(unittest.TestCase):
     def test_get_lock_detail_with_doorsense_bridge_online(self, mock):
         mock.register_uri(
             "get",
-            API_GET_LOCK_URL.format(lock_id="ABC"),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_LOCK_URL).format(lock_id="ABC"),
             text=load_fixture("get_lock.online_with_doorsense.json"),
         )
 
@@ -277,7 +277,7 @@ class TestApi(unittest.TestCase):
     def test_get_lock_detail_bridge_online(self, mock):
         mock.register_uri(
             "get",
-            API_GET_LOCK_URL.format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_LOCK_URL).format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
             text=load_fixture("get_lock.online.json"),
         )
 
@@ -340,7 +340,7 @@ class TestApi(unittest.TestCase):
     def test_get_lock_detail_doorsense_init_state(self, mock):
         mock.register_uri(
             "get",
-            API_GET_LOCK_URL.format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_LOCK_URL).format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
             text=load_fixture("get_lock.doorsense_init.json"),
         )
 
@@ -414,7 +414,7 @@ class TestApi(unittest.TestCase):
         lock_id = 1234
         mock.register_uri(
             "get",
-            API_GET_LOCK_STATUS_URL.format(lock_id=lock_id),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_LOCK_STATUS_URL).format(lock_id=lock_id),
             text='{"status": "kAugLockState_Locked"}',
         )
 
