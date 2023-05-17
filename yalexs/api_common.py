@@ -22,7 +22,7 @@ from .activity import (
     DoorOperationActivity,
     LockOperationActivity,
 )
-from .const import BASE_URLS, BRANDS, Brand
+from .const import BASE_URLS, Brand
 from .doorbell import Doorbell
 from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
 
@@ -214,7 +214,9 @@ class ApiCommon:
     ):
         return {
             "method": "post",
-            "url": self.get_brand_url(API_VALIDATE_VERIFICATION_CODE_URLS[login_method]),
+            "url": self.get_brand_url(
+                API_VALIDATE_VERIFICATION_CODE_URLS[login_method]
+            ),
             "access_token": access_token,
             "json": {login_method: username, "code": str(verification_code)},
         }
@@ -229,7 +231,9 @@ class ApiCommon:
     def _build_get_doorbell_detail_request(self, access_token, doorbell_id):
         return {
             "method": "get",
-            "url": self.get_brand_url(API_GET_DOORBELL_URL.format(doorbell_id=doorbell_id)),
+            "url": self.get_brand_url(
+                API_GET_DOORBELL_URL.format(doorbell_id=doorbell_id)
+            ),
             "access_token": access_token,
         }
 
