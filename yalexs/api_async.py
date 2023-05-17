@@ -4,7 +4,12 @@ import asyncio
 from http import HTTPStatus
 import logging
 
-from aiohttp import ClientResponseError, ClientSession, ServerDisconnectedError
+from aiohttp import (
+    ClientResponse,
+    ClientResponseError,
+    ClientSession,
+    ServerDisconnectedError,
+)
 
 from .api_common import (
     API_LOCK_ASYNC_URL,
@@ -333,7 +338,8 @@ class ApiAsync(ApiCommon):
         return response
 
 
-def _raise_response_exceptions(response):
+def _raise_response_exceptions(response: ClientResponse) -> None:
+    """Raise exceptions for known error codes."""
     try:
         response.raise_for_status()
     except ClientResponseError as err:
