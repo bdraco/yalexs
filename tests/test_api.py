@@ -22,8 +22,10 @@ from yalexs.api_common import (
     API_GET_USER_URL,
     API_LOCK_URL,
     API_UNLOCK_URL,
+    ApiCommon,
 )
 from yalexs.bridge import BridgeDetail, BridgeStatus, BridgeStatusDetail
+from yalexs.const import DEFAULT_BRAND
 from yalexs.exceptions import AugustApiHTTPError
 from yalexs.lock import LockDoorStatus, LockStatus
 
@@ -45,7 +47,9 @@ class TestApi(unittest.TestCase):
     @requests_mock.Mocker()
     def test_get_doorbells(self, mock):
         mock.register_uri(
-            "get", API_GET_DOORBELLS_URL, text=load_fixture("get_doorbells.json")
+            "get",
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELLS_URL),
+            text=load_fixture("get_doorbells.json"),
         )
 
         api = Api()
