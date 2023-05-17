@@ -4,10 +4,9 @@ from typing import List, Optional
 
 import dateutil.parser
 
-from yalexs.bridge import BridgeDetail, BridgeStatus
-from yalexs.device import Device, DeviceDetail
-from yalexs.keypad import KeypadDetail
-
+from .bridge import BridgeDetail, BridgeStatus
+from .device import Device, DeviceDetail
+from .keypad import KeypadDetail
 from .users import cache_user_info
 
 LOCKED_STATUS = ("locked", "kAugLockState_Locked", "kAugLockState_SecureMode")

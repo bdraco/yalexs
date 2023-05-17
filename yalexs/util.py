@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional, Union
 
-from yalexs.activity import (
+from .activity import (
     ACTION_BRIDGE_OFFLINE,
     ACTION_BRIDGE_ONLINE,
     ACTIVITY_ACTION_STATES,
@@ -12,7 +12,7 @@ from yalexs.activity import (
     DoorOperationActivity,
     LockOperationActivity,
 )
-from yalexs.lock import LockDetail
+from .lock import LockDetail
 
 
 def get_latest_activity(

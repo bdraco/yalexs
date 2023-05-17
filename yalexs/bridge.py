@@ -1,6 +1,6 @@
 from enum import Enum
 
-from yalexs.device import DeviceDetail
+from .device import DeviceDetail
 
 
 class BridgeStatus(Enum):

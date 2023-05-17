@@ -1,4 +1,4 @@
-from yalexs.device import DeviceDetail
+from .device import DeviceDetail
 
 BATTERY_LEVEL_FULL = "Full"
 BATTERY_LEVEL_MEDIUM = "Medium"
