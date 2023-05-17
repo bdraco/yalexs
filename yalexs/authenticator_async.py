@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 import json
 import logging
 import os
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 import aiofiles
 from aiohttp import ClientError
