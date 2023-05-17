@@ -27,6 +27,7 @@ from .const import BASE_URLS, BRANDING, Brand
 from .doorbell import Doorbell
 from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
 
+API_EXCEPTION_RETRY_TIME = 0.1
 API_RETRY_TIME = 2.5
 API_RETRY_ATTEMPTS = 10
 

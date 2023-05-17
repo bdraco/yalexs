@@ -20,6 +20,7 @@ from .api_common import (
     API_LOCK_URL,
     API_RETRY_ATTEMPTS,
     API_RETRY_TIME,
+    API_EXCEPTION_RETRY_TIME,
     API_STATUS_ASYNC_URL,
     API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
@@ -384,6 +385,7 @@ class ApiAsync(ApiCommon):
                     raise AugustApiAIOHTTPError(
                         f"Failed to connect to August API: {ex}"
                     ) from ex
+                await asyncio.sleep(API_EXCEPTION_RETRY_TIME)
                 continue
             if debug_enabled:
                 _LOGGER.debug(
