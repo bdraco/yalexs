@@ -16,11 +16,11 @@ from aiohttp import (
 )
 
 from .api_common import (
+    API_EXCEPTION_RETRY_TIME,
     API_LOCK_ASYNC_URL,
     API_LOCK_URL,
     API_RETRY_ATTEMPTS,
     API_RETRY_TIME,
-    API_EXCEPTION_RETRY_TIME,
     API_STATUS_ASYNC_URL,
     API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
