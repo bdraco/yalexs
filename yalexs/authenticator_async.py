@@ -16,6 +16,7 @@ from .authenticator_common import (
     from_authentication_json,
     to_authentication_json,
 )
+from .exceptions import AugustApiAIOHTTPError
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -104,7 +105,7 @@ class AuthenticatorAsync(AuthenticatorCommon):
                 self._username,
                 verification_code,
             )
-        except ClientError:
+        except (AugustApiAIOHTTPError, ClientError):
             return ValidationResult.INVALID_VERIFICATION_CODE
 
         return ValidationResult.VALIDATED
