@@ -2,10 +2,11 @@ from datetime import datetime, timedelta, timezone
 import json
 import logging
 import os
+from typing import Any
 
 import requests
 
-from yalexs.authenticator_common import (
+from .authenticator_common import (
     Authentication,
     AuthenticationState,
     AuthenticatorCommon,
@@ -18,7 +19,9 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Authenticator(AuthenticatorCommon):
-    def __init__(self, *args, **kwargs):
+    """Class to manage authentication with the August API."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._setup_authentication()
 

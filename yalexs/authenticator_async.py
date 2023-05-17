@@ -6,7 +6,7 @@ import os
 import aiofiles
 from aiohttp import ClientError
 
-from yalexs.authenticator_common import (
+from .authenticator_common import (
     Authentication,
     AuthenticationState,
     AuthenticatorCommon,
@@ -19,8 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class AuthenticatorAsync(AuthenticatorCommon):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    """Class to manage authentication with the August API."""
 
     async def async_setup_authentication(self):
         access_token_cache_file = self._access_token_cache_file
