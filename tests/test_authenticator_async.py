@@ -13,12 +13,14 @@ from yalexs.api_common import (
     API_SEND_VERIFICATION_CODE_URLS,
     API_VALIDATE_VERIFICATION_CODE_URLS,
     HEADER_AUGUST_ACCESS_TOKEN,
+    ApiCommon,
 )
 from yalexs.authenticator_async import (
     AuthenticationState,
     AuthenticatorAsync,
     ValidationResult,
 )
+from yalexs.const import DEFAULT_BRAND
 
 
 def format_datetime(dt):
@@ -44,7 +46,7 @@ class TestAuthenticatorAsync(aiounittest.AsyncTestCase):
         expires_at=format_datetime(datetime.utcnow()),
     ):
         mock_aioresponses.post(
-            API_GET_SESSION_URL,
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_SESSION_URL),
             headers={"x-august-access-token": "access_token"},
             body=json.dumps(
                 {
@@ -100,7 +102,9 @@ class TestAuthenticatorAsync(aiounittest.AsyncTestCase):
 
         token = "e30=.eyJleHAiOjEzMzd9.e30="
         mock_aioresponses.get(
-            API_GET_HOUSES_URL, body=token, headers={HEADER_AUGUST_ACCESS_TOKEN: token}
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_HOUSES_URL),
+            body=token,
+            headers={HEADER_AUGUST_ACCESS_TOKEN: token},
         )
 
         access_token = await authenticator.async_refresh_access_token(force=False)
@@ -171,7 +175,12 @@ class TestAuthenticatorAsync(aiounittest.AsyncTestCase):
         self._setup_session_response(mock_aioresponses, True, False)
 
         authenticator = await self._async_create_authenticator_async(mock_aioresponses)
-        mock_aioresponses.post(API_SEND_VERIFICATION_CODE_URLS["phone"], body="{}")
+        mock_aioresponses.post(
+            ApiCommon(DEFAULT_BRAND).get_brand_url(
+                API_SEND_VERIFICATION_CODE_URLS["phone"]
+            ),
+            body="{}",
+        )
         await authenticator.async_authenticate()
         result = await authenticator.async_send_verification_code()
 
@@ -186,7 +195,12 @@ class TestAuthenticatorAsync(aiounittest.AsyncTestCase):
         authenticator = await self._async_create_authenticator_async(mock_aioresponses)
         await authenticator.async_authenticate()
 
-        mock_aioresponses.post(API_VALIDATE_VERIFICATION_CODE_URLS["phone"], body="{}")
+        mock_aioresponses.post(
+            ApiCommon(DEFAULT_BRAND).get_brand_url(
+                API_VALIDATE_VERIFICATION_CODE_URLS["phone"]
+            ),
+            body="{}",
+        )
         result = await authenticator.async_validate_verification_code("")
 
         # mock_aioresponses.async_validate_verification_code.assert_not_called()
@@ -199,7 +213,12 @@ class TestAuthenticatorAsync(aiounittest.AsyncTestCase):
     ):
         self._setup_session_response(mock_aioresponses, True, False)
 
-        mock_aioresponses.post(API_VALIDATE_VERIFICATION_CODE_URLS["phone"], body="{}")
+        mock_aioresponses.post(
+            ApiCommon(DEFAULT_BRAND).get_brand_url(
+                API_VALIDATE_VERIFICATION_CODE_URLS["phone"]
+            ),
+            body="{}",
+        )
 
         authenticator = await self._async_create_authenticator_async(mock_aioresponses)
         await authenticator.async_authenticate()
@@ -214,7 +233,10 @@ class TestAuthenticatorAsync(aiounittest.AsyncTestCase):
         self._setup_session_response(mock_aioresponses, True, False)
 
         mock_aioresponses.post(
-            API_VALIDATE_VERIFICATION_CODE_URLS["phone"], exception=ClientError()
+            ApiCommon(DEFAULT_BRAND).get_brand_url(
+                API_VALIDATE_VERIFICATION_CODE_URLS["phone"]
+            ),
+            exception=ClientError(),
         )
 
         authenticator = await self._async_create_authenticator_async(mock_aioresponses)

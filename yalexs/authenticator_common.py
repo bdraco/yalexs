@@ -2,9 +2,9 @@ from datetime import datetime, timedelta, timezone
 from enum import Enum
 import json
 import logging
+from typing import Any, Optional
 import uuid
 
-from typing import Any, Optional
 import dateutil.parser
 import jwt
 
