@@ -381,7 +381,7 @@ class ApiAsync(ApiCommon):
                 # Try again if we get disconnected
                 # We may get [Errno 104] Connection reset by peer or a
                 # transient disconnect/SSL error
-                if attempts == API_RETRY_ATTEMPTS - 1:
+                if attempts == API_RETRY_ATTEMPTS:
                     raise AugustApiAIOHTTPError(
                         f"Failed to connect to August API: {ex}"
                     ) from ex
