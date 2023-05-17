@@ -175,18 +175,18 @@ def _process_locks_json(json_dict):
 class ApiCommon:
     """Api dict shared between async and sync."""
 
-    def __init__(self, eco_system: str) -> None:
+    def __init__(self, brand: Brand) -> None:
         """Init."""
-        self._base_url = BASE_URLS[eco_system]
+        self._base_url = BASE_URLS[brand]
 
-    def _get_url(self, url_str: str) -> str:
+    def get_brand_url(self, url_str: str) -> str:
         """Get url."""
         return self._base_url + url_str
 
     def _build_get_session_request(self, install_id, identifier, password):
         return {
             "method": "post",
-            "url": self._get_url(API_GET_SESSION_URL),
+            "url": self.get_brand_url(API_GET_SESSION_URL),
             "json": {
                 "installId": install_id,
                 "identifier": identifier,
@@ -204,7 +204,7 @@ class ApiCommon:
 
         return {
             "method": "post",
-            "url": self._get_url(API_SEND_VERIFICATION_CODE_URLS[login_method]),
+            "url": self.get_brand_url(API_SEND_VERIFICATION_CODE_URLS[login_method]),
             "access_token": access_token,
             "json": json,
         }
@@ -214,7 +214,7 @@ class ApiCommon:
     ):
         return {
             "method": "post",
-            "url": self._get_url(API_VALIDATE_VERIFICATION_CODE_URLS[login_method]),
+            "url": self.get_brand_url(API_VALIDATE_VERIFICATION_CODE_URLS[login_method]),
             "access_token": access_token,
             "json": {login_method: username, "code": str(verification_code)},
         }
@@ -222,21 +222,21 @@ class ApiCommon:
     def _build_get_doorbells_request(self, access_token):
         return {
             "method": "get",
-            "url": self._get_url(API_GET_DOORBELLS_URL),
+            "url": self.get_brand_url(API_GET_DOORBELLS_URL),
             "access_token": access_token,
         }
 
     def _build_get_doorbell_detail_request(self, access_token, doorbell_id):
         return {
             "method": "get",
-            "url": self._get_url(API_GET_DOORBELL_URL.format(doorbell_id=doorbell_id)),
+            "url": self.get_brand_url(API_GET_DOORBELL_URL.format(doorbell_id=doorbell_id)),
             "access_token": access_token,
         }
 
     def _build_wakeup_doorbell_request(self, access_token, doorbell_id):
         return {
             "method": "put",
-            "url": self._get_url(
+            "url": self.get_brand_url(
                 API_WAKEUP_DOORBELL_URL.format(doorbell_id=doorbell_id)
             ),
             "access_token": access_token,
@@ -248,14 +248,14 @@ class ApiCommon:
     def _build_get_house_request(self, access_token, house_id):
         return {
             "method": "get",
-            "url": self._get_url(API_GET_HOUSE_URL.format(house_id=house_id)),
+            "url": self.get_brand_url(API_GET_HOUSE_URL.format(house_id=house_id)),
             "access_token": access_token,
         }
 
     def _build_get_house_activities_request(self, access_token, house_id, limit=8):
         return {
             "method": "get",
-            "url": self._get_url(
+            "url": self.get_brand_url(
                 API_GET_HOUSE_ACTIVITIES_URL.format(house_id=house_id)
             ),
             "version": "4.0.0",
@@ -266,42 +266,42 @@ class ApiCommon:
     def _build_get_locks_request(self, access_token):
         return {
             "method": "get",
-            "url": self._get_url(API_GET_LOCKS_URL),
+            "url": self.get_brand_url(API_GET_LOCKS_URL),
             "access_token": access_token,
         }
 
     def _build_get_user_request(self, access_token):
         return {
             "method": "get",
-            "url": self._get_url(API_GET_USER_URL),
+            "url": self.get_brand_url(API_GET_USER_URL),
             "access_token": access_token,
         }
 
     def _build_get_lock_detail_request(self, access_token, lock_id):
         return {
             "method": "get",
-            "url": self._get_url(API_GET_LOCK_URL.format(lock_id=lock_id)),
+            "url": self.get_brand_url(API_GET_LOCK_URL.format(lock_id=lock_id)),
             "access_token": access_token,
         }
 
     def _build_get_lock_status_request(self, access_token, lock_id):
         return {
             "method": "get",
-            "url": self._get_url(API_GET_LOCK_STATUS_URL.format(lock_id=lock_id)),
+            "url": self.get_brand_url(API_GET_LOCK_STATUS_URL.format(lock_id=lock_id)),
             "access_token": access_token,
         }
 
     def _build_get_pins_request(self, access_token, lock_id):
         return {
             "method": "get",
-            "url": self._get_url(API_GET_PINS_URL.format(lock_id=lock_id)),
+            "url": self.get_brand_url(API_GET_PINS_URL.format(lock_id=lock_id)),
             "access_token": access_token,
         }
 
     def _build_refresh_access_token_request(self, access_token):
         return {
             "method": "get",
-            "url": self._get_url(API_GET_HOUSES_URL),
+            "url": self.get_brand_url(API_GET_HOUSES_URL),
             "access_token": access_token,
         }
 
@@ -310,7 +310,7 @@ class ApiCommon:
     ) -> Dict[str, Any]:
         return {
             "method": "put",
-            "url": self._get_url(url_str.format(lock_id=lock_id)),
+            "url": self.get_brand_url(url_str.format(lock_id=lock_id)),
             "access_token": access_token,
             "timeout": timeout,
         }

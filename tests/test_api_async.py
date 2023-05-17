@@ -29,10 +29,12 @@ from yalexs.api_common import (
     API_UNLOCK_URL,
     API_VALIDATE_VERIFICATION_CODE_URLS,
     HYPER_BRIDGE_PARAM,
+    ApiCommon
 )
 from yalexs.bridge import BridgeDetail, BridgeStatus, BridgeStatusDetail
 from yalexs.exceptions import AugustApiAIOHTTPError
 from yalexs.lock import LockDoorStatus, LockStatus
+from yalexs.const import DEFAULT_BRAND
 
 ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
 
@@ -82,7 +84,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_get_doorbell_detail(self, mock):
         expected_doorbell_image_url = "https://image.com/vmk16naaaa7ibuey7sar.jpg"
         mock.get(
-            API_GET_DOORBELL_URL.format(doorbell_id="K98GiDT45GUL"),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELL_URL).format(doorbell_id="K98GiDT45GUL"),
             body=load_fixture("get_doorbell.json"),
         )
         mock.get(expected_doorbell_image_url, body="doorbell_image_mocked")
@@ -114,7 +116,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_doorbell_detail_missing_image(self, mock):
         mock.get(
-            API_GET_DOORBELL_URL.format(doorbell_id="K98GiDT45GUL"),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELL_URL).format(doorbell_id="K98GiDT45GUL"),
             body=load_fixture("get_doorbell_missing_image.json"),
         )
 
@@ -137,7 +139,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_doorbell_offline(self, mock):
         mock.get(
-            API_GET_DOORBELL_URL.format(doorbell_id="231ee2168dd0"),
+            ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_DOORBELL_URL).format(doorbell_id="231ee2168dd0"),
             body=load_fixture("get_doorbell.offline.json"),
         )
 
