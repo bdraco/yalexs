@@ -1,6 +1,7 @@
 """Api functions common between sync and async."""
+import datetime
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional, Union
 
 import dateutil.parser
 
@@ -75,6 +76,15 @@ HYPER_BRIDGE_PARAM = "&connection=persistent"
 API_GET_USER_URL = "/users/me"
 
 _LOGGER = logging.getLogger(__name__)
+ActivityType = Union[
+    DoorbellDingActivity,
+    DoorbellMotionActivity,
+    DoorbellImageCaptureActivity,
+    DoorbellViewActivity,
+    LockOperationActivity,
+    DoorOperationActivity,
+    BridgeOperationActivity,
+]
 
 
 def _api_headers(access_token=None):
@@ -93,7 +103,9 @@ def _api_headers(access_token=None):
     return headers
 
 
-def _convert_lock_result_to_activities(lock_json_dict):
+def _convert_lock_result_to_activities(
+    lock_json_dict: Dict[str, Any]
+) -> List[ActivityType]:
     activities = []
     lock_info_json_dict = lock_json_dict.get("info", {})
     lock_id = lock_info_json_dict.get("lockID")
@@ -114,7 +126,9 @@ def _convert_lock_result_to_activities(lock_json_dict):
     return activities
 
 
-def _activity_from_dict(source: str, activity_dict: Dict[str, Any]):
+def _activity_from_dict(
+    source: str, activity_dict: Dict[str, Any]
+) -> Optional[ActivityType]:
     _LOGGER.debug("Processing activity: %s", activity_dict)
     action = activity_dict.get("action")
 
@@ -137,7 +151,9 @@ def _activity_from_dict(source: str, activity_dict: Dict[str, Any]):
     return None
 
 
-def _map_lock_result_to_activity(lock_id, activity_epoch, action_text):
+def _map_lock_result_to_activity(
+    lock_id: str, activity_epoch: float, action_text: str
+) -> Optional[ActivityType]:
     """Create an yale access activity from a lock result."""
     mapped_dict = {
         "dateTime": activity_epoch,
@@ -148,11 +164,11 @@ def _map_lock_result_to_activity(lock_id, activity_epoch, action_text):
     return _activity_from_dict(SOURCE_LOCK_OPERATE, mapped_dict)
 
 
-def _datetime_string_to_epoch(datetime_string):
+def _datetime_string_to_epoch(datetime_string: str) -> datetime.datetime:
     return dateutil.parser.parse(datetime_string).timestamp() * 1000
 
 
-def _process_activity_json(json_dict):
+def _process_activity_json(json_dict: Dict[str, Any]) -> List[ActivityType]:
     if "events" in json_dict:
         json_dict = json_dict["events"]
     activities = []
@@ -164,11 +180,11 @@ def _process_activity_json(json_dict):
     return activities
 
 
-def _process_doorbells_json(json_dict):
+def _process_doorbells_json(json_dict: Dict[str, Any]) -> List[Doorbell]:
     return [Doorbell(device_id, data) for device_id, data in json_dict.items()]
 
 
-def _process_locks_json(json_dict):
+def _process_locks_json(json_dict: Dict[str, Any]) -> List[Lock]:
     return [Lock(device_id, data) for device_id, data in json_dict.items()]
 
 
