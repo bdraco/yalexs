@@ -5,7 +5,7 @@ import logging
 
 from aiohttp import ClientResponseError, ClientSession, ServerDisconnectedError
 
-from yalexs.api_common import (
+from .api_common import (
     API_LOCK_ASYNC_URL,
     API_LOCK_URL,
     API_RETRY_ATTEMPTS,
@@ -23,10 +23,11 @@ from yalexs.api_common import (
     _process_doorbells_json,
     _process_locks_json,
 )
-from yalexs.doorbell import DoorbellDetail
-from yalexs.exceptions import AugustApiAIOHTTPError
-from yalexs.lock import LockDetail, determine_door_state, determine_lock_status
-from yalexs.pin import Pin
+from .const import DEFAULT_BRAND
+from .doorbell import DoorbellDetail
+from .exceptions import AugustApiAIOHTTPError
+from .lock import LockDetail, determine_door_state, determine_lock_status
+from .pin import Pin
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,12 +38,12 @@ class ApiAsync(ApiCommon):
         aiohttp_session: ClientSession,
         timeout=10,
         command_timeout=60,
-        eco_system="august",
+        brand=DEFAULT_BRAND,
     ) -> None:
         self._timeout = timeout
         self._command_timeout = command_timeout
         self._aiohttp_session = aiohttp_session
-        super().__init__(eco_system)
+        super().__init__(brand)
 
     async def async_get_session(self, install_id, identifier, password):
         return await self._async_dict_to_api(

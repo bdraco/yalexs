@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 import dateutil.parser
 
-from yalexs.activity import (
+from .activity import (
     ACTIVITY_ACTIONS_BRIDGE_OPERATION,
     ACTIVITY_ACTIONS_DOOR_OPERATION,
     ACTIVITY_ACTIONS_DOORBELL_DING,
@@ -22,8 +22,9 @@ from yalexs.activity import (
     DoorOperationActivity,
     LockOperationActivity,
 )
-from yalexs.doorbell import Doorbell
-from yalexs.lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
+from .const import BASE_URLS, BRANDS, Brand
+from .doorbell import Doorbell
+from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
 
 API_RETRY_TIME = 2.5
 API_RETRY_ATTEMPTS = 10
@@ -42,11 +43,6 @@ HEADER_VALUE_USER_AGENT = "August/Luna-22.17.0 (Android; SDK 31; gphone64_arm64)
 HEADER_VALUE_ACCEPT_VERSION = "0.0.1"
 HEADER_VALUE_AUGUST_BRANDING = "august"
 HEADER_VALUE_AUGUST_COUNTRY = "US"
-
-BASE_URLS = {
-    "august": "https://api-production.august.com",
-    "yale_home": "https://api.aaecosystem.com",
-}
 
 
 API_GET_SESSION_URL = "/session"
