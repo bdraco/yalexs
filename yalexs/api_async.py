@@ -6,9 +6,12 @@ import logging
 from typing import Any, Dict, List, Tuple, Union
 
 from aiohttp import (
+    ClientConnectionError,
+    ClientOSError,
     ClientResponse,
     ClientResponseError,
     ClientSession,
+    ClientSSLError,
     ServerDisconnectedError,
 )
 
@@ -368,8 +371,19 @@ class ApiAsync(ApiCommon):
             attempts += 1
             try:
                 response = await self._aiohttp_session.request(method, url, **api_dict)
-            except ServerDisconnectedError:
+            except (
+                ClientOSError,
+                ClientSSLError,
+                ServerDisconnectedError,
+                ClientConnectionError,
+            ) as ex:
                 # Try again if we get disconnected
+                # We may get [Errno 104] Connection reset by peer or a
+                # transient disconnect/SSL error
+                if attempts == API_RETRY_ATTEMPTS - 1:
+                    raise AugustApiAIOHTTPError(
+                        f"Failed to connect to August API: {ex}"
+                    ) from ex
                 continue
             if debug_enabled:
                 _LOGGER.debug(

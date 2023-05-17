@@ -2,12 +2,13 @@ from datetime import datetime
 import os
 from unittest import mock
 
-from aiohttp import ClientResponse, ClientSession
+from aiohttp import ClientOSError, ClientResponse, ClientSession
 from aiohttp.helpers import TimerNoop
 from aioresponses import CallbackResult, aioresponses
 import aiounittest
 import dateutil.parser
 from dateutil.tz import tzlocal, tzutc
+import pytest
 from yarl import URL
 
 import yalexs.activity
@@ -977,6 +978,22 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertIsInstance(activities[7], yalexs.activity.DoorOperationActivity)
         self.assertIsInstance(activities[8], yalexs.activity.LockOperationActivity)
         self.assertIsInstance(activities[9], yalexs.activity.LockOperationActivity)
+
+    @aioresponses()
+    async def test_async_get_retry_raises_our_exception_class(self, mock):
+        house_id = 1234
+
+        mock.get(
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_HOUSE_ACTIVITIES_URL)
+            .format(house_id=house_id)
+            + "?limit=8",
+            exception=ClientOSError("any"),
+        )
+
+        api = ApiAsync(ClientSession())
+        with pytest.raises(AugustApiAIOHTTPError):
+            await api.async_get_house_activities(ACCESS_TOKEN, house_id)
 
     @aioresponses()
     async def test_async_refresh_access_token(self, mock):
