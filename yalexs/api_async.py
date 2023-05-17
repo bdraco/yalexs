@@ -33,6 +33,8 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class ApiAsync(ApiCommon):
+    """Async api."""
+
     def __init__(
         self,
         aiohttp_session: ClientSession,

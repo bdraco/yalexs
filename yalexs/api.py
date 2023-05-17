@@ -31,6 +31,8 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Api(ApiCommon):
+    """Legacy sync api."""
+
     def __init__(
         self,
         timeout=10,
