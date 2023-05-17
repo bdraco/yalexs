@@ -19,7 +19,7 @@ setup(
     author="bdraco",
     author_email="nick@koston.org",
     description="Python API for Yale Access (formerly August) Smart Lock and Doorbell",
-    packages=find_packages(include=["yalexs", "yalexs.*"]),
+    packages=find_packages(include=["yalexs", "yalexs.backports", "yalexs.*"]),
     install_requires=[
         "pyjwt",
         "requests",
