@@ -7,7 +7,7 @@ from requests.exceptions import HTTPError
 class AugustApiAIOHTTPError(Exception):
     """An yale access api error with a friendly user consumable string."""
 
-    def __init__(self, message: str, aiohttp_client_error: ClientResponseError) -> None:
+    def __init__(self, message: str, aiohttp_client_error: ClientError) -> None:
         """Initialize the error."""
         super().__init__(message)
         self.status = (
