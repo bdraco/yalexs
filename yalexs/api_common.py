@@ -23,7 +23,7 @@ from .activity import (
     DoorOperationActivity,
     LockOperationActivity,
 )
-from .const import BASE_URLS, Brand
+from .const import BASE_URLS, BRANDING, Brand
 from .doorbell import Doorbell
 from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
 
@@ -38,7 +38,9 @@ HEADER_AUGUST_COUNTRY = "x-august-country"
 HEADER_CONTENT_TYPE = "Content-Type"
 HEADER_USER_AGENT = "User-Agent"
 
-HEADER_VALUE_API_KEY = "7cab4bbd-2693-4fc1-b99b-dec0fb20f9d4"
+
+HEADER_VALUE_API_KEY_OLD = "7cab4bbd-2693-4fc1-b99b-dec0fb20f9d4"
+HEADER_VALUE_API_KEY = "d9984f29-07a6-816e-e1c9-44ec9d1be431"
 HEADER_VALUE_CONTENT_TYPE = "application/json; charset=UTF-8"
 HEADER_VALUE_USER_AGENT = "August/Luna-22.17.0 (Android; SDK 31; gphone64_arm64)"
 HEADER_VALUE_ACCEPT_VERSION = "0.0.1"
@@ -87,15 +89,18 @@ ActivityType = Union[
 ]
 
 
-def _api_headers(access_token=None):
+def _api_headers(
+    access_token: Optional[str] = None, brand: Optional[Brand] = None
+) -> Dict[str, str]:
     headers = {
         HEADER_ACCEPT_VERSION: HEADER_VALUE_ACCEPT_VERSION,
         HEADER_AUGUST_API_KEY: HEADER_VALUE_API_KEY,
         HEADER_CONTENT_TYPE: HEADER_VALUE_CONTENT_TYPE,
         HEADER_USER_AGENT: HEADER_VALUE_USER_AGENT,
-        HEADER_AUGUST_BRANDING: HEADER_VALUE_AUGUST_BRANDING,
         HEADER_AUGUST_COUNTRY: HEADER_VALUE_AUGUST_COUNTRY,
     }
+
+    headers[HEADER_AUGUST_BRANDING] = BRANDING.get(brand, HEADER_VALUE_AUGUST_BRANDING)
 
     if access_token:
         headers[HEADER_AUGUST_ACCESS_TOKEN] = access_token
@@ -194,6 +199,7 @@ class ApiCommon:
     def __init__(self, brand: Brand) -> None:
         """Init."""
         self._base_url = BASE_URLS[brand]
+        self.brand = brand
 
     def get_brand_url(self, url_str: str) -> str:
         """Get url."""

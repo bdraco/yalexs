@@ -22,3 +22,9 @@ BRANDS = {
     Brand.YALE_ACCESS: "Yale Access",
     Brand.YALE_HOME: "Yale Home",
 }
+
+BRANDING = {
+    Brand.AUGUST: "august",
+    Brand.YALE_ACCESS: "yale",
+    Brand.YALE_HOME: "yale",
+}

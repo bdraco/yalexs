@@ -219,7 +219,9 @@ class Api(ApiCommon):
         payload = api_dict.get("params") or api_dict.get("json")
 
         if "headers" not in api_dict:
-            api_dict["headers"] = _api_headers(access_token=access_token)
+            api_dict["headers"] = _api_headers(
+                access_token=access_token, brand=self.brand
+            )
 
         if "version" in api_dict:
             api_dict["headers"][HEADER_ACCEPT_VERSION] = api_dict["version"]
