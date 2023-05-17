@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Dict
 
-from yalexs.activity import (
+from .activity import (
     ACTION_BRIDGE_OFFLINE,
     ACTION_BRIDGE_ONLINE,
     ACTION_DOOR_CLOSED,
@@ -16,9 +16,10 @@ from yalexs.activity import (
     ACTION_LOCK_UNLOCKING,
     SOURCE_PUBNUB,
 )
-from yalexs.api_common import _activity_from_dict
-from yalexs.doorbell import DOORBELL_STATUS_KEY, DoorbellDetail
-from yalexs.lock import (
+from .api_common import _activity_from_dict, _datetime_string_to_epoch
+from .device import Device
+from .doorbell import DOORBELL_STATUS_KEY, DoorbellDetail
+from .lock import (
     DOOR_STATE_KEY,
     LOCK_STATUS_KEY,
     LockDetail,
@@ -27,9 +28,6 @@ from yalexs.lock import (
     determine_door_state,
     determine_lock_status,
 )
-
-from .api_common import _datetime_string_to_epoch
-from .device import Device
 
 
 def activities_from_pubnub_message(
@@ -65,8 +63,10 @@ def activities_from_pubnub_message(
             activity_dict["callingUser"] = {"UserID": calling_user_id}
         if "remoteEvent" in message:
             activity_dict["info"]["remote"] = True
-
-        if LOCK_STATUS_KEY in message:
+        error = message.get("error") or {}
+        if error.get("restCode") == 98 or error.get("name") == "ERRNO_BRIDGE_OFFLINE":
+            _add_activity(activities, activity_dict, ACTION_BRIDGE_OFFLINE)
+        elif LOCK_STATUS_KEY in message:
             status = message[LOCK_STATUS_KEY]
             if status == ACTION_BRIDGE_ONLINE:
                 _add_activity(activities, activity_dict, ACTION_BRIDGE_ONLINE)
