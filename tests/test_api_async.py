@@ -243,11 +243,11 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_locks_yale_home_brand(self, mock):
         mock.get(
-            ApiCommon(Brands.YALE_HOME).get_brand_url(API_GET_LOCKS_URL),
+            ApiCommon(Brand.YALE_HOME).get_brand_url(API_GET_LOCKS_URL),
             body=load_fixture("get_locks.json"),
         )
 
-        api = ApiAsync(ClientSession(), brand=Brands.YALE_HOME)
+        api = ApiAsync(ClientSession(), brand=Brand.YALE_HOME)
         locks = sorted(
             await api.async_get_locks(ACCESS_TOKEN), key=lambda d: d.device_id
         )
