@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 import dateutil.parser
 
-from yalexs.activity import (
+from .activity import (
     ACTIVITY_ACTIONS_BRIDGE_OPERATION,
     ACTIVITY_ACTIONS_DOOR_OPERATION,
     ACTIVITY_ACTIONS_DOORBELL_DING,
@@ -22,8 +22,9 @@ from yalexs.activity import (
     DoorOperationActivity,
     LockOperationActivity,
 )
-from yalexs.doorbell import Doorbell
-from yalexs.lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
+from .const import BASE_URLS, Brand
+from .doorbell import Doorbell
+from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
 
 API_RETRY_TIME = 2.5
 API_RETRY_ATTEMPTS = 10
@@ -43,37 +44,35 @@ HEADER_VALUE_ACCEPT_VERSION = "0.0.1"
 HEADER_VALUE_AUGUST_BRANDING = "august"
 HEADER_VALUE_AUGUST_COUNTRY = "US"
 
-API_BASE_URL = "https://api-production.august.com"
-API_GET_SESSION_URL = API_BASE_URL + "/session"
+
+API_GET_SESSION_URL = "/session"
 API_SEND_VERIFICATION_CODE_URLS = {
-    "phone": API_BASE_URL + "/validation/phone",
-    "email": API_BASE_URL + "/validation/email",
+    "phone": "/validation/phone",
+    "email": "/validation/email",
 }
 API_VALIDATE_VERIFICATION_CODE_URLS = {
-    "phone": API_BASE_URL + "/validate/phone",
-    "email": API_BASE_URL + "/validate/email",
+    "phone": "/validate/phone",
+    "email": "/validate/email",
 }
-API_GET_HOUSE_ACTIVITIES_URL = API_BASE_URL + "/houses/{house_id}/activities"
-API_GET_DOORBELLS_URL = API_BASE_URL + "/users/doorbells/mine"
-API_GET_DOORBELL_URL = API_BASE_URL + "/doorbells/{doorbell_id}"
-API_WAKEUP_DOORBELL_URL = API_BASE_URL + "/doorbells/{doorbell_id}/wakeup"
-API_GET_HOUSES_URL = API_BASE_URL + "/users/houses/mine"
-API_GET_HOUSE_URL = API_BASE_URL + "/houses/{house_id}"
-API_GET_LOCKS_URL = API_BASE_URL + "/users/locks/mine"
-API_GET_LOCK_URL = API_BASE_URL + "/locks/{lock_id}"
-API_GET_LOCK_STATUS_URL = API_BASE_URL + "/locks/{lock_id}/status"
-API_GET_PINS_URL = API_BASE_URL + "/locks/{lock_id}/pins"
-API_LOCK_URL = API_BASE_URL + "/remoteoperate/{lock_id}/lock"
-API_UNLOCK_URL = API_BASE_URL + "/remoteoperate/{lock_id}/unlock"
-API_LOCK_ASYNC_URL = API_BASE_URL + "/remoteoperate/{lock_id}/lock?v=2.3.1&type=async"
-API_UNLOCK_ASYNC_URL = (
-    API_BASE_URL + "/remoteoperate/{lock_id}/unlock?v=2.3.1&type=async"
-)
+API_GET_HOUSE_ACTIVITIES_URL = "/houses/{house_id}/activities"
+API_GET_DOORBELLS_URL = "/users/doorbells/mine"
+API_GET_DOORBELL_URL = "/doorbells/{doorbell_id}"
+API_WAKEUP_DOORBELL_URL = "/doorbells/{doorbell_id}/wakeup"
+API_GET_HOUSES_URL = "/users/houses/mine"
+API_GET_HOUSE_URL = "/houses/{house_id}"
+API_GET_LOCKS_URL = "/users/locks/mine"
+API_GET_LOCK_URL = "/locks/{lock_id}"
+API_GET_LOCK_STATUS_URL = "/locks/{lock_id}/status"
+API_GET_PINS_URL = "/locks/{lock_id}/pins"
+API_LOCK_URL = "/remoteoperate/{lock_id}/lock"
+API_UNLOCK_URL = "/remoteoperate/{lock_id}/unlock"
+API_LOCK_ASYNC_URL = "/remoteoperate/{lock_id}/lock?v=2.3.1&type=async"
+API_UNLOCK_ASYNC_URL = "/remoteoperate/{lock_id}/unlock?v=2.3.1&type=async"
 API_STATUS_ASYNC_URL = (
-    API_BASE_URL + "/remoteoperate/{lock_id}/status?v=2.3.1&type=async&intent=wakeup"
+    "/remoteoperate/{lock_id}/status?v=2.3.1&type=async&intent=wakeup"
 )
 HYPER_BRIDGE_PARAM = "&connection=persistent"
-API_GET_USER_URL = API_BASE_URL + "/users/me"
+API_GET_USER_URL = "/users/me"
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -176,10 +175,18 @@ def _process_locks_json(json_dict):
 class ApiCommon:
     """Api dict shared between async and sync."""
 
+    def __init__(self, brand: Brand) -> None:
+        """Init."""
+        self._base_url = BASE_URLS[brand]
+
+    def get_brand_url(self, url_str: str) -> str:
+        """Get url."""
+        return self._base_url + url_str
+
     def _build_get_session_request(self, install_id, identifier, password):
         return {
             "method": "post",
-            "url": API_GET_SESSION_URL,
+            "url": self.get_brand_url(API_GET_SESSION_URL),
             "json": {
                 "installId": install_id,
                 "identifier": identifier,
@@ -197,7 +204,7 @@ class ApiCommon:
 
         return {
             "method": "post",
-            "url": API_SEND_VERIFICATION_CODE_URLS[login_method],
+            "url": self.get_brand_url(API_SEND_VERIFICATION_CODE_URLS[login_method]),
             "access_token": access_token,
             "json": json,
         }
@@ -207,7 +214,9 @@ class ApiCommon:
     ):
         return {
             "method": "post",
-            "url": API_VALIDATE_VERIFICATION_CODE_URLS[login_method],
+            "url": self.get_brand_url(
+                API_VALIDATE_VERIFICATION_CODE_URLS[login_method]
+            ),
             "access_token": access_token,
             "json": {login_method: username, "code": str(verification_code)},
         }
@@ -215,21 +224,25 @@ class ApiCommon:
     def _build_get_doorbells_request(self, access_token):
         return {
             "method": "get",
-            "url": API_GET_DOORBELLS_URL,
+            "url": self.get_brand_url(API_GET_DOORBELLS_URL),
             "access_token": access_token,
         }
 
     def _build_get_doorbell_detail_request(self, access_token, doorbell_id):
         return {
             "method": "get",
-            "url": API_GET_DOORBELL_URL.format(doorbell_id=doorbell_id),
+            "url": self.get_brand_url(
+                API_GET_DOORBELL_URL.format(doorbell_id=doorbell_id)
+            ),
             "access_token": access_token,
         }
 
     def _build_wakeup_doorbell_request(self, access_token, doorbell_id):
         return {
             "method": "put",
-            "url": API_WAKEUP_DOORBELL_URL.format(doorbell_id=doorbell_id),
+            "url": self.get_brand_url(
+                API_WAKEUP_DOORBELL_URL.format(doorbell_id=doorbell_id)
+            ),
             "access_token": access_token,
         }
 
@@ -239,59 +252,69 @@ class ApiCommon:
     def _build_get_house_request(self, access_token, house_id):
         return {
             "method": "get",
-            "url": API_GET_HOUSE_URL.format(house_id=house_id),
+            "url": self.get_brand_url(API_GET_HOUSE_URL.format(house_id=house_id)),
             "access_token": access_token,
         }
 
     def _build_get_house_activities_request(self, access_token, house_id, limit=8):
         return {
             "method": "get",
-            "url": API_GET_HOUSE_ACTIVITIES_URL.format(house_id=house_id),
+            "url": self.get_brand_url(
+                API_GET_HOUSE_ACTIVITIES_URL.format(house_id=house_id)
+            ),
             "version": "4.0.0",
             "access_token": access_token,
             "params": {"limit": limit},
         }
 
     def _build_get_locks_request(self, access_token):
-        return {"method": "get", "url": API_GET_LOCKS_URL, "access_token": access_token}
+        return {
+            "method": "get",
+            "url": self.get_brand_url(API_GET_LOCKS_URL),
+            "access_token": access_token,
+        }
 
     def _build_get_user_request(self, access_token):
-        return {"method": "get", "url": API_GET_USER_URL, "access_token": access_token}
+        return {
+            "method": "get",
+            "url": self.get_brand_url(API_GET_USER_URL),
+            "access_token": access_token,
+        }
 
     def _build_get_lock_detail_request(self, access_token, lock_id):
         return {
             "method": "get",
-            "url": API_GET_LOCK_URL.format(lock_id=lock_id),
+            "url": self.get_brand_url(API_GET_LOCK_URL.format(lock_id=lock_id)),
             "access_token": access_token,
         }
 
     def _build_get_lock_status_request(self, access_token, lock_id):
         return {
             "method": "get",
-            "url": API_GET_LOCK_STATUS_URL.format(lock_id=lock_id),
+            "url": self.get_brand_url(API_GET_LOCK_STATUS_URL.format(lock_id=lock_id)),
             "access_token": access_token,
         }
 
     def _build_get_pins_request(self, access_token, lock_id):
         return {
             "method": "get",
-            "url": API_GET_PINS_URL.format(lock_id=lock_id),
+            "url": self.get_brand_url(API_GET_PINS_URL.format(lock_id=lock_id)),
             "access_token": access_token,
         }
 
     def _build_refresh_access_token_request(self, access_token):
         return {
             "method": "get",
-            "url": API_GET_HOUSES_URL,
+            "url": self.get_brand_url(API_GET_HOUSES_URL),
             "access_token": access_token,
         }
 
     def _build_call_lock_operation_request(
-        self, url_str, access_token, lock_id, timeout
-    ):
+        self, url_str: str, access_token: str, lock_id: str, timeout
+    ) -> Dict[str, Any]:
         return {
             "method": "put",
-            "url": url_str.format(lock_id=lock_id),
+            "url": self.get_brand_url(url_str.format(lock_id=lock_id)),
             "access_token": access_token,
             "timeout": timeout,
         }

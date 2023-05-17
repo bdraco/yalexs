@@ -19,7 +19,7 @@ setup(
     author="bdraco",
     author_email="nick@koston.org",
     description="Python API for Yale Access (formerly August) Smart Lock and Doorbell",
-    packages=find_packages(include=["yalexs", "yalexs.*"]),
+    packages=find_packages(include=["yalexs", "yalexs.backports", "yalexs.*"]),
     install_requires=[
         "pyjwt",
         "requests",
@@ -27,6 +27,7 @@ setup(
         "python-dateutil",
         "aiohttp",
         "aiofiles",
-        "pubnub>=5.5.0",
+        "pubnub>=7.1.0",
+        "typing_extensions>=4.5.0"
     ],
 )

@@ -3,7 +3,7 @@ import datetime
 import dateutil.parser
 import requests
 
-from yalexs.device import Device, DeviceDetail
+from .device import Device, DeviceDetail
 
 DOORBELL_STATUS_KEY = "status"
 

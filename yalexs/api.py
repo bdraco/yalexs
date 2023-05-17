@@ -7,7 +7,7 @@ import time
 from requests import Session, request
 from requests.exceptions import HTTPError
 
-from yalexs.api_common import (
+from .api_common import (
     API_LOCK_URL,
     API_RETRY_ATTEMPTS,
     API_RETRY_TIME,
@@ -21,19 +21,29 @@ from yalexs.api_common import (
     _process_doorbells_json,
     _process_locks_json,
 )
-from yalexs.doorbell import DoorbellDetail
-from yalexs.exceptions import AugustApiHTTPError
-from yalexs.lock import LockDetail, determine_door_state, determine_lock_status
-from yalexs.pin import Pin
+from .const import DEFAULT_BRAND
+from .doorbell import DoorbellDetail
+from .exceptions import AugustApiHTTPError
+from .lock import LockDetail, determine_door_state, determine_lock_status
+from .pin import Pin
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class Api(ApiCommon):
-    def __init__(self, timeout=10, command_timeout=60, http_session: Session = None):
+    """Legacy sync api."""
+
+    def __init__(
+        self,
+        timeout=10,
+        command_timeout=60,
+        http_session: Session = None,
+        brand=DEFAULT_BRAND,
+    ) -> None:
         self._timeout = timeout
         self._command_timeout = command_timeout
         self._http_session = http_session
+        super().__init__(brand)
 
     def get_session(self, install_id, identifier, password):
         return self._dict_to_api(

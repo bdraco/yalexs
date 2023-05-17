@@ -5,8 +5,8 @@ from enum import Enum
 
 import dateutil.parser
 
-from yalexs.lock import LockDoorStatus, LockStatus
-from yalexs.users import get_user_info
+from .lock import LockDoorStatus, LockStatus
+from .users import get_user_info
 
 ACTION_LOCK_ONETOUCHLOCK = "onetouchlock"
 ACTION_LOCK_ONETOUCHLOCK_2 = "one_touch_lock"

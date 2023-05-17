@@ -51,7 +51,8 @@ from yalexs.activity import (
     LockOperationActivity,
 )
 from yalexs.api_async import ApiAsync
-from yalexs.api_common import API_GET_LOCK_URL
+from yalexs.api_common import API_GET_LOCK_URL, ApiCommon
+from yalexs.const import DEFAULT_BRAND
 from yalexs.lock import LockDoorStatus, LockStatus
 
 ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
@@ -333,7 +334,9 @@ class TestActivityApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_lock_detail_bridge_online(self, mock):
         mock.get(
-            API_GET_LOCK_URL.format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_URL)
+            .format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
             body=load_fixture("get_lock.online.json"),
         )
 

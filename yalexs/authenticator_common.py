@@ -2,12 +2,13 @@ from datetime import datetime, timedelta, timezone
 from enum import Enum
 import json
 import logging
+from typing import Any, Optional
 import uuid
 
 import dateutil.parser
 import jwt
 
-from yalexs.api import HEADER_AUGUST_ACCESS_TOKEN
+from .api import HEADER_AUGUST_ACCESS_TOKEN, ApiCommon
 
 # The default time before expiration to refresh a token
 DEFAULT_RENEWAL_THRESHOLD = timedelta(days=7)
@@ -94,14 +95,14 @@ class ValidationResult(Enum):
 class AuthenticatorCommon:
     def __init__(
         self,
-        api,
-        login_method,
-        username,
-        password,
-        install_id=None,
-        access_token_cache_file=None,
-        access_token_renewal_threshold=DEFAULT_RENEWAL_THRESHOLD,
-    ):
+        api: ApiCommon,
+        login_method: str,
+        username: str,
+        password: str,
+        install_id: Optional[str] = None,
+        access_token_cache_file: Optional[str] = None,
+        access_token_renewal_threshold: timedelta = DEFAULT_RENEWAL_THRESHOLD,
+    ) -> None:
         self._api = api
         self._login_method = login_method
         self._username = username
@@ -112,8 +113,11 @@ class AuthenticatorCommon:
         self._authentication = None
 
     def _authentication_from_session_response(
-        self, install_id, response_headers, json_dict
-    ):
+        self,
+        install_id: str,
+        response_headers: dict[str, Any],
+        json_dict: dict[str, Any],
+    ) -> Authentication:
         access_token = response_headers[HEADER_AUGUST_ACCESS_TOKEN]
         access_token_expires = json_dict["expiresAt"]
         v_password = json_dict["vPassword"]
