@@ -11,14 +11,12 @@ from pubnub.models.consumer.pubsub import PNMessageResult
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub_asyncio import AsyncioSubscriptionManager, PubNubAsyncio
 
-from .const import Brand
+from .const import PUBNUB_TOKENS, Brand
 from .device import DeviceDetail
 
 _LOGGER = logging.getLogger(__name__)
 
 UpdateCallbackType = Callable[[str, datetime.datetime, dict[str, Any]], None]
-
-from .const import PUBNUB_TOKENS
 
 
 class AugustPubNub(SubscribeCallback):
