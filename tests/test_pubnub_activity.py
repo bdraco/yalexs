@@ -398,3 +398,38 @@ class TestDetail(unittest.TestCase):
         )
         assert isinstance(activities[0], DoorbellDingActivity)
         assert "DoorbellDingActivity" in str(activities[0])
+
+
+class TestBridge(unittest.TestCase):
+    def test_update_bridge_details_from_pubnub_message(self):
+        lock = LockDetail(json.loads(load_fixture("get_lock.doorsense_init.json")))
+        self.assertEqual("A6697750D607098BAE8D6BAA11EF8063", lock.device_id)
+        self.assertEqual(LockStatus.LOCKED, lock.lock_status)
+        self.assertEqual(LockDoorStatus.DISABLED, lock.door_state)
+
+        activities = activities_from_pubnub_message(
+            lock,
+            dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
+            {
+                "remoteEvent": 1,
+                "status": "unknown",
+                "result": "failed",
+                "error": {
+                    "jse_shortmsg": "",
+                    "jse_info": {},
+                    "message": "Bridge is offline",
+                    "statusCode": 422,
+                    "body": {"code": 98, "message": "Bridge is offline"},
+                    "restCode": 98,
+                    "name": "ERRNO_BRIDGE_OFFLINE",
+                    "code": "Error",
+                },
+                "info": {
+                    "lockID": "45E3635D35B9471FAF1218885816E90D",
+                    "action": "status",
+                },
+            },
+        )
+        assert isinstance(activities[0], BridgeOperationActivity)
+        assert "BridgeOperationActivity" in str(activities[0])
+        assert activities[0].action == "associated_bridge_offline"
