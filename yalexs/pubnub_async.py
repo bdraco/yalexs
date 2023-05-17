@@ -2,34 +2,43 @@
 
 import datetime
 import logging
+from typing import Any, Callable, List
 
 from pubnub.callbacks import SubscribeCallback
 from pubnub.enums import PNReconnectionPolicy, PNStatusCategory
+from pubnub.models.consumer.common import PNStatus
+from pubnub.models.consumer.pubsub import PNMessageResult
 from pubnub.pnconfiguration import PNConfiguration
-from pubnub.pubnub_asyncio import PubNubAsyncio
+from pubnub.pubnub_asyncio import AsyncioSubscriptionManager, PubNubAsyncio
 
-AUGUST_CHANNEL = "sub-c-1030e062-0ebe-11e5-a5c2-0619f8945a4f"
+from .const import Brand
+from .device import DeviceDetail
 
 _LOGGER = logging.getLogger(__name__)
 
+UpdateCallbackType = Callable[[str, datetime.datetime, dict[str, Any]], None]
+
+from .const import PUBNUB_TOKENS
+
 
 class AugustPubNub(SubscribeCallback):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize the AugustPubNub."""
         super().__init__(*args, **kwargs)
         self.connected = False
         self._device_channels = {}
         self._subscriptions = []
 
-    def presence(self, pubnub, presence):
-        _LOGGER.debug("Recieved new presence: %s", presence)
+    def presence(self, pubnub: AsyncioSubscriptionManager, presence):
+        _LOGGER.debug("Received new presence: %s", presence)
 
-    def status(self, pubnub, status):
+    def status(self, pubnub: AsyncioSubscriptionManager, status: PNStatus) -> None:
         if not pubnub:
             self.connected = False
             return
 
         _LOGGER.debug(
-            "Recieved new status: category=%s error_data=%s error=%s status_code=%s operation=%s",
+            "Received new status: category=%s error_data=%s error=%s status_code=%s operation=%s",
             status.category,
             status.error_data,
             status.error,
@@ -57,11 +66,13 @@ class AugustPubNub(SubscribeCallback):
         elif status.category == PNStatusCategory.PNConnectedCategory:
             self.connected = True
 
-    def message(self, pubnub, message):
+    def message(
+        self, pubnub: AsyncioSubscriptionManager, message: PNMessageResult
+    ) -> None:
         # Handle new messages
         device_id = self._device_channels[message.channel]
         _LOGGER.debug(
-            "Recieved new messages on channel %s for device_id: %s with timetoken: %s: %s",
+            "Received new messages on channel %s for device_id: %s with timetoken: %s: %s",
             message.channel,
             device_id,
             message.timetoken,
@@ -76,7 +87,7 @@ class AugustPubNub(SubscribeCallback):
                 message.message,
             )
 
-    def subscribe(self, update_callback):
+    def subscribe(self, update_callback: UpdateCallbackType) -> Callable[[], None]:
         """Add an callback subscriber.
 
         Returns a callable that can be used to unsubscribe.
@@ -88,8 +99,8 @@ class AugustPubNub(SubscribeCallback):
 
         return _unsubscribe
 
-    def register_device(self, device_detail):
-        """Regiter a device to get updates."""
+    def register_device(self, device_detail: DeviceDetail) -> None:
+        """Register a device to get updates."""
         if device_detail.pubsub_channel is None:
             return
         self._device_channels[device_detail.pubsub_channel] = device_detail.device_id
@@ -100,10 +111,14 @@ class AugustPubNub(SubscribeCallback):
         return self._device_channels.keys()
 
 
-def async_create_pubnub(user_uuid, subscriptions):
+def async_create_pubnub(
+    user_uuid: str, subscriptions: List[UpdateCallbackType], brand: Brand = Brand.AUGUST
+) -> Callable[[], None]:
     """Create a pubnub subscription."""
+    tokens = PUBNUB_TOKENS[brand]
     pnconfig = PNConfiguration()
-    pnconfig.subscribe_key = AUGUST_CHANNEL
+    pnconfig.subscribe_key = tokens["subscribe"]
+    pnconfig.publish_key = tokens["publish"]
     pnconfig.uuid = f"pn-{str(user_uuid).upper()}"
     pnconfig.reconnect_policy = PNReconnectionPolicy.EXPONENTIAL
     pubnub = PubNubAsyncio(pnconfig)
