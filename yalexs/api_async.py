@@ -53,7 +53,7 @@ def _obscure_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
         return None
     if "password" in payload:
         payload = payload.copy()
-        payload["password"] = "****"
+        payload["password"] = "****"  # nosec
     return payload
 
 
