@@ -1,8 +1,7 @@
-from requests.exceptions import HTTPError
+from http import HTTPStatus
 
 from aiohttp import ClientResponseError
-
-from http import HTTPStatus
+from requests.exceptions import HTTPError
 
 
 class AugustApiAIOHTTPError(Exception):

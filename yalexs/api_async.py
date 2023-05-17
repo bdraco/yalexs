@@ -1,10 +1,11 @@
 """Api calls for sync."""
 
 import asyncio
+from http import HTTPStatus
 import logging
 
 from aiohttp import ClientResponseError, ClientSession, ServerDisconnectedError
-from http import HTTPStatus
+
 from .api_common import (
     API_LOCK_ASYNC_URL,
     API_LOCK_URL,
