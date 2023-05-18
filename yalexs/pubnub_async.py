@@ -2,7 +2,7 @@
 
 import datetime
 import logging
-from typing import Any, Callable, List
+from typing import Any, Callable
 
 from pubnub.callbacks import SubscribeCallback
 from pubnub.enums import PNReconnectionPolicy, PNStatusCategory
@@ -110,7 +110,7 @@ class AugustPubNub(SubscribeCallback):
 
 
 def async_create_pubnub(
-    user_uuid: str, subscriptions: List[UpdateCallbackType], brand: Brand = Brand.AUGUST
+    user_uuid: str, subscriptions: AugustPubNub, brand: Brand = Brand.AUGUST
 ) -> Callable[[], None]:
     """Create a pubnub subscription."""
     tokens = PUBNUB_TOKENS[brand]
