@@ -110,7 +110,7 @@ class AugustPubNub(SubscribeCallback):
 
 
 def async_create_pubnub(
-    user_uuid: str, subscriptions: List[UpdateCallbackType], brand: Brand = Brand.AUGUST
+    user_uuid: str, subscriptions: AugustPubNub, brand: Brand = Brand.AUGUST
 ) -> Callable[[], None]:
     """Create a pubnub subscription."""
     tokens = PUBNUB_TOKENS[brand]
