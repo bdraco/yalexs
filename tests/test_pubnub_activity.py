@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 import unittest
@@ -286,6 +287,23 @@ class TestLockDetail(unittest.TestCase):
         assert "LockOperationActivity" in str(activities[0])
         assert activities[0].action == "unlock"
         assert activities[0].operated_by == "bob smith"
+
+        activities = activities_from_pubnub_message(
+            lock,
+            datetime.datetime.fromtimestamp(16844292526891571 / 1000000),
+            {
+                "status": "unlocked",
+                "callingUserID": "manualunlock",
+                "doorState": "open",
+            },
+        )
+        assert isinstance(activities[0], LockOperationActivity)
+        assert "LockOperationActivity" in str(activities[0])
+        assert activities[0].action == "unlock"
+        assert (
+            activities[0].activity_type is ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR
+        )
+        assert activities[0].operated_by is None
 
 
 class TestDetail(unittest.TestCase):
