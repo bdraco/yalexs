@@ -305,6 +305,23 @@ class TestLockDetail(unittest.TestCase):
         )
         assert activities[0].operated_by is None
 
+        activities = activities_from_pubnub_message(
+            lock,
+            datetime.datetime.fromtimestamp(16844299539729015 / 1000000),
+            {
+                "status": "locked",
+                "callingUserID": "manuallock",
+                "doorState": "open",
+            },
+        )
+        assert isinstance(activities[0], LockOperationActivity)
+        assert "LockOperationActivity" in str(activities[0])
+        assert activities[0].action == "lock"
+        assert (
+            activities[0].activity_type is ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR
+        )
+        assert activities[0].operated_by is None
+
 
 class TestDetail(unittest.TestCase):
     def test_update_doorbell_details_from_pubnub_message(self):
