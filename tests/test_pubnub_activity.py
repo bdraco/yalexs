@@ -1,10 +1,11 @@
+import datetime
 import json
 import os
 import unittest
 
 import dateutil.parser
 from dateutil.tz import tzlocal
-import datetime
+
 from yalexs.activity import (
     ActivityType,
     BridgeOperationActivity,
