@@ -2,7 +2,7 @@
 
 import datetime
 import logging
-from typing import Any, Callable, List
+from typing import Any, Callable
 
 from pubnub.callbacks import SubscribeCallback
 from pubnub.enums import PNReconnectionPolicy, PNStatusCategory
