@@ -2,11 +2,10 @@ import datetime
 from enum import Enum
 from typing import List, Optional
 
-import dateutil.parser
-
 from .bridge import BridgeDetail, BridgeStatus
 from .device import Device, DeviceDetail
 from .keypad import KeypadDetail
+from .time import parse_datetime
 from .users import cache_user_info
 
 LOCKED_STATUS = ("locked", "kAugLockState_Locked", "kAugLockState_SecureMode")
@@ -76,9 +75,7 @@ class LockDetail(DeviceDetail):
             self._door_state = determine_door_state(lock_status.get(DOOR_STATE_KEY))
 
             if "dateTime" in lock_status:
-                self._lock_status_datetime = dateutil.parser.parse(
-                    lock_status["dateTime"]
-                )
+                self._lock_status_datetime = parse_datetime(lock_status["dateTime"])
                 self._door_state_datetime = self._lock_status_datetime
 
             if (

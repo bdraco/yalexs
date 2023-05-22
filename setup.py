@@ -21,6 +21,7 @@ setup(
     description="Python API for Yale Access (formerly August) Smart Lock and Doorbell",
     packages=find_packages(include=["yalexs", "yalexs.backports", "yalexs.*"]),
     install_requires=[
+        "ciso8601>=2.1.3",
         "pyjwt",
         "requests",
         "vol",

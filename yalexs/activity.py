@@ -3,9 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from enum import Enum
 
-import dateutil.parser
-
 from .lock import LockDoorStatus, LockStatus
+from .time import parse_datetime
 from .users import get_user_info
 
 ACTION_LOCK_ONETOUCHLOCK = "onetouchlock"
@@ -234,7 +233,7 @@ class BaseDoorbellMotionActivity(Activity):
         if image is None:
             return
         if "created_at" in image:
-            self._image_created_at_datetime = dateutil.parser.parse(image["created_at"])
+            self._image_created_at_datetime = parse_datetime(image["created_at"])
         else:
             self._image_created_at_datetime = self._activity_time
 

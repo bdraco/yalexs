@@ -3,8 +3,6 @@ import datetime
 import logging
 from typing import Any, Dict, List, Optional, Union
 
-import dateutil.parser
-
 from .activity import (
     ACTIVITY_ACTIONS_BRIDGE_OPERATION,
     ACTIVITY_ACTIONS_DOOR_OPERATION,
@@ -26,6 +24,7 @@ from .activity import (
 from .const import BASE_URLS, BRANDING, Brand
 from .doorbell import Doorbell
 from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
+from .time import parse_datetime
 
 API_EXCEPTION_RETRY_TIME = 0.1
 API_RETRY_TIME = 2.5
@@ -171,7 +170,7 @@ def _map_lock_result_to_activity(
 
 
 def _datetime_string_to_epoch(datetime_string: str) -> datetime.datetime:
-    return dateutil.parser.parse(datetime_string).timestamp() * 1000
+    return parse_datetime(datetime_string).timestamp() * 1000
 
 
 def _process_activity_json(json_dict: Dict[str, Any]) -> List[ActivityType]:

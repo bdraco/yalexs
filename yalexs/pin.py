@@ -1,4 +1,4 @@
-import dateutil.parser
+from .time import parse_datetime
 
 
 class Pin:
@@ -64,33 +64,33 @@ class Pin:
 
     @property
     def created_at(self):
-        return dateutil.parser.parse(self._created_at)
+        return parse_datetime(self._created_at)
 
     @property
     def updated_at(self):
-        return dateutil.parser.parse(self._updated_at)
+        return parse_datetime(self._updated_at)
 
     @property
     def loaded_date(self):
-        return dateutil.parser.parse(self._loaded_date)
+        return parse_datetime(self._loaded_date)
 
     @property
     def access_start_time(self):
         if not self._access_start_time:
             return None
-        return dateutil.parser.parse(self._access_start_time)
+        return parse_datetime(self._access_start_time)
 
     @property
     def access_end_time(self):
         if not self._access_end_time:
             return None
-        return dateutil.parser.parse(self._access_end_time)
+        return parse_datetime(self._access_end_time)
 
     @property
     def access_times(self):
         if not self._access_times:
             return None
-        return dateutil.parser.parse(self._access_times)
+        return parse_datetime(self._access_times)
 
     def __repr__(self):
         return "Pin(id={} firstName={}, lastName={})".format(
