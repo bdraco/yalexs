@@ -43,3 +43,9 @@ PUBNUB_TOKENS = {
         "publish": "pub-c-353e8881-cf58-4b26-9baf-96f296de0677",
     },
 }
+
+CONFIGURATION_URLS = {
+    Brand.AUGUST: "https://account.august.com",
+    Brand.YALE_ACCESS: "https://account.august.com",
+    Brand.YALE_HOME: "https://account.aaecosystem.com",
+}
