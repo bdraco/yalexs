@@ -5,10 +5,10 @@ import logging
 from typing import Any, Optional
 import uuid
 
-import dateutil.parser
 import jwt
 
 from .api import HEADER_AUGUST_ACCESS_TOKEN, ApiCommon
+from .time import parse_datetime
 
 # The default time before expiration to refresh a token
 DEFAULT_RENEWAL_THRESHOLD = timedelta(days=7)
@@ -51,7 +51,7 @@ class Authentication:
         self._access_token_expires = access_token_expires
         self._parsed_expiration_time = None
         if access_token_expires:
-            self._parsed_expiration_time = dateutil.parser.parse(access_token_expires)
+            self._parsed_expiration_time = parse_datetime(access_token_expires)
 
     @property
     def install_id(self):

@@ -1,9 +1,9 @@
 import datetime
 
-import dateutil.parser
 import requests
 
 from .device import Device, DeviceDetail
+from .time import parse_datetime
 
 DOORBELL_STATUS_KEY = "status"
 
@@ -70,9 +70,7 @@ class DoorbellDetail(DeviceDetail):
             self._model = data["type"]
 
         if "created_at" in recent_image:
-            self._image_created_at_datetime = dateutil.parser.parse(
-                recent_image["created_at"]
-            )
+            self._image_created_at_datetime = parse_datetime(recent_image["created_at"])
 
         self._battery_level = None
         if "telemetry" in data:
