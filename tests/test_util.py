@@ -395,3 +395,6 @@ def test_get_configuration_url():
     assert get_configuration_url("august") == "https://account.august.com"
     assert get_configuration_url("yale_access") == "https://account.august.com"
     assert get_configuration_url("yale_home") == "https://account.aaecosystem.com"
+    assert get_configuration_url(Brand.AUGUST) == "https://account.august.com"
+    assert get_configuration_url(Brand.YALE_ACCESS) == "https://account.august.com"
+    assert get_configuration_url(Brand.YALE_HOME) == "https://account.aaecosystem.com"
