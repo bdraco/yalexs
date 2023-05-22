@@ -400,7 +400,7 @@ class ApiAsync(ApiCommon):
                     "August sent a 429 (attempt: %d), sleeping and trying again",
                     attempts,
                 )
-                asyncio.sleep(API_RETRY_TIME)
+                await asyncio.sleep(API_RETRY_TIME)
                 continue
             break
 
