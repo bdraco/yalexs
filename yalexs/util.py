@@ -12,6 +12,7 @@ from .activity import (
     DoorOperationActivity,
     LockOperationActivity,
 )
+from .const import CONFIGURATION_URLS, Brand
 from .lock import LockDetail
 
 
@@ -107,3 +108,8 @@ def update_doorbell_image_from_activity(doorbell_detail, activity):
 def as_utc_from_local(dtime: datetime.datetime) -> datetime.datetime:
     """Converts the datetime returned from an activity to UTC."""
     return dtime.astimezone(tz=datetime.timezone.utc)
+
+
+def get_configuration_url(brand: Brand) -> str:
+    """Return the configuration URL for the brand."""
+    return CONFIGURATION_URLS[brand]

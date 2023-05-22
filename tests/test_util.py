@@ -14,11 +14,13 @@ from yalexs.activity import (
     LockOperationActivity,
 )
 from yalexs.api import _convert_lock_result_to_activities
+from yalexs.const import Brand
 from yalexs.doorbell import DoorbellDetail
 from yalexs.lock import LockDetail, LockDoorStatus, LockStatus
 from yalexs.pubnub_activity import activities_from_pubnub_message
 from yalexs.util import (
     as_utc_from_local,
+    get_configuration_url,
     get_latest_activity,
     update_doorbell_image_from_activity,
     update_lock_detail_from_activity,
@@ -386,3 +388,13 @@ class TestDetail(unittest.TestCase):
             doorbell.image_created_at_datetime,
         )
         self.assertEqual("https://my.updated.image/image.jpg", doorbell.image_url)
+
+
+def test_get_configuration_url():
+    """Test that we get the correct configuration url for the brand."""
+    assert get_configuration_url("august") == "https://account.august.com"
+    assert get_configuration_url("yale_access") == "https://account.august.com"
+    assert get_configuration_url("yale_home") == "https://account.aaecosystem.com"
+    assert get_configuration_url(Brand.AUGUST) == "https://account.august.com"
+    assert get_configuration_url(Brand.YALE_ACCESS) == "https://account.august.com"
+    assert get_configuration_url(Brand.YALE_HOME) == "https://account.aaecosystem.com"
