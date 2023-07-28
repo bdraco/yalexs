@@ -95,11 +95,11 @@ class Api(ApiCommon):
             self._build_get_house_request(access_token, house_id)
         ).json()
 
-    def get_house_activities(self, access_token, house_id, limit=8):
+    def get_house_activities(self, access_token, house_id, limit=8, end_date=None):
         return _process_activity_json(
             self._dict_to_api(
                 self._build_get_house_activities_request(
-                    access_token, house_id, limit=limit
+                    access_token, house_id, limit=limit, end_date=end_date
                 )
             ).json()
         )
