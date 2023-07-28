@@ -278,15 +278,14 @@ class ApiCommon:
             "access_token": access_token,
         }
 
-    def _build_get_house_activities_request(self, access_token, house_id, limit=8):
+    def _build_get_house_activities_request(self, access_token, house_id, limit=8, end_date=None):
         return {
             "method": "get",
             "url": self.get_brand_url(
                 API_GET_HOUSE_ACTIVITIES_URL.format(house_id=house_id)
             ),
-            "version": "4.0.0",
             "access_token": access_token,
-            "params": {"limit": limit},
+            "params": {"limit": limit} | ({"endDate": int(end_date.timestamp()*1000)} if end_date != None else {}),
         }
 
     def _build_get_locks_request(self, access_token):
