@@ -48,6 +48,7 @@ from yalexs.activity import (
     ACTIVITY_ACTIONS_LOCK_OPERATION,
     SOURCE_LOG,
     ActivityType,
+    DoorbellDingActivity,
     LockOperationActivity,
 )
 from yalexs.api_async import ApiAsync
@@ -328,6 +329,13 @@ class TestActivity(unittest.TestCase):
         assert auto_relock_operation_activity.operated_remote is False
         assert auto_relock_operation_activity.operated_autorelock is True
         assert auto_relock_operation_activity.operated_keypad is False
+
+    def test_get_lock_button_pressed(self):
+        doorbell_ding_activity = DoorbellDingActivity(
+            SOURCE_LOG, json.loads(load_fixture("lock_accessory_motion_detect.json"))
+        )
+        assert doorbell_ding_activity.activity_start_time.timestamp() == 1691249378.0
+        assert doorbell_ding_activity.activity_end_time.timestamp() == 1691249378.0
 
 
 class TestActivityApiAsync(aiounittest.AsyncTestCase):
