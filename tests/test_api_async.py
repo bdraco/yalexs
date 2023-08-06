@@ -376,6 +376,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
             ACCESS_TOKEN, "A6697750D607098BAE8D6BAA11EF8063"
         )
 
+        assert lock.doorbell is False
         self.assertEqual("A6697750D607098BAE8D6BAA11EF8063", lock.device_id)
         self.assertEqual("Front Door Lock", lock.device_name)
         self.assertEqual("000000000000", lock.house_id)
@@ -400,6 +401,22 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(
             dateutil.parser.parse("2017-12-10T04:48:30.272Z"), lock.door_state_datetime
         )
+
+    @aioresponses()
+    async def test_async_get_lock_with_doorbell(self, mock):
+        mock.get(
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_URL)
+            .format(lock_id="A6697750D607098BAE8D6BAA11EF8063"),
+            body=load_fixture("lock_with_doorbell.online.json"),
+        )
+
+        api = ApiAsync(ClientSession())
+        lock = await api.async_get_lock_detail(
+            ACCESS_TOKEN, "A6697750D607098BAE8D6BAA11EF8063"
+        )
+
+        assert lock.doorbell is True
 
     @aioresponses()
     async def test_async_get_v2_lock_detail_bridge_online(self, mock):

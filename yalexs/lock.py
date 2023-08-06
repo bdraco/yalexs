@@ -107,6 +107,11 @@ class LockDetail(DeviceDetail):
         return self._model
 
     @property
+    def doorbell(self) -> bool:
+        # Type 7 is a doorman
+        return self._data["Type"] == 7
+
+    @property
     def battery_level(self):
         return self._battery_level
 
