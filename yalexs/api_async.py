@@ -27,7 +27,6 @@ from .api_common import (
     HEADER_ACCEPT_VERSION,
     HEADER_AUGUST_ACCESS_TOKEN,
     HYPER_BRIDGE_PARAM,
-    ActivityType,
     ApiCommon,
     _api_headers,
     _convert_lock_result_to_activities,
@@ -35,6 +34,7 @@ from .api_common import (
     _process_doorbells_json,
     _process_locks_json,
 )
+from .activity import ActivityTypes
 from .const import DEFAULT_BRAND
 from .doorbell import Doorbell, DoorbellDetail
 from .exceptions import AugustApiAIOHTTPError
@@ -146,7 +146,7 @@ class ApiAsync(ApiCommon):
 
     async def async_get_house_activities(
         self, access_token: str, house_id: str, limit: int = 8
-    ) -> List[ActivityType]:
+    ) -> List[ActivityTypes]:
         response = await self._async_dict_to_api(
             self._build_get_house_activities_request(
                 access_token, house_id, limit=limit
