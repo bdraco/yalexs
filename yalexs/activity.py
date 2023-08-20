@@ -323,7 +323,8 @@ class LockOperationActivity(Activity):
 
     def __init__(self, source: str, data: dict[str, Any]) -> None:
         """Initialize lock operation activity."""
-        super().__init__(source, activity_type, data)
+        super().__init__(source, ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR, data)
+
         operator_image_url: str | None = None
         operator_thumbnail_url: str | None = None
         operated_by: str | None = None
@@ -339,17 +340,15 @@ class LockOperationActivity(Activity):
         # For legacy compatibility, we need to set the first_name and last_name
         # if its a physical or rf lock operation
         if (
-            not first_name is None
+            first_name is None
             and last_name is None
             and (first_last := ACTIVITY_TO_FIRST_LAST_NAME.get(self.action))
         ):
             first_name, last_name = first_last
 
-        if first_name is None and last_name is None:
-            activity_type = ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR
-        else:
+        if first_name and last_name:
             operated_by = f"{first_name} {last_name}"
-            activity_type = ActivityType.LOCK_OPERATION
+            self._activity_type = ActivityType.LOCK_OPERATION
 
         image_info = calling_user.get("imageInfo") or calling_user
         original = image_info.get("original")
@@ -377,8 +376,10 @@ class LockOperationActivity(Activity):
             if icon := data.get("icon"):
                 operator_thumbnail_url = icon
 
-        operator_image_url |= operator_thumbnail_url
-        operator_thumbnail_url |= operator_image_url
+        if operator_thumbnail_url and not operator_image_url:
+            operator_image_url = operator_thumbnail_url
+        if operator_image_url and not operator_thumbnail_url:
+            operator_thumbnail_url = operator_image_url
 
         self._operated_by = operated_by
         self._operator_image_url = operator_image_url
