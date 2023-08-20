@@ -1,5 +1,9 @@
-from enum import Enum
+from __future__ import annotations
 
+from enum import Enum
+from typing import Any
+
+from .backports.functools import cached_property
 from .device import DeviceDetail
 
 
@@ -10,7 +14,10 @@ class BridgeStatus(Enum):
 
 
 class BridgeDetail(DeviceDetail):
-    def __init__(self, house_id, data):
+    """Represents a bridge device."""
+
+    def __init__(self, house_id: str, data: dict[str, Any]) -> None:
+        """Initialize the bridge device."""
         super().__init__(
             data["_id"], None, house_id, None, data["firmwareVersion"], None, data
         )
@@ -23,15 +30,15 @@ class BridgeDetail(DeviceDetail):
         else:
             self._status = None
 
-    @property
+    @cached_property
     def status(self):
         return self._status
 
-    @property
+    @cached_property
     def hyper_bridge(self):
         return self._hyper_bridge
 
-    @property
+    @cached_property
     def operative(self):
         return self._operative
 
@@ -41,7 +48,10 @@ class BridgeDetail(DeviceDetail):
 
 
 class BridgeStatusDetail:
-    def __init__(self, data):
+    """Represents the status of a bridge device."""
+
+    def __init__(self, data: dict[str, Any]) -> None:
+        """Initialize the bridge status."""
         self._current = BridgeStatus.UNKNOWN
 
         if "current" in data and data["current"] == "online":
@@ -51,7 +61,7 @@ class BridgeStatusDetail:
         self._last_online = data["lastOnline"] if "lastOnline" in data else None
         self._last_offline = data["lastOffline"] if "lastOffline" in data else None
 
-    @property
+    @cached_property
     def current(self):
         return self._current
 
@@ -59,14 +69,14 @@ class BridgeStatusDetail:
         """Called when the bridge online state changes."""
         self._current = BridgeStatus.ONLINE if state else BridgeStatus.OFFLINE
 
-    @property
+    @cached_property
     def updated(self):
         return self._updated
 
-    @property
+    @cached_property
     def last_online(self):
         return self._last_online
 
-    @property
+    @cached_property
     def last_offline(self):
         return self._last_offline
