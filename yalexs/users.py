@@ -1,7 +1,8 @@
 from typing import Any, Dict, Optional
 
-USER_CACHE = {}
 from .backports.functools import cached_property
+
+USER_CACHE = {}
 
 
 class YaleUser:
