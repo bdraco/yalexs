@@ -3,25 +3,7 @@ import datetime
 import logging
 from typing import Any, Dict, List, Optional
 
-from .activity import (
-    ACTIVITY_ACTIONS_BRIDGE_OPERATION,
-    ACTIVITY_ACTIONS_DOOR_OPERATION,
-    ACTIVITY_ACTIONS_DOORBELL_DING,
-    ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE,
-    ACTIVITY_ACTIONS_DOORBELL_MOTION,
-    ACTIVITY_ACTIONS_DOORBELL_VIEW,
-    ACTIVITY_ACTIONS_LOCK_OPERATION,
-    SOURCE_LOCK_OPERATE,
-    SOURCE_LOG,
-    ActivityTypes,
-    BridgeOperationActivity,
-    DoorbellDingActivity,
-    DoorbellImageCaptureActivity,
-    DoorbellMotionActivity,
-    DoorbellViewActivity,
-    DoorOperationActivity,
-    LockOperationActivity,
-)
+from .activity import ACTION_TO_CLASS, SOURCE_LOCK_OPERATE, SOURCE_LOG, ActivityTypes
 from .const import BASE_URLS, BRANDING, Brand
 from .doorbell import Doorbell
 from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
@@ -121,22 +103,6 @@ def _convert_lock_result_to_activities(
         activities.append(activity_door_dict)
 
     return activities
-
-
-ACTIONS_TO_CLASS = (
-    (ACTIVITY_ACTIONS_DOORBELL_DING, DoorbellDingActivity),
-    (ACTIVITY_ACTIONS_DOORBELL_MOTION, DoorbellMotionActivity),
-    (ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE, DoorbellImageCaptureActivity),
-    (ACTIVITY_ACTIONS_DOORBELL_VIEW, DoorbellViewActivity),
-    (ACTIVITY_ACTIONS_LOCK_OPERATION, LockOperationActivity),
-    (ACTIVITY_ACTIONS_DOOR_OPERATION, DoorOperationActivity),
-    (ACTIVITY_ACTIONS_BRIDGE_OPERATION, BridgeOperationActivity),
-)
-
-ACTION_TO_CLASS: dict[str, ActivityTypes] = {}
-for activities, klass in ACTIONS_TO_CLASS:
-    for activity in activities:
-        ACTION_TO_CLASS[activity] = klass
 
 
 def _activity_from_dict(

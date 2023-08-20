@@ -476,3 +476,18 @@ ActivityTypes = Union[
     DoorOperationActivity,
     BridgeOperationActivity,
 ]
+
+ACTIONS_TO_CLASS = (
+    (ACTIVITY_ACTIONS_DOORBELL_DING, DoorbellDingActivity),
+    (ACTIVITY_ACTIONS_DOORBELL_MOTION, DoorbellMotionActivity),
+    (ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE, DoorbellImageCaptureActivity),
+    (ACTIVITY_ACTIONS_DOORBELL_VIEW, DoorbellViewActivity),
+    (ACTIVITY_ACTIONS_LOCK_OPERATION, LockOperationActivity),
+    (ACTIVITY_ACTIONS_DOOR_OPERATION, DoorOperationActivity),
+    (ACTIVITY_ACTIONS_BRIDGE_OPERATION, BridgeOperationActivity),
+)
+
+ACTION_TO_CLASS: dict[str, ActivityTypes] = {}
+for activities, klass in ACTIONS_TO_CLASS:
+    for activity in activities:
+        ACTION_TO_CLASS[activity] = klass
