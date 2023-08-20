@@ -1,7 +1,12 @@
-import datetime
+from __future__ import annotations
 
+import datetime
+from typing import Any
+
+from aiohttp import ClientSession
 import requests
 
+from .backports.functools import cached_property
 from .device import Device, DeviceDetail
 from .time import parse_datetime
 
@@ -9,7 +14,7 @@ DOORBELL_STATUS_KEY = "status"
 
 
 class Doorbell(Device):
-    def __init__(self, device_id, data):
+    def __init__(self, device_id: str, data: dict[str, Any]) -> None:
         super().__init__(device_id, data["name"], data["HouseID"])
         self._serial_number = data["serialNumber"]
         self._status = data["status"]
@@ -17,27 +22,27 @@ class Doorbell(Device):
         self._image_url = recent_image.get("secure_url", None)
         self._has_subscription = data.get("dvrSubscriptionSetupDone", False)
 
-    @property
+    @cached_property
     def serial_number(self):
         return self._serial_number
 
-    @property
+    @cached_property
     def status(self):
         return self._status
 
-    @property
+    @cached_property
     def is_standby(self):
         return self.status == "standby"
 
-    @property
+    @cached_property
     def is_online(self):
         return self.status == "doorbell_call_status_online"
 
-    @property
+    @cached_property
     def image_url(self):
         return self._image_url
 
-    @property
+    @cached_property
     def has_subscription(self):
         return self._has_subscription
 
@@ -90,19 +95,19 @@ class DoorbellDetail(DeviceDetail):
                 else:
                     self._battery_level = 25
 
-    @property
+    @cached_property
     def status(self):
         return self._status
 
-    @property
+    @cached_property
     def model(self):
         return self._model
 
-    @property
+    @cached_property
     def is_online(self):
         return self.status == "doorbell_call_status_online"
 
-    @property
+    @cached_property
     def is_standby(self):
         return self.status == "standby"
 
@@ -126,20 +131,22 @@ class DoorbellDetail(DeviceDetail):
         """Update the doorbell image url (usually form the activity log)."""
         self._image_url = var
 
-    @property
+    @cached_property
     def battery_level(self):
         """Return an approximation of the battery percentage."""
         return self._battery_level
 
-    @property
+    @cached_property
     def has_subscription(self):
         return self._has_subscription
 
-    async def async_get_doorbell_image(self, aiohttp_session, timeout=10):
+    async def async_get_doorbell_image(
+        self, aiohttp_session: ClientSession, timeout=10
+    ) -> bytes:
         response = await aiohttp_session.request(
             "get", self._image_url, timeout=timeout
         )
         return await response.read()
 
-    def get_doorbell_image(self, timeout=10):
+    def get_doorbell_image(self, timeout=10) -> bytes:
         return requests.get(self._image_url, timeout=timeout).content

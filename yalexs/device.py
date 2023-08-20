@@ -1,33 +1,42 @@
+from __future__ import annotations
+
+from typing import Any
+
+from .backports.functools import cached_property
+
+
 class Device:
-    def __init__(self, device_id, device_name, house_id):
+    """Base class for all devices."""
+
+    def __init__(self, device_id: str, device_name: str, house_id: str) -> None:
         self._device_id = device_id
         self._device_name = device_name
         self._house_id = house_id
 
-    @property
-    def device_id(self):
+    @cached_property
+    def device_id(self) -> str:
         return self._device_id
 
-    @property
-    def device_name(self):
+    @cached_property
+    def device_name(self) -> str:
         return self._device_name
 
-    @property
-    def house_id(self):
+    @cached_property
+    def house_id(self) -> str:
         return self._house_id
 
 
 class DeviceDetail:
     def __init__(
         self,
-        device_id,
-        device_name,
-        house_id,
-        serial_number,
-        firmware_version,
-        pubsub_channel,
-        data,
-    ):
+        device_id: str,
+        device_name: str,
+        house_id: str,
+        serial_number: str,
+        firmware_version: str,
+        pubsub_channel: str,
+        data: dict[str, Any],
+    ) -> None:
         self._device_id = device_id
         self._device_name = device_name
         self._house_id = house_id
@@ -36,30 +45,30 @@ class DeviceDetail:
         self._pubsub_channel = pubsub_channel
         self._data = data
 
-    @property
+    @cached_property
     def raw(self):
         return self._data
 
-    @property
+    @cached_property
     def device_id(self):
         return self._device_id
 
-    @property
+    @cached_property
     def device_name(self):
         return self._device_name
 
-    @property
+    @cached_property
     def house_id(self):
         return self._house_id
 
-    @property
+    @cached_property
     def serial_number(self):
         return self._serial_number
 
-    @property
+    @cached_property
     def firmware_version(self):
         return self._firmware_version
 
-    @property
+    @cached_property
     def pubsub_channel(self):
         return self._pubsub_channel
