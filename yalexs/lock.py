@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import datetime
 from enum import Enum
 from typing import List, Optional
 
+from .backports.functools import cached_property
 from .bridge import BridgeDetail, BridgeStatus
 from .device import Device, DeviceDetail
 from .keypad import KeypadDetail
@@ -34,7 +37,7 @@ class Lock(Device):
         )
         self._user_type = data["UserType"]
 
-    @property
+    @cached_property
     def is_operable(self):
         return self._user_type == "superuser"
 
@@ -102,28 +105,28 @@ class LockDetail(DeviceDetail):
             self._model = data["skuNumber"]
         self._data = data
 
-    @property
+    @cached_property
     def model(self):
         return self._model
 
-    @property
+    @cached_property
     def doorbell(self) -> bool:
         # Type 7 is a doorman
         return self._data["Type"] == 7
 
-    @property
+    @cached_property
     def battery_level(self):
         return self._battery_level
 
-    @property
+    @cached_property
     def keypad(self):
         return self._keypad_detail
 
-    @property
+    @cached_property
     def bridge(self):
         return self._bridge
 
-    @property
+    @cached_property
     def bridge_is_online(self):
         if self._bridge is None:
             return False
@@ -142,7 +145,7 @@ class LockDetail(DeviceDetail):
 
         return False
 
-    @property
+    @cached_property
     def doorsense(self):
         return self._doorsense
 
@@ -202,29 +205,29 @@ class LockDetail(DeviceDetail):
         """Lookup user data by id."""
         return self._data.get("users", {}).get(user_id)
 
-    @property
+    @cached_property
     def offline_keys(self) -> dict:
         return self._data.get("OfflineKeys", {})
 
-    @property
+    @cached_property
     def loaded_offline_keys(self) -> List[dict]:
         return self.offline_keys.get("loaded", [])
 
-    @property
+    @cached_property
     def offline_key(self) -> Optional[str]:
         loaded_offline_keys = self.loaded_offline_keys
         if loaded_offline_keys and "key" in loaded_offline_keys[0]:
             return loaded_offline_keys[0]["key"]
         return None
 
-    @property
+    @cached_property
     def offline_slot(self) -> Optional[int]:
         loaded_offline_keys = self.loaded_offline_keys
         if loaded_offline_keys and "slot" in loaded_offline_keys[0]:
             return loaded_offline_keys[0]["slot"]
         return None
 
-    @property
+    @cached_property
     def mac_address(self) -> Optional[str]:
         mac = self._data.get("macAddress")
         return mac.upper() if mac else None

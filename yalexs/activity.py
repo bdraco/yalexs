@@ -234,21 +234,14 @@ class Activity:
 
 
 class BaseDoorbellMotionActivity(Activity):
+    """Base class for doorbell motion activities."""
+
     def __init__(
         self, source: str, activity_type: ActivityType, data: dict[str, Any]
     ) -> None:
+        """Initialize doorbell motion activity."""
         super().__init__(source, activity_type, data)
-        image = data.get("info", {}).get("image")
-        self._image_url = (
-            None if image is None else image.get("secure_url")
-        ) or data.get("attachment")
-        self._image_created_at_datetime = None
-        if image is None:
-            return
-        if "created_at" in image:
-            self._image_created_at_datetime = parse_datetime(image["created_at"])
-        else:
-            self._image_created_at_datetime = self._activity_time
+        self._image: dict[str, Any] | None = data.get("info", {}).get("image")
 
     def __repr__(self):
         return (
@@ -258,17 +251,30 @@ class BaseDoorbellMotionActivity(Activity):
             f"image_url={self.image_url}>"
         )
 
-    @property
+    @cached_property
     def image_url(self):
-        return self._image_url
+        """Return the image URL of the activity."""
+        image = self._image
+        return (None if image is None else image.get("secure_url")) or self._data.get(
+            "attachment"
+        )
 
-    @property
+    @cached_property
     def image_created_at_datetime(self):
-        return self._image_created_at_datetime
+        """Return the image created at datetime."""
+        image = self._image
+        if image is None:
+            return None
+        if "created_at" in image:
+            return parse_datetime(image["created_at"])
+        return self.activity_start_time
 
 
 class DoorbellMotionActivity(BaseDoorbellMotionActivity):
+    """A motion activity."""
+
     def __init__(self, source: str, data: dict[str, Any]) -> None:
+        """Initialize doorbell motion activity."""
         super().__init__(source, ActivityType.DOORBELL_MOTION, data)
 
 
@@ -276,6 +282,7 @@ class DoorbellImageCaptureActivity(BaseDoorbellMotionActivity):
     """A motion activity with an image."""
 
     def __init__(self, source: str, data: dict[str, Any]) -> None:
+        """Initialize doorbell motion activity."""
         super().__init__(source, ActivityType.DOORBELL_IMAGE_CAPTURE, data)
 
 
