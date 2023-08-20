@@ -262,7 +262,7 @@ class ApiAsync(ApiCommon):
 
     async def async_lock_return_activities(
         self, access_token: str, lock_id: str
-    ) -> List[ActivityType]:
+    ) -> List[ActivityTypes]:
         """Execute a remote lock operation.
 
         Returns an array of one or more yalexs.activity.Activity objects
@@ -302,7 +302,7 @@ class ApiAsync(ApiCommon):
 
     async def async_unlock_return_activities(
         self, access_token: str, lock_id: str
-    ) -> List[ActivityType]:
+    ) -> List[ActivityTypes]:
         """Execute a remote lock operation.
 
         Returns an array of one or more yalexs.activity.Activity objects
