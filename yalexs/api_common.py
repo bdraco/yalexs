@@ -1,7 +1,7 @@
 """Api functions common between sync and async."""
 import datetime
 import logging
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from .activity import (
     ACTIVITY_ACTIONS_BRIDGE_OPERATION,
@@ -13,7 +13,7 @@ from .activity import (
     ACTIVITY_ACTIONS_LOCK_OPERATION,
     SOURCE_LOCK_OPERATE,
     SOURCE_LOG,
-    Activity,
+    ActivityTypes,
     BridgeOperationActivity,
     DoorbellDingActivity,
     DoorbellImageCaptureActivity,
@@ -79,15 +79,6 @@ HYPER_BRIDGE_PARAM = "&connection=persistent"
 API_GET_USER_URL = "/users/me"
 
 _LOGGER = logging.getLogger(__name__)
-ActivityType = Union[
-    DoorbellDingActivity,
-    DoorbellMotionActivity,
-    DoorbellImageCaptureActivity,
-    DoorbellViewActivity,
-    LockOperationActivity,
-    DoorOperationActivity,
-    BridgeOperationActivity,
-]
 
 
 def _api_headers(
@@ -111,7 +102,7 @@ def _api_headers(
 
 def _convert_lock_result_to_activities(
     lock_json_dict: Dict[str, Any]
-) -> List[ActivityType]:
+) -> List[ActivityTypes]:
     activities = []
     lock_info_json_dict = lock_json_dict.get("info", {})
     lock_id = lock_info_json_dict.get("lockID")
@@ -142,7 +133,7 @@ ACTIONS_TO_CLASS = (
     (ACTIVITY_ACTIONS_BRIDGE_OPERATION, BridgeOperationActivity),
 )
 
-ACTION_TO_CLASS: dict[str, ActivityType] = {}
+ACTION_TO_CLASS: dict[str, ActivityTypes] = {}
 for activities, klass in ACTIONS_TO_CLASS:
     for activity in activities:
         ACTION_TO_CLASS[activity] = klass
@@ -150,7 +141,7 @@ for activities, klass in ACTIONS_TO_CLASS:
 
 def _activity_from_dict(
     source: str, activity_dict: Dict[str, Any], debug: bool = False
-) -> Optional[ActivityType]:
+) -> Optional[ActivityTypes]:
     """Convert an activity dict to and Activity object."""
     if debug:
         _LOGGER.debug("Processing activity: %s", activity_dict)
@@ -165,7 +156,7 @@ def _activity_from_dict(
 
 def _map_lock_result_to_activity(
     lock_id: str, activity_epoch: float, action_text: str
-) -> Optional[ActivityType]:
+) -> Optional[ActivityTypes]:
     """Create an yale access activity from a lock result."""
     mapped_dict = {
         "dateTime": activity_epoch,
@@ -182,11 +173,11 @@ def _datetime_string_to_epoch(datetime_string: str) -> datetime.datetime:
     return parse_datetime(datetime_string).timestamp() * 1000
 
 
-def _process_activity_json(json_dict: Dict[str, Any]) -> List[ActivityType]:
+def _process_activity_json(json_dict: Dict[str, Any]) -> List[ActivityTypes]:
     if "events" in json_dict:
         json_dict = json_dict["events"]
     debug = _LOGGER.isEnabledFor(logging.DEBUG)
-    activities: list[ActivityType] = []
+    activities: list[ActivityTypes] = []
     for activity_json in json_dict:
         if activity := _activity_from_dict(SOURCE_LOG, activity_json, debug):
             activities.append(activity)

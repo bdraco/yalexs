@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from typing import Any, Dict
 
 from .activity import (
@@ -15,6 +16,7 @@ from .activity import (
     ACTION_LOCK_UNLOCK,
     ACTION_LOCK_UNLOCKING,
     SOURCE_PUBNUB,
+    ActivityTypes,
 )
 from .api_common import _activity_from_dict, _datetime_string_to_epoch
 from .device import Device
@@ -29,12 +31,14 @@ from .lock import (
     determine_lock_status,
 )
 
+_LOGGER = logging.getLogger(__name__)
+
 
 def activities_from_pubnub_message(
     device: Device, date_time: datetime, message: Dict[str, Any]
-):
+) -> list[ActivityTypes]:
     """Create activities from pubnub."""
-    activities = []
+    activities: list[ActivityTypes] = []
     activity_dict = {
         "deviceID": device.device_id,
         "house": device.house_id,
@@ -109,7 +113,14 @@ def activities_from_pubnub_message(
     return activities
 
 
-def _add_activity(activities, activity_dict, action):
+def _add_activity(
+    activities: list[ActivityTypes], activity_dict: dict[str, Any], action: str
+) -> None:
+    """Add an activity."""
     activity_dict = activity_dict.copy()
     activity_dict["action"] = action
-    activities.append(_activity_from_dict(SOURCE_PUBNUB, activity_dict))
+    activities.append(
+        _activity_from_dict(
+            SOURCE_PUBNUB, activity_dict, _LOGGER.isEnabledFor(logging.DEBUG)
+        )
+    )
