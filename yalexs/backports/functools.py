@@ -38,9 +38,7 @@ class cached_property(Generic[_T]):  # pylint: disable=invalid-name
     def __get__(self, instance: Any, owner: type[Any] | None = None) -> _T:
         ...
 
-    def __get__(
-        self, instance: Any | None, owner: type[Any] | None = None
-    ) -> _T | Any:
+    def __get__(self, instance: Any | None, owner: type[Any] | None = None) -> _T | Any:
         """Get."""
         if instance is None:
             return self
