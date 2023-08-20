@@ -15,6 +15,7 @@ from aiohttp import (
     ServerDisconnectedError,
 )
 
+from .activity import ActivityTypes
 from .api_common import (
     API_EXCEPTION_RETRY_TIME,
     API_LOCK_ASYNC_URL,
@@ -27,7 +28,6 @@ from .api_common import (
     HEADER_ACCEPT_VERSION,
     HEADER_AUGUST_ACCESS_TOKEN,
     HYPER_BRIDGE_PARAM,
-    ActivityType,
     ApiCommon,
     _api_headers,
     _convert_lock_result_to_activities,
@@ -146,7 +146,7 @@ class ApiAsync(ApiCommon):
 
     async def async_get_house_activities(
         self, access_token: str, house_id: str, limit: int = 8
-    ) -> List[ActivityType]:
+    ) -> List[ActivityTypes]:
         response = await self._async_dict_to_api(
             self._build_get_house_activities_request(
                 access_token, house_id, limit=limit
@@ -262,7 +262,7 @@ class ApiAsync(ApiCommon):
 
     async def async_lock_return_activities(
         self, access_token: str, lock_id: str
-    ) -> List[ActivityType]:
+    ) -> List[ActivityTypes]:
         """Execute a remote lock operation.
 
         Returns an array of one or more yalexs.activity.Activity objects
@@ -302,7 +302,7 @@ class ApiAsync(ApiCommon):
 
     async def async_unlock_return_activities(
         self, access_token: str, lock_id: str
-    ) -> List[ActivityType]:
+    ) -> List[ActivityTypes]:
         """Execute a remote lock operation.
 
         Returns an array of one or more yalexs.activity.Activity objects

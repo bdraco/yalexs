@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import Any, Union
 
 from .backports.functools import cached_property
 from .lock import LockDoorStatus, LockStatus
@@ -465,3 +465,29 @@ class BridgeOperationActivity(Activity):
     def __init__(self, source: str, data: dict[str, Any]) -> None:
         """Initialize bridge operation activity."""
         super().__init__(source, ActivityType.BRIDGE_OPERATION, data)
+
+
+ActivityTypes = Union[
+    DoorbellDingActivity,
+    DoorbellMotionActivity,
+    DoorbellImageCaptureActivity,
+    DoorbellViewActivity,
+    LockOperationActivity,
+    DoorOperationActivity,
+    BridgeOperationActivity,
+]
+
+ACTIONS_TO_CLASS = (
+    (ACTIVITY_ACTIONS_DOORBELL_DING, DoorbellDingActivity),
+    (ACTIVITY_ACTIONS_DOORBELL_MOTION, DoorbellMotionActivity),
+    (ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE, DoorbellImageCaptureActivity),
+    (ACTIVITY_ACTIONS_DOORBELL_VIEW, DoorbellViewActivity),
+    (ACTIVITY_ACTIONS_LOCK_OPERATION, LockOperationActivity),
+    (ACTIVITY_ACTIONS_DOOR_OPERATION, DoorOperationActivity),
+    (ACTIVITY_ACTIONS_BRIDGE_OPERATION, BridgeOperationActivity),
+)
+
+ACTION_TO_CLASS: dict[str, ActivityTypes] = {}
+for activities, klass in ACTIONS_TO_CLASS:
+    for activity in activities:
+        ACTION_TO_CLASS[activity] = klass

@@ -1,26 +1,9 @@
 """Api functions common between sync and async."""
 import datetime
 import logging
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
-from .activity import (
-    ACTIVITY_ACTIONS_BRIDGE_OPERATION,
-    ACTIVITY_ACTIONS_DOOR_OPERATION,
-    ACTIVITY_ACTIONS_DOORBELL_DING,
-    ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE,
-    ACTIVITY_ACTIONS_DOORBELL_MOTION,
-    ACTIVITY_ACTIONS_DOORBELL_VIEW,
-    ACTIVITY_ACTIONS_LOCK_OPERATION,
-    SOURCE_LOCK_OPERATE,
-    SOURCE_LOG,
-    BridgeOperationActivity,
-    DoorbellDingActivity,
-    DoorbellImageCaptureActivity,
-    DoorbellMotionActivity,
-    DoorbellViewActivity,
-    DoorOperationActivity,
-    LockOperationActivity,
-)
+from .activity import ACTION_TO_CLASS, SOURCE_LOCK_OPERATE, SOURCE_LOG, ActivityTypes
 from .const import BASE_URLS, BRANDING, Brand
 from .doorbell import Doorbell
 from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
@@ -78,15 +61,6 @@ HYPER_BRIDGE_PARAM = "&connection=persistent"
 API_GET_USER_URL = "/users/me"
 
 _LOGGER = logging.getLogger(__name__)
-ActivityType = Union[
-    DoorbellDingActivity,
-    DoorbellMotionActivity,
-    DoorbellImageCaptureActivity,
-    DoorbellViewActivity,
-    LockOperationActivity,
-    DoorOperationActivity,
-    BridgeOperationActivity,
-]
 
 
 def _api_headers(
@@ -110,7 +84,7 @@ def _api_headers(
 
 def _convert_lock_result_to_activities(
     lock_json_dict: Dict[str, Any]
-) -> List[ActivityType]:
+) -> List[ActivityTypes]:
     activities = []
     lock_info_json_dict = lock_json_dict.get("info", {})
     lock_id = lock_info_json_dict.get("lockID")
@@ -132,33 +106,23 @@ def _convert_lock_result_to_activities(
 
 
 def _activity_from_dict(
-    source: str, activity_dict: Dict[str, Any]
-) -> Optional[ActivityType]:
-    _LOGGER.debug("Processing activity: %s", activity_dict)
-    action = activity_dict.get("action")
-
-    if action in ACTIVITY_ACTIONS_DOORBELL_DING:
-        return DoorbellDingActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_DOORBELL_MOTION:
-        return DoorbellMotionActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE:
-        return DoorbellImageCaptureActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_DOORBELL_VIEW:
-        return DoorbellViewActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_LOCK_OPERATION:
-        return LockOperationActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_DOOR_OPERATION:
-        return DoorOperationActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_BRIDGE_OPERATION:
-        return BridgeOperationActivity(source, activity_dict)
-
-    _LOGGER.debug("Unknown activity: %s", activity_dict)
+    source: str, activity_dict: Dict[str, Any], debug: bool = False
+) -> Optional[ActivityTypes]:
+    """Convert an activity dict to and Activity object."""
+    if debug:
+        _LOGGER.debug("Processing activity: %s", activity_dict)
+    if (action := activity_dict.get("action")) and (
+        klass := ACTION_TO_CLASS.get(action)
+    ):
+        return klass(source, activity_dict)
+    if debug:
+        _LOGGER.debug("Unknown activity: %s", activity_dict)
     return None
 
 
 def _map_lock_result_to_activity(
     lock_id: str, activity_epoch: float, action_text: str
-) -> Optional[ActivityType]:
+) -> Optional[ActivityTypes]:
     """Create an yale access activity from a lock result."""
     mapped_dict = {
         "dateTime": activity_epoch,
@@ -166,22 +130,23 @@ def _map_lock_result_to_activity(
         "deviceType": "lock",
         "action": action_text,
     }
-    return _activity_from_dict(SOURCE_LOCK_OPERATE, mapped_dict)
+    return _activity_from_dict(
+        SOURCE_LOCK_OPERATE, mapped_dict, _LOGGER.isEnabledFor(logging.DEBUG)
+    )
 
 
 def _datetime_string_to_epoch(datetime_string: str) -> datetime.datetime:
     return parse_datetime(datetime_string).timestamp() * 1000
 
 
-def _process_activity_json(json_dict: Dict[str, Any]) -> List[ActivityType]:
+def _process_activity_json(json_dict: Dict[str, Any]) -> List[ActivityTypes]:
     if "events" in json_dict:
         json_dict = json_dict["events"]
-    activities = []
+    debug = _LOGGER.isEnabledFor(logging.DEBUG)
+    activities: list[ActivityTypes] = []
     for activity_json in json_dict:
-        activity = _activity_from_dict(SOURCE_LOG, activity_json)
-        if activity:
+        if activity := _activity_from_dict(SOURCE_LOG, activity_json, debug):
             activities.append(activity)
-
     return activities
 
 

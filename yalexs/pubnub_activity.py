@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from typing import Any, Dict
 
 from .activity import (
@@ -15,6 +16,7 @@ from .activity import (
     ACTION_LOCK_UNLOCK,
     ACTION_LOCK_UNLOCKING,
     SOURCE_PUBNUB,
+    ActivityTypes,
 )
 from .api_common import _activity_from_dict, _datetime_string_to_epoch
 from .device import Device
@@ -29,12 +31,14 @@ from .lock import (
     determine_lock_status,
 )
 
+_LOGGER = logging.getLogger(__name__)
+
 
 def activities_from_pubnub_message(
     device: Device, date_time: datetime, message: Dict[str, Any]
-):
+) -> list[ActivityTypes]:
     """Create activities from pubnub."""
-    activities = []
+    activities: list[ActivityTypes] = []
     activity_dict = {
         "deviceID": device.device_id,
         "house": device.house_id,
@@ -66,8 +70,7 @@ def activities_from_pubnub_message(
         error = message.get("error") or {}
         if error.get("restCode") == 98 or error.get("name") == "ERRNO_BRIDGE_OFFLINE":
             _add_activity(activities, activity_dict, ACTION_BRIDGE_OFFLINE)
-        elif LOCK_STATUS_KEY in message:
-            status = message[LOCK_STATUS_KEY]
+        elif status := message.get(LOCK_STATUS_KEY):
             if status == ACTION_BRIDGE_ONLINE:
                 _add_activity(activities, activity_dict, ACTION_BRIDGE_ONLINE)
             elif status == ACTION_BRIDGE_OFFLINE:
@@ -83,8 +86,8 @@ def activities_from_pubnub_message(
                 _add_activity(activities, activity_dict, ACTION_LOCK_UNLOCKING)
             elif lock_status == LockStatus.JAMMED:
                 _add_activity(activities, activity_dict, ACTION_LOCK_JAMMED)
-        if DOOR_STATE_KEY in message:
-            door_state = determine_door_state(message[DOOR_STATE_KEY])
+        if door_state_raw := message.get(DOOR_STATE_KEY):
+            door_state = determine_door_state(door_state_raw)
             if door_state == LockDoorStatus.OPEN:
                 _add_activity(activities, activity_dict, ACTION_DOOR_OPEN)
             elif door_state == LockDoorStatus.CLOSED:
@@ -97,19 +100,24 @@ def activities_from_pubnub_message(
         info.setdefault("started", activity_dict["dateTime"])
         info.setdefault("ended", activity_dict["dateTime"])
 
-        if DOORBELL_STATUS_KEY in message:
-            status = message[DOORBELL_STATUS_KEY]
-            if status in (
-                ACTION_DOORBELL_MOTION_DETECTED,
-                ACTION_DOORBELL_IMAGE_CAPTURE,
-                ACTION_DOORBELL_BUTTON_PUSHED,
-            ):
-                _add_activity(activities, activity_dict, status)
+        if (status := message.get(DOORBELL_STATUS_KEY)) and status in (
+            ACTION_DOORBELL_MOTION_DETECTED,
+            ACTION_DOORBELL_IMAGE_CAPTURE,
+            ACTION_DOORBELL_BUTTON_PUSHED,
+        ):
+            _add_activity(activities, activity_dict, status)
 
     return activities
 
 
-def _add_activity(activities, activity_dict, action):
+def _add_activity(
+    activities: list[ActivityTypes], activity_dict: dict[str, Any], action: str
+) -> None:
+    """Add an activity."""
     activity_dict = activity_dict.copy()
     activity_dict["action"] = action
-    activities.append(_activity_from_dict(SOURCE_PUBNUB, activity_dict))
+    activities.append(
+        _activity_from_dict(
+            SOURCE_PUBNUB, activity_dict, _LOGGER.isEnabledFor(logging.DEBUG)
+        )
+    )
