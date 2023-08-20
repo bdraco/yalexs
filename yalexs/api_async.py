@@ -15,6 +15,7 @@ from aiohttp import (
     ServerDisconnectedError,
 )
 
+from .activity import ActivityTypes
 from .api_common import (
     API_EXCEPTION_RETRY_TIME,
     API_LOCK_ASYNC_URL,
@@ -34,7 +35,6 @@ from .api_common import (
     _process_doorbells_json,
     _process_locks_json,
 )
-from .activity import ActivityTypes
 from .const import DEFAULT_BRAND
 from .doorbell import Doorbell, DoorbellDetail
 from .exceptions import AugustApiAIOHTTPError
