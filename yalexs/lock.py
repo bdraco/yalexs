@@ -126,7 +126,7 @@ class LockDetail(DeviceDetail):
     def bridge(self):
         return self._bridge
 
-    @cached_property
+    @property
     def bridge_is_online(self):
         if self._bridge is None:
             return False
