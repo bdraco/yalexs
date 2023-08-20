@@ -30,7 +30,7 @@ class BridgeDetail(DeviceDetail):
         else:
             self._status = None
 
-    @cached_property
+    @property
     def status(self):
         return self._status
 
