@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional
 
 USER_CACHE = {}
+from .backports.functools import cached_property
 
 
 class YaleUser:
@@ -11,23 +12,23 @@ class YaleUser:
         self._uuid = uuid
         self._data = data
 
-    @property
+    @cached_property
     def thumbnail_url(self) -> Optional[str]:
         return self._data.get("imageInfo", {}).get("thumbnail", {}).get("secure_url")
 
-    @property
+    @cached_property
     def image_url(self) -> Optional[str]:
         return self._data.get("imageInfo", {}).get("original", {}).get("secure_url")
 
-    @property
+    @cached_property
     def first_name(self) -> Optional[str]:
         return self._data.get("FirstName")
 
-    @property
+    @cached_property
     def last_name(self) -> Optional[str]:
         return self._data.get("LastName")
 
-    @property
+    @cached_property
     def user_type(self) -> Optional[str]:
         return self._data.get("UserType")
 
