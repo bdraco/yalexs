@@ -70,8 +70,7 @@ def activities_from_pubnub_message(
         error = message.get("error") or {}
         if error.get("restCode") == 98 or error.get("name") == "ERRNO_BRIDGE_OFFLINE":
             _add_activity(activities, activity_dict, ACTION_BRIDGE_OFFLINE)
-        elif LOCK_STATUS_KEY in message:
-            status = message[LOCK_STATUS_KEY]
+        elif status := message.get(LOCK_STATUS_KEY):
             if status == ACTION_BRIDGE_ONLINE:
                 _add_activity(activities, activity_dict, ACTION_BRIDGE_ONLINE)
             elif status == ACTION_BRIDGE_OFFLINE:
@@ -87,8 +86,8 @@ def activities_from_pubnub_message(
                 _add_activity(activities, activity_dict, ACTION_LOCK_UNLOCKING)
             elif lock_status == LockStatus.JAMMED:
                 _add_activity(activities, activity_dict, ACTION_LOCK_JAMMED)
-        if DOOR_STATE_KEY in message:
-            door_state = determine_door_state(message[DOOR_STATE_KEY])
+        if door_state_raw := message.get(DOOR_STATE_KEY):
+            door_state = determine_door_state(door_state_raw)
             if door_state == LockDoorStatus.OPEN:
                 _add_activity(activities, activity_dict, ACTION_DOOR_OPEN)
             elif door_state == LockDoorStatus.CLOSED:
@@ -101,14 +100,12 @@ def activities_from_pubnub_message(
         info.setdefault("started", activity_dict["dateTime"])
         info.setdefault("ended", activity_dict["dateTime"])
 
-        if DOORBELL_STATUS_KEY in message:
-            status = message[DOORBELL_STATUS_KEY]
-            if status in (
-                ACTION_DOORBELL_MOTION_DETECTED,
-                ACTION_DOORBELL_IMAGE_CAPTURE,
-                ACTION_DOORBELL_BUTTON_PUSHED,
-            ):
-                _add_activity(activities, activity_dict, status)
+        if (status := message.get(DOORBELL_STATUS_KEY)) and status in (
+            ACTION_DOORBELL_MOTION_DETECTED,
+            ACTION_DOORBELL_IMAGE_CAPTURE,
+            ACTION_DOORBELL_BUTTON_PUSHED,
+        ):
+            _add_activity(activities, activity_dict, status)
 
     return activities
 
