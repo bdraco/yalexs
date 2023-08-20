@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from types import GenericAlias
-from typing import Any, Generic, Self, TypeVar, overload
+from typing import Any, Generic, TypeVar, overload
 
 _T = TypeVar("_T")
 
@@ -31,7 +31,7 @@ class cached_property(Generic[_T]):  # pylint: disable=invalid-name
             )
 
     @overload
-    def __get__(self, instance: None, owner: type[Any] | None = None) -> Self:
+    def __get__(self, instance: None, owner: type[Any] | None = None) -> Any:
         ...
 
     @overload
@@ -40,7 +40,7 @@ class cached_property(Generic[_T]):  # pylint: disable=invalid-name
 
     def __get__(
         self, instance: Any | None, owner: type[Any] | None = None
-    ) -> _T | Self:
+    ) -> _T | Any:
         """Get."""
         if instance is None:
             return self
