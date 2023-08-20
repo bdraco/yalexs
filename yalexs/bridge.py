@@ -61,7 +61,7 @@ class BridgeStatusDetail:
         self._last_online = data["lastOnline"] if "lastOnline" in data else None
         self._last_offline = data["lastOffline"] if "lastOffline" in data else None
 
-    @cached_property
+    @property
     def current(self):
         return self._current
 
