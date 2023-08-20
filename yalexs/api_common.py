@@ -13,6 +13,7 @@ from .activity import (
     ACTIVITY_ACTIONS_LOCK_OPERATION,
     SOURCE_LOCK_OPERATE,
     SOURCE_LOG,
+    Activity,
     BridgeOperationActivity,
     DoorbellDingActivity,
     DoorbellImageCaptureActivity,
@@ -131,28 +132,34 @@ def _convert_lock_result_to_activities(
     return activities
 
 
+ACTIONS_TO_CLASS = (
+    (ACTIVITY_ACTIONS_DOORBELL_DING, DoorbellDingActivity),
+    (ACTIVITY_ACTIONS_DOORBELL_MOTION, DoorbellMotionActivity),
+    (ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE, DoorbellImageCaptureActivity),
+    (ACTIVITY_ACTIONS_DOORBELL_VIEW, DoorbellViewActivity),
+    (ACTIVITY_ACTIONS_LOCK_OPERATION, LockOperationActivity),
+    (ACTIVITY_ACTIONS_DOOR_OPERATION, DoorOperationActivity),
+    (ACTIVITY_ACTIONS_BRIDGE_OPERATION, BridgeOperationActivity),
+)
+
+ACTION_TO_CLASS: dict[str, ActivityType] = {}
+for activities, klass in ACTIONS_TO_CLASS:
+    for activity in activities:
+        ACTION_TO_CLASS[activity] = klass
+
+
 def _activity_from_dict(
-    source: str, activity_dict: Dict[str, Any]
+    source: str, activity_dict: Dict[str, Any], debug: bool = False
 ) -> Optional[ActivityType]:
-    _LOGGER.debug("Processing activity: %s", activity_dict)
-    action = activity_dict.get("action")
-
-    if action in ACTIVITY_ACTIONS_DOORBELL_DING:
-        return DoorbellDingActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_DOORBELL_MOTION:
-        return DoorbellMotionActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_DOORBELL_IMAGE_CAPTURE:
-        return DoorbellImageCaptureActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_DOORBELL_VIEW:
-        return DoorbellViewActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_LOCK_OPERATION:
-        return LockOperationActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_DOOR_OPERATION:
-        return DoorOperationActivity(source, activity_dict)
-    if action in ACTIVITY_ACTIONS_BRIDGE_OPERATION:
-        return BridgeOperationActivity(source, activity_dict)
-
-    _LOGGER.debug("Unknown activity: %s", activity_dict)
+    """Convert an activity dict to and Activity object."""
+    if debug:
+        _LOGGER.debug("Processing activity: %s", activity_dict)
+    if (action := activity_dict.get("action")) and (
+        klass := ACTION_TO_CLASS.get(action)
+    ):
+        return klass(source, activity_dict)
+    if debug:
+        _LOGGER.debug("Unknown activity: %s", activity_dict)
     return None
 
 
@@ -166,7 +173,9 @@ def _map_lock_result_to_activity(
         "deviceType": "lock",
         "action": action_text,
     }
-    return _activity_from_dict(SOURCE_LOCK_OPERATE, mapped_dict)
+    return _activity_from_dict(
+        SOURCE_LOCK_OPERATE, mapped_dict, _LOGGER.isEnabledFor(logging.DEBUG)
+    )
 
 
 def _datetime_string_to_epoch(datetime_string: str) -> datetime.datetime:
@@ -176,12 +185,11 @@ def _datetime_string_to_epoch(datetime_string: str) -> datetime.datetime:
 def _process_activity_json(json_dict: Dict[str, Any]) -> List[ActivityType]:
     if "events" in json_dict:
         json_dict = json_dict["events"]
-    activities = []
+    debug = _LOGGER.isEnabledFor(logging.DEBUG)
+    activities: list[ActivityType] = []
     for activity_json in json_dict:
-        activity = _activity_from_dict(SOURCE_LOG, activity_json)
-        if activity:
+        if activity := _activity_from_dict(SOURCE_LOG, activity_json, debug):
             activities.append(activity)
-
     return activities
 
 
