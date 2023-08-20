@@ -360,17 +360,17 @@ class LockOperationActivity(Activity):
         image_info = calling_user.get("imageInfo") or calling_user
         original = image_info.get("original")
 
-        if type(original) is str:
+        if type(original) is str:  # pylint: disable=unidiomatic-typecheck
             operator_image_url = original
-        elif type(original) is dict:
+        elif type(original) is dict:  # pylint: disable=unidiomatic-typecheck
             operator_image_url = original.get("secure_url")
         else:
             operator_image_url = None
 
         thumbnail = image_info.get("thumbnail")
-        if type(thumbnail) is str:
+        if type(thumbnail) is str:  # pylint: disable=unidiomatic-typecheck
             operator_thumbnail_url = thumbnail
-        elif type(thumbnail) is dict:
+        elif type(thumbnail) is dict:  # pylint: disable=unidiomatic-typecheck
             operator_thumbnail_url = thumbnail.get("secure_url")
         else:
             operator_thumbnail_url = None
