@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
 import json
 import logging
 import os
-from typing import Optional
 
 import aiofiles
 from aiohttp import ClientError
@@ -117,7 +118,7 @@ class AuthenticatorAsync(AuthenticatorCommon):
 
         return True
 
-    async def async_refresh_access_token(self, force=False) -> Optional[Authentication]:
+    async def async_refresh_access_token(self, force=False) -> Authentication | None:
         if not self.should_refresh() and not force:
             return self._authentication
 

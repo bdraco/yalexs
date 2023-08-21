@@ -32,8 +32,7 @@ def get_latest_activity(
     if not activity2:
         return activity1
     if (
-        activity2.activity_start_time > activity1.activity_start_time
-        or activity1.activity_start_time == activity2.activity_start_time
+        activity1.activity_start_time <= activity2.activity_start_time
         and ACTIVITY_ACTION_STATES.get(activity2.action) not in MOVING_STATES
     ):
         return activity2

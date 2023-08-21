@@ -6,7 +6,7 @@ from typing import Any, Union
 
 from .backports.functools import cached_property
 from .lock import LockDoorStatus, LockStatus
-from .time import parse_datetime
+from .time import epoch_to_datetime, parse_datetime
 from .users import YaleUser, get_user_info
 
 ACTION_LOCK_ONETOUCHLOCK = "onetouchlock"
@@ -142,11 +142,6 @@ SOURCE_LOG = "log"
 # If we get a lock operation activity with the same time stamp as a moving
 # activity we want to use the non-moving activity since its the completed state.
 MOVING_STATES = {LockStatus.UNLOCKING, LockStatus.LOCKING}
-
-
-def epoch_to_datetime(epoch: str | int | float) -> datetime:
-    """Convert epoch to datetime."""
-    return datetime.fromtimestamp(float(epoch) / 1000.0)
 
 
 class ActivityType(Enum):
