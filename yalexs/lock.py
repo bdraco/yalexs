@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import datetime
 from enum import Enum
-from typing import List, Optional
 
 from .backports.functools import cached_property
 from .bridge import BridgeDetail, BridgeStatus
@@ -210,25 +209,25 @@ class LockDetail(DeviceDetail):
         return self._data.get("OfflineKeys", {})
 
     @cached_property
-    def loaded_offline_keys(self) -> List[dict]:
+    def loaded_offline_keys(self) -> list[dict]:
         return self.offline_keys.get("loaded", [])
 
     @cached_property
-    def offline_key(self) -> Optional[str]:
+    def offline_key(self) -> str | None:
         loaded_offline_keys = self.loaded_offline_keys
         if loaded_offline_keys and "key" in loaded_offline_keys[0]:
             return loaded_offline_keys[0]["key"]
         return None
 
     @cached_property
-    def offline_slot(self) -> Optional[int]:
+    def offline_slot(self) -> int | None:
         loaded_offline_keys = self.loaded_offline_keys
         if loaded_offline_keys and "slot" in loaded_offline_keys[0]:
             return loaded_offline_keys[0]["slot"]
         return None
 
     @cached_property
-    def mac_address(self) -> Optional[str]:
+    def mac_address(self) -> str | None:
         mac = self._data.get("macAddress")
         return mac.upper() if mac else None
 

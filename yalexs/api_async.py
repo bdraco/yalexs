@@ -1,9 +1,10 @@
 """Api calls for sync."""
+from __future__ import annotations
 
 import asyncio
 from http import HTTPStatus
 import logging
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 
 from aiohttp import (
     ClientConnectionError,
@@ -51,7 +52,7 @@ from .pin import Pin
 _LOGGER = logging.getLogger(__name__)
 
 
-def _obscure_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+def _obscure_payload(payload: dict[str, Any]) -> dict[str, Any]:
     """Obscure the payload for logging."""
     if payload is None:
         return None
@@ -138,7 +139,7 @@ class ApiAsync(ApiCommon):
             self._build_get_houses_request(access_token)
         )
 
-    async def async_get_house(self, access_token: str, house_id: str) -> Dict[str, Any]:
+    async def async_get_house(self, access_token: str, house_id: str) -> dict[str, Any]:
         response = await self._async_dict_to_api(
             self._build_get_house_request(access_token, house_id)
         )
@@ -146,7 +147,7 @@ class ApiAsync(ApiCommon):
 
     async def async_get_house_activities(
         self, access_token: str, house_id: str, limit: int = 8
-    ) -> List[ActivityTypes]:
+    ) -> list[ActivityTypes]:
         response = await self._async_dict_to_api(
             self._build_get_house_activities_request(
                 access_token, house_id, limit=limit
@@ -154,13 +155,13 @@ class ApiAsync(ApiCommon):
         )
         return _process_activity_json(await response.json())
 
-    async def async_get_locks(self, access_token: str) -> List[Lock]:
+    async def async_get_locks(self, access_token: str) -> list[Lock]:
         response = await self._async_dict_to_api(
             self._build_get_locks_request(access_token)
         )
         return _process_locks_json(await response.json())
 
-    async def async_get_operable_locks(self, access_token: str) -> List[Lock]:
+    async def async_get_operable_locks(self, access_token: str) -> list[Lock]:
         locks = await self.async_get_locks(access_token)
 
         return [lock for lock in locks if lock.is_operable]
@@ -191,7 +192,7 @@ class ApiAsync(ApiCommon):
 
     async def async_get_lock_door_status(
         self, access_token: str, lock_id: str, lock_status=False
-    ) -> Union[LockDoorStatus, Tuple[LockDoorStatus, LockStatus]]:
+    ) -> LockDoorStatus | tuple[LockDoorStatus, LockStatus]:
         response = await self._async_dict_to_api(
             self._build_get_lock_status_request(access_token, lock_id)
         )
@@ -205,7 +206,7 @@ class ApiAsync(ApiCommon):
 
         return determine_door_state(json_dict.get("doorState"))
 
-    async def async_get_pins(self, access_token: str, lock_id: str) -> List[Pin]:
+    async def async_get_pins(self, access_token: str, lock_id: str) -> list[Pin]:
         response = await self._async_dict_to_api(
             self._build_get_pins_request(access_token, lock_id)
         )
@@ -262,7 +263,7 @@ class ApiAsync(ApiCommon):
 
     async def async_lock_return_activities(
         self, access_token: str, lock_id: str
-    ) -> List[ActivityTypes]:
+    ) -> list[ActivityTypes]:
         """Execute a remote lock operation.
 
         Returns an array of one or more yalexs.activity.Activity objects
@@ -302,7 +303,7 @@ class ApiAsync(ApiCommon):
 
     async def async_unlock_return_activities(
         self, access_token: str, lock_id: str
-    ) -> List[ActivityTypes]:
+    ) -> list[ActivityTypes]:
         """Execute a remote lock operation.
 
         Returns an array of one or more yalexs.activity.Activity objects

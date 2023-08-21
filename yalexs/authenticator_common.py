@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 import json
 import logging
-from typing import Any, Optional
+from typing import Any
 import uuid
 
 import jwt
@@ -99,8 +101,8 @@ class AuthenticatorCommon:
         login_method: str,
         username: str,
         password: str,
-        install_id: Optional[str] = None,
-        access_token_cache_file: Optional[str] = None,
+        install_id: str | None = None,
+        access_token_cache_file: str | None = None,
         access_token_renewal_threshold: timedelta = DEFAULT_RENEWAL_THRESHOLD,
     ) -> None:
         self._api = api

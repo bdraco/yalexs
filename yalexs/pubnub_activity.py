@@ -1,6 +1,6 @@
 from datetime import datetime
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from .activity import (
     ACTION_BRIDGE_OFFLINE,
@@ -35,7 +35,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def activities_from_pubnub_message(
-    device: Device, date_time: datetime, message: Dict[str, Any]
+    device: Device, date_time: datetime, message: dict[str, Any]
 ) -> list[ActivityTypes]:
     """Create activities from pubnub."""
     activities: list[ActivityTypes] = []

@@ -1,7 +1,9 @@
 """Api functions common between sync and async."""
+from __future__ import annotations
+
 import datetime
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .activity import ACTION_TO_CLASS, SOURCE_LOCK_OPERATE, SOURCE_LOG, ActivityTypes
 from .const import BASE_URLS, BRANDING, Brand
@@ -64,8 +66,8 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def _api_headers(
-    access_token: Optional[str] = None, brand: Optional[Brand] = None
-) -> Dict[str, str]:
+    access_token: str | None = None, brand: Brand | None = None
+) -> dict[str, str]:
     headers = {
         HEADER_ACCEPT_VERSION: HEADER_VALUE_ACCEPT_VERSION,
         HEADER_AUGUST_API_KEY: HEADER_VALUE_API_KEY,
@@ -83,8 +85,8 @@ def _api_headers(
 
 
 def _convert_lock_result_to_activities(
-    lock_json_dict: Dict[str, Any]
-) -> List[ActivityTypes]:
+    lock_json_dict: dict[str, Any]
+) -> list[ActivityTypes]:
     activities = []
     lock_info_json_dict = lock_json_dict.get("info", {})
     lock_id = lock_info_json_dict.get("lockID")
@@ -106,8 +108,8 @@ def _convert_lock_result_to_activities(
 
 
 def _activity_from_dict(
-    source: str, activity_dict: Dict[str, Any], debug: bool = False
-) -> Optional[ActivityTypes]:
+    source: str, activity_dict: dict[str, Any], debug: bool = False
+) -> ActivityTypes | None:
     """Convert an activity dict to and Activity object."""
     if debug:
         _LOGGER.debug("Processing activity: %s", activity_dict)
@@ -122,7 +124,7 @@ def _activity_from_dict(
 
 def _map_lock_result_to_activity(
     lock_id: str, activity_epoch: float, action_text: str
-) -> Optional[ActivityTypes]:
+) -> ActivityTypes | None:
     """Create an yale access activity from a lock result."""
     mapped_dict = {
         "dateTime": activity_epoch,
@@ -139,7 +141,7 @@ def _datetime_string_to_epoch(datetime_string: str) -> datetime.datetime:
     return parse_datetime(datetime_string).timestamp() * 1000
 
 
-def _process_activity_json(json_dict: Dict[str, Any]) -> List[ActivityTypes]:
+def _process_activity_json(json_dict: dict[str, Any]) -> list[ActivityTypes]:
     if "events" in json_dict:
         json_dict = json_dict["events"]
     debug = _LOGGER.isEnabledFor(logging.DEBUG)
@@ -150,11 +152,11 @@ def _process_activity_json(json_dict: Dict[str, Any]) -> List[ActivityTypes]:
     return activities
 
 
-def _process_doorbells_json(json_dict: Dict[str, Any]) -> List[Doorbell]:
+def _process_doorbells_json(json_dict: dict[str, Any]) -> list[Doorbell]:
     return [Doorbell(device_id, data) for device_id, data in json_dict.items()]
 
 
-def _process_locks_json(json_dict: Dict[str, Any]) -> List[Lock]:
+def _process_locks_json(json_dict: dict[str, Any]) -> list[Lock]:
     return [Lock(device_id, data) for device_id, data in json_dict.items()]
 
 
@@ -298,7 +300,7 @@ class ApiCommon:
 
     def _build_call_lock_operation_request(
         self, url_str: str, access_token: str, lock_id: str, timeout
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         return {
             "method": "put",
             "url": self.get_brand_url(url_str.format(lock_id=lock_id)),
