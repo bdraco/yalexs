@@ -26,7 +26,11 @@ DISABLE_STATUS = ("init", "", None)
 LOCK_STATUS_KEY = "status"
 DOOR_STATE_KEY = "doorState"
 
+DOORMAN_MODEL_TYPES = {7, 10}
 
+
+# Type 7 is a doorman
+# Type 10 is a doorman in the Swedish market
 class Lock(Device):
     def __init__(self, device_id, data):
         super().__init__(
@@ -110,8 +114,7 @@ class LockDetail(DeviceDetail):
 
     @cached_property
     def doorbell(self) -> bool:
-        # Type 7 is a doorman
-        return self._data["Type"] == 7
+        return self._data["Type"] in DOORMAN_MODEL_TYPES
 
     @cached_property
     def battery_level(self):
