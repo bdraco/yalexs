@@ -453,15 +453,11 @@ class LockOperationActivity(Activity):
         """Operation used rfid tag."""
         return self._info.get("tag", self.action in TAG_ACTIONS)
 
-    
     @cached_property
     def operated_autorelock(self):
         """Operation done by automatic relock."""
         return self.user_id == "automaticrelock" or self.action in AUTO_RELOCK_ACTIONS
 
-
-    
-    
     @cached_property
     def operator_image_url(self):
         """URL to the image of the lock operator."""
