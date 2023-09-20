@@ -110,6 +110,17 @@ REMOTE_ACTIONS = {
 }
 AUTO_RELOCK_ACTIONS = {ACTION_LOCK_AUTO_LOCK}
 
+TAG_ACTIONS = {
+    ACTION_RF_SECURE,
+    ACTION_RF_LOCK,
+    ACTION_RF_UNLOCK,
+}
+
+MANUAL_ACTIONS = {
+    ACTION_LOCK_MANUAL_LOCK,
+    ACTION_LOCK_MANUAL_UNLOCK,
+}
+
 ACTIVITY_ACTION_STATES = {
     ACTION_RF_SECURE: LockStatus.LOCKED,
     ACTION_RF_LOCK: LockStatus.LOCKED,
@@ -396,6 +407,8 @@ class LockOperationActivity(Activity):
             f"operated_by={self.operated_by} "
             f"operated_remote={self.operated_remote} "
             f"operated_keypad={self.operated_keypad} "
+            f"operated_tag={self.operated_tag} "
+            f"operated_manual={self.operated_manual} "
             f"operated_autorelock={self.operated_autorelock} "
             f"operator_image_url={self.operator_image_url} "
             f"operator_thumbnail_url={self.operator_thumbnail_url}>"
@@ -431,10 +444,24 @@ class LockOperationActivity(Activity):
         return self._info.get("keypad", self.action in KEYPAD_ACTIONS)
 
     @cached_property
+    def operated_manual(self):
+        """Operation done manually using the knob."""
+        return self._info.get("manual", self.action in MANUAL_ACTIONS)
+
+    @cached_property
+    def operated_tag(self):
+        """Operation used rfid tag."""
+        return self._info.get("tag", self.action in TAG_ACTIONS)
+
+    
+    @cached_property
     def operated_autorelock(self):
         """Operation done by automatic relock."""
         return self.user_id == "automaticrelock" or self.action in AUTO_RELOCK_ACTIONS
 
+
+    
+    
     @cached_property
     def operator_image_url(self):
         """URL to the image of the lock operator."""
