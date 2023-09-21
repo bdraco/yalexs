@@ -327,7 +327,7 @@ class TestActivity(unittest.TestCase):
 
     def test_rf_unlock_activity_v4(self):
         rf_unlock_activity = LockOperationActivity(
-            SOURCE_LOG, json.loads(load_fixture("rf_unlock_activity.json"))
+            SOURCE_LOG, json.loads(load_fixture("rf_unlock_activity_v4.json"))
         )
         assert rf_unlock_activity.operated_by == "89 House"
         assert rf_unlock_activity.operated_remote is False
