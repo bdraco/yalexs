@@ -142,8 +142,8 @@ class TestActivity(unittest.TestCase):
         assert auto_unlock_activity.operated_by == "My Name"
         assert auto_unlock_activity.operated_remote is False
         assert auto_unlock_activity.operated_keypad is False
-        assert manual_lock_activity.operated_manual is False
-        assert manual_lock_activity.operated_tag is False
+        assert auto_unlock_activity.operated_manual is False
+        assert auto_unlock_activity.operated_tag is False
 
     def test_bluetooth_lock_activity(self):
         bluetooth_lock_activity = LockOperationActivity(
@@ -152,8 +152,8 @@ class TestActivity(unittest.TestCase):
         assert bluetooth_lock_activity.operated_by == "I have a picture"
         assert bluetooth_lock_activity.operated_remote is False
         assert bluetooth_lock_activity.operated_keypad is False
-        assert manual_lock_activity.operated_manual is False
-        assert manual_lock_activity.operated_tag is False
+        assert bluetooth_lock_activity.operated_manual is False
+        assert bluetooth_lock_activity.operated_tag is False
         assert bluetooth_lock_activity.operator_image_url == "https://image.url"
         assert bluetooth_lock_activity.operator_thumbnail_url == "https://thumbnail.url"
 
@@ -164,8 +164,8 @@ class TestActivity(unittest.TestCase):
         assert keypad_lock_activity.operated_by == "My Name"
         assert keypad_lock_activity.operated_remote is False
         assert keypad_lock_activity.operated_keypad is True
-        assert manual_lock_activity.operated_manual is False
-        assert manual_lock_activity.operated_tag is False
+        assert keypad_lock_activity.operated_manual is False
+        assert keypad_lock_activity.operated_tag is False
         assert keypad_lock_activity.operator_image_url is None
         assert keypad_lock_activity.operator_thumbnail_url is None
 
@@ -176,8 +176,8 @@ class TestActivity(unittest.TestCase):
         assert auto_lock_activity.operated_by == "Auto Lock"
         assert auto_lock_activity.operated_remote is False
         assert auto_lock_activity.operated_keypad is False
-        assert manual_lock_activity.operated_manual is False
-        assert manual_lock_activity.operated_tag is False
+        assert auto_lock_activity.operated_manual is False
+        assert auto_lock_activity.operated_tag is False
         assert (
             auto_lock_activity.operator_image_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/auto_lock@3x.png"
@@ -194,8 +194,8 @@ class TestActivity(unittest.TestCase):
         assert keypad_lock_activity.operated_by == "Sample Person"
         assert keypad_lock_activity.operated_remote is False
         assert keypad_lock_activity.operated_keypad is True
-        assert manual_lock_activity.operated_manual is False
-        assert manual_lock_activity.operated_tag is False
+        assert keypad_lock_activity.operated_manual is False
+        assert keypad_lock_activity.operated_tag is False
         assert (
             keypad_lock_activity.operator_image_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/pin_unlock@3x.png"
@@ -212,8 +212,8 @@ class TestActivity(unittest.TestCase):
         assert keypad_lock_activity.operated_by == "Zip Zoo"
         assert keypad_lock_activity.operated_remote is False
         assert keypad_lock_activity.operated_keypad is True
-        assert manual_lock_activity.operated_manual is False
-        assert manual_lock_activity.operated_tag is False
+        assert keypad_lock_activity.operated_manual is False
+        assert keypad_lock_activity.operated_tag is False
         assert (
             keypad_lock_activity.operator_image_url
             == "https://d33mytkkohwnk6.cloudfront.net/user/abc.jpg"
@@ -230,8 +230,8 @@ class TestActivity(unittest.TestCase):
         assert remote_lock_activity.operated_by == "My Name"
         assert remote_lock_activity.operated_remote is True
         assert remote_lock_activity.operated_keypad is False
-        assert manual_lock_activity.operated_manual is False
-        assert manual_lock_activity.operated_tag is False
+        assert remote_lock_activity.operated_manual is False
+        assert remote_lock_activity.operated_tag is False
 
     def test_remote_lock_activity_v4(self):
         remote_lock_activity = LockOperationActivity(
@@ -240,8 +240,8 @@ class TestActivity(unittest.TestCase):
         assert remote_lock_activity.operated_by == "89 House"
         assert remote_lock_activity.operated_remote is True
         assert remote_lock_activity.operated_keypad is False
-        assert manual_lock_activity.operated_manual is False
-        assert manual_lock_activity.operated_tag is False
+        assert remote_lock_activity.operated_manual is False
+        assert remote_lock_activity.operated_tag is False
         assert (
             remote_lock_activity.operator_image_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_lock@3x.png"
@@ -259,8 +259,8 @@ class TestActivity(unittest.TestCase):
         assert remote_unlock_activity.operated_by == "89 House"
         assert remote_unlock_activity.operated_remote is True
         assert remote_unlock_activity.operated_keypad is False
-        assert manual_lock_activity.operated_manual is False
-        assert manual_lock_activity.operated_tag is False
+        assert remote_unlock_activity.operated_manual is False
+        assert remote_unlock_activity.operated_tag is False
         assert (
             remote_unlock_activity.operator_image_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_unlock@3x.png"
@@ -278,8 +278,8 @@ class TestActivity(unittest.TestCase):
         assert remote_unlock_activity.operated_by == "Zipper Zoomer"
         assert remote_unlock_activity.operated_remote is True
         assert remote_unlock_activity.operated_keypad is False
-        assert manual_lock_activity.operated_manual is False
-        assert manual_lock_activity.operated_tag is False
+        assert remote_unlock_activity.operated_manual is False
+        assert remote_unlock_activity.operated_tag is False
         assert (
             remote_unlock_activity.operator_image_url
             == "https://d33mytkkohwnk6.cloudfront.net/user/a45daa08-f4b0-4251-aacd-7bf5475851e5.jpg"
@@ -314,8 +314,8 @@ class TestActivity(unittest.TestCase):
         assert manual_unlock_activity.operated_by == "Manual Unlock"
         assert manual_unlock_activity.operated_remote is False
         assert manual_unlock_activity.operated_keypad is False
-        assert manual_lock_activity.operated_manual is True
-        assert manual_lock_activity.operated_tag is False
+        assert manual_unlock_activity.operated_manual is True
+        assert manual_unlock_activity.operated_tag is False
         assert (
             manual_unlock_activity.operator_image_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_unlock@3x.png"
@@ -326,20 +326,20 @@ class TestActivity(unittest.TestCase):
         )
 
     def test_rf_unlock_activity_v4(self):
-        manual_unlock_activity = LockOperationActivity(
+        rf_unlock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("rf_unlock_activity.json"))
         )
-        assert manual_unlock_activity.operated_by == "89 House"
-        assert manual_unlock_activity.operated_remote is False
-        assert manual_unlock_activity.operated_keypad is False
-        assert manual_lock_activity.operated_manual is False
-        assert manual_lock_activity.operated_tag is True
+        assert rf_unlock_activity.operated_by == "89 House"
+        assert rf_unlock_activity.operated_remote is False
+        assert rf_unlock_activity.operated_keypad is False
+        assert rf_unlock_activity.operated_manual is False
+        assert rf_unlock_activity.operated_tag is True
         assert (
-            manual_unlock_activity.operator_image_url
+            rf_unlock_activity.operator_image_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/rf_unlock@3x.png"
         )
         assert (
-            manual_unlock_activity.operator_thumbnail_url
+            rf_unlock_activity.operator_thumbnail_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/rf_unlock@3x.png"
         )
 
