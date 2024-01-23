@@ -22,6 +22,7 @@ from yalexs.util import (
     as_utc_from_local,
     get_configuration_url,
     get_latest_activity,
+    get_ssl_context,
     update_doorbell_image_from_activity,
     update_lock_detail_from_activity,
 )
@@ -398,3 +399,8 @@ def test_get_configuration_url():
     assert get_configuration_url(Brand.AUGUST) == "https://account.august.com"
     assert get_configuration_url(Brand.YALE_ACCESS) == "https://account.august.com"
     assert get_configuration_url(Brand.YALE_HOME) == "https://account.aaecosystem.com"
+
+
+def test_get_ssl_context():
+    """Test getting the ssl context is cached."""
+    assert get_ssl_context() is get_ssl_context()
