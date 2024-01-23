@@ -1,4 +1,7 @@
 import datetime
+from functools import cache
+import random
+import ssl
 from typing import Optional, Union
 
 from .activity import (
@@ -112,3 +115,15 @@ def as_utc_from_local(dtime: datetime.datetime) -> datetime.datetime:
 def get_configuration_url(brand: Brand) -> str:
     """Return the configuration URL for the brand."""
     return CONFIGURATION_URLS[brand]
+
+
+@cache
+def get_ssl_context() -> ssl.SSLContext:
+    """Return an SSL context for cloudflare."""
+    context = ssl.create_default_context()
+    ciphers = [cipher["name"] for cipher in context.get_ciphers()]
+    default_ciphers = ciphers[:3]
+    backup_ciphers = ciphers[3:]
+    random.shuffle(backup_ciphers)
+    context.set_ciphers(":".join((*default_ciphers, *backup_ciphers)))
+    return context
