@@ -21,6 +21,7 @@ class Doorbell(Device):
         recent_image = data.get("recentImage", {})
         self._image_url = recent_image.get("secure_url", None)
         self._has_subscription = data.get("dvrSubscriptionSetupDone", False)
+        self._content_token = data.get("contentToken", '')
 
     @cached_property
     def serial_number(self):
@@ -46,6 +47,10 @@ class Doorbell(Device):
     def has_subscription(self):
         return self._has_subscription
 
+    @cached_property
+    def content_token(self):
+        return self._content_token
+
     def __repr__(self):
         return "Doorbell(id={}, name={}, house_id={})".format(
             self.device_id, self.device_name, self.house_id
@@ -70,6 +75,7 @@ class DoorbellDetail(DeviceDetail):
         self._has_subscription = data.get("dvrSubscriptionSetupDone", False)
         self._image_created_at_datetime = None
         self._model = None
+        self._content_token = data.get("contentToken", '')
 
         if "type" in data:
             self._model = data["type"]
@@ -144,9 +150,9 @@ class DoorbellDetail(DeviceDetail):
         self, aiohttp_session: ClientSession, timeout=10
     ) -> bytes:
         response = await aiohttp_session.request(
-            "get", self._image_url, timeout=timeout
+            "get", self._image_url, timeout=timeout, headers={'Authorization': self._content_token}
         )
         return await response.read()
 
     def get_doorbell_image(self, timeout=10) -> bytes:
-        return requests.get(self._image_url, timeout=timeout).content
+        return requests.get(self._image_url, timeout=timeout, headers={'Authorization': self._content_token}).content
