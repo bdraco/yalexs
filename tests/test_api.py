@@ -65,6 +65,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(False, first.has_subscription)
         self.assertEqual(None, first.image_url)
         self.assertEqual("3dd2accadddd", first.house_id)
+        self.assertEqual("", first.content_token)
 
         second = doorbells[1]
         self.assertEqual("K98GiDT45GUL", second.device_id)
@@ -74,6 +75,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(True, second.has_subscription)
         self.assertEqual("https://image.com/vmk16naaaa7ibuey7sar.jpg", second.image_url)
         self.assertEqual("3dd2accaea08", second.house_id)
+        self.assertEqual("", second.content_token)
 
     @requests_mock.Mocker()
     def test_get_doorbell_detail(self, mock):
