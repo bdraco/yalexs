@@ -1,4 +1,5 @@
 """Api functions common between sync and async."""
+
 from __future__ import annotations
 
 import datetime
