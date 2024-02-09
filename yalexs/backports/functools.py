@@ -34,14 +34,12 @@ class cached_property(Generic[_T]):  # pylint: disable=invalid-name
     @overload
     def __get__(  # noqa: E704
         self, instance: None, owner: type[Any] | None = None
-    ) -> Any:
-        ...
+    ) -> Any: ...
 
     @overload
     def __get__(  # noqa: E704
         self, instance: Any, owner: type[Any] | None = None
-    ) -> _T:
-        ...
+    ) -> _T: ...
 
     def __get__(self, instance: Any | None, owner: type[Any] | None = None) -> _T | Any:
         """Get."""
