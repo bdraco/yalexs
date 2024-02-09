@@ -19,6 +19,8 @@ from yalexs.activity import (
     ACTION_DOORBELL_CALL_MISSED,
     ACTION_DOORBELL_IMAGE_CAPTURE,
     ACTION_DOORBELL_MOTION_DETECTED,
+    ACTION_HOMEKEY_LOCK,
+    ACTION_HOMEKEY_UNLOCK,
     ACTION_LOCK_AUTO_LOCK,
     ACTION_LOCK_BLE_LOCK,
     ACTION_LOCK_BLE_UNLOCK,
@@ -110,6 +112,8 @@ class TestActivity(unittest.TestCase):
                 ACTION_LOCK_UNLOCK,
                 ACTION_LOCK_LOCKING,
                 ACTION_LOCK_UNLOCKING,
+                ACTION_HOMEKEY_LOCK,
+                ACTION_HOMEKEY_UNLOCK,
                 ACTION_LOCK_JAMMED,
                 ACTION_LOCK_BLE_LOCK,
                 ACTION_LOCK_BLE_UNLOCK,
@@ -341,6 +345,24 @@ class TestActivity(unittest.TestCase):
         assert (
             rf_unlock_activity.operator_thumbnail_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/rf_unlock@3x.png"
+        )
+
+    def test_homekey_unlock_activity_v4(self):
+        homekey_unlock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("homekey_unlock_activity_v4.json"))
+        )
+        assert homekey_unlock_activity.operated_by == "89 House"
+        assert homekey_unlock_activity.operated_remote is False
+        assert homekey_unlock_activity.operated_keypad is False
+        assert homekey_unlock_activity.operated_manual is False
+        assert homekey_unlock_activity.operated_tag is True
+        assert (
+            homekey_unlock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/homekey_unlock@3x.png"
+        )
+        assert (
+            homekey_unlock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/homekey_unlock@3x.png"
         )
 
     def test_lock_activity(self):
