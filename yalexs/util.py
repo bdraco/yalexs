@@ -99,6 +99,9 @@ def update_doorbell_image_from_activity(doorbell_detail, activity):
             doorbell_detail.image_created_at_datetime = (
                 activity.image_created_at_datetime
             )
+            doorbell_detail.content_token = (
+                activity.content_token or doorbell_detail.content_token
+            )
         else:
             return False
     else:
