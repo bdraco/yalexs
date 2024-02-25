@@ -322,6 +322,40 @@ class TestLockDetail(unittest.TestCase):
         )
         assert activities[0].operated_by is None
 
+        # status polls should not create activities
+        activities = activities_from_pubnub_message(
+            lock,
+            dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
+            {
+                "remoteEvent": 1,
+                "status": "kAugLockState_Locked",
+                "info": {
+                    "action": "status",
+                    "startTime": "2024-02-15T07:33:50.804Z",
+                    "context": {
+                        "transactionID": "RP99lHGUIx",
+                        "startDate": "2024-02-15T07:33:50.793Z",
+                        "retryCount": 1,
+                    },
+                    "lockType": "lock_version_17",
+                    "serialNumber": "L.....",
+                    "rssi": 0,
+                    "wlanRSSI": -35,
+                    "wlanSNR": -1,
+                    "duration": 991,
+                    "lockID": "AF5EFD84.....",
+                    "bridgeID": "652e35ba7e.....",
+                    "serial": "L.....",
+                },
+                "doorState": "kAugDoorState_Closed",
+                "retryCount": 1,
+                "totalTime": 1028,
+                "resultsFromOperationCache": False,
+            },
+        )
+
+        assert len(activities) == 0
+
 
 class TestDetail(unittest.TestCase):
     def test_update_doorbell_details_from_pubnub_message(self):

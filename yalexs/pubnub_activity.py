@@ -60,6 +60,16 @@ def activities_from_pubnub_message(
         activity_dict["deviceType"] = "lock"
         activity_dict["info"] = info
         calling_user_id = message.get("callingUserID")
+
+        # Some locks sometimes send lots of status messages, triggered by the app. Ignore these.
+        if (
+            info.get("action") == "status"
+            and not message.get("error")
+            and not message.get("result") == "failed"
+        ):
+            _LOGGER.debug("Not creating lock activity from status pubnub")
+            return activities
+
         # Only accept a UserID if we have a date/time
         # as otherwise it is a duplicate of the previous
         # activity
