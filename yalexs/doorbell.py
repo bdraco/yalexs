@@ -7,6 +7,8 @@ from typing import Any
 from aiohttp import ClientSession
 import requests
 
+from yalexs.exceptions import TokenExpiredException
+
 from .backports.functools import cached_property
 from .device import Device, DeviceDetail
 from .time import parse_datetime
@@ -174,7 +176,7 @@ class DoorbellDetail(DeviceDetail):
             _LOGGER.error(
                 "snapshot get error %s, may need new content token", response.status
             )
-            raise ValueError(response.status)
+            raise TokenExpiredException
         return await response.read()
 
     def get_doorbell_image(self, timeout=10) -> bytes:
