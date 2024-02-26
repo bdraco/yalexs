@@ -7,7 +7,7 @@ from typing import Any
 from aiohttp import ClientSession
 import requests
 
-from yalexs.exceptions import TokenExpiredException
+from yalexs.exceptions import ContentTokenExpired
 
 from .backports.functools import cached_property
 from .device import Device, DeviceDetail
@@ -172,11 +172,11 @@ class DoorbellDetail(DeviceDetail):
             timeout=timeout,
             headers={"Authorization": self._content_token or ""},
         )
-        if response.status >= 400:
-            _LOGGER.error(
+        if response.status == 401:
+            _LOGGER.debug(
                 "snapshot get error %s, may need new content token", response.status
             )
-            raise TokenExpiredException
+            raise ContentTokenExpired
         return await response.read()
 
     def get_doorbell_image(self, timeout=10) -> bytes:

@@ -315,16 +315,7 @@ class DoorbellBaseActionActivity(Activity):
     @cached_property
     def image_url(self):
         """Return the image URL of the activity."""
-        return (
-            self._info.get("image")
-            or self._info.get("attachment")
-            or self._data.get("attachment")
-        )
-
-    @cached_property
-    def content_token(self):
-        """Return contentToken for image URL"""
-        return self._data.get("doorbell", {}).get("contentToken")
+        return self._info.get("image") or self._info.get("attachment")
 
     @cached_property
     def activity_start_time(self):
