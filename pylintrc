@@ -21,11 +21,8 @@ disable=
   locally-disabled,
   duplicate-code,
   cyclic-import,
-  abstract-class-little-used,
-  abstract-class-not-used,
   unused-argument,
   global-statement,
-  redefined-variable-type,
   too-many-arguments,
   too-many-branches,
   too-many-instance-attributes,
@@ -37,9 +34,8 @@ disable=
   too-few-public-methods,
   abstract-method,
   missing-docstring,
-  no-self-use,
   unspecified-encoding,
   consider-using-f-string
 
 [EXCEPTIONS]
-overgeneral-exceptions=Exception
+overgeneral-exceptions=builtins.Exception
