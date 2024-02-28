@@ -24,3 +24,7 @@ class AugustApiAIOHTTPError(Exception):
 
 class AugustApiHTTPError(HTTPError):
     """An yale access api error with a friendly user consumable string."""
+
+
+class ContentTokenExpired(Exception):
+    """Token required for accessing this resource is not valid."""

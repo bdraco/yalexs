@@ -36,7 +36,7 @@ from yalexs.api_common import (
 )
 from yalexs.bridge import BridgeDetail, BridgeStatus, BridgeStatusDetail
 from yalexs.const import DEFAULT_BRAND, Brand
-from yalexs.exceptions import AugustApiAIOHTTPError
+from yalexs.exceptions import AugustApiAIOHTTPError, ContentTokenExpired
 from yalexs.lock import LockDoorStatus, LockStatus
 
 ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
@@ -120,6 +120,24 @@ class TestApiAsync(aiounittest.AsyncTestCase):
             await doorbell.async_get_doorbell_image(ClientSession()),
             b"doorbell_image_mocked",
         )
+
+    @aioresponses()
+    async def test_async_get_doorbell_image_token_expired(self, mock):
+        expected_doorbell_image_url = "https://image.com/vmk16naaaa7ibuey7sar.jpg"
+
+        mock.get(
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_DOORBELL_URL)
+            .format(doorbell_id="K98GiDT45GUL"),
+            body=load_fixture("get_doorbell.json"),
+        )
+        mock.get(expected_doorbell_image_url, status=401)
+
+        api = ApiAsync(ClientSession())
+        doorbell = await api.async_get_doorbell_detail(ACCESS_TOKEN, "K98GiDT45GUL")
+
+        with self.assertRaises(ContentTokenExpired):
+            await doorbell.async_get_doorbell_image(ClientSession())
 
     @aioresponses()
     async def test_async_get_doorbell_detail_missing_image(self, mock):
