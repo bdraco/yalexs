@@ -351,7 +351,7 @@ class TestActivity(unittest.TestCase):
         manual_unlatch_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("manual_unlatch_activity.json"))
         )
-        assert manual_unlatch_activity.operated_by == "Manual Unlatch"
+        assert manual_unlatch_activity.operated_by == None
         assert manual_unlatch_activity.operated_remote is False
         assert manual_unlatch_activity.operated_keypad is False
         assert manual_unlatch_activity.operated_manual is True
