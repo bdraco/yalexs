@@ -46,6 +46,33 @@ class TestLockDetail(unittest.TestCase):
             dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
             {
                 "remoteEvent": 1,
+                "status": "kAugLockState_Unlatching",
+                "info": {
+                    "action": "unlock",
+                    "startTime": "2021-03-20T18:19:05.373Z",
+                    "context": {
+                        "transactionID": "_oJRZKJsx",
+                        "startDate": "2021-03-20T18:19:05.371Z",
+                        "retryCount": 1,
+                    },
+                    "lockType": "lock_version_1001",
+                    "serialNumber": "M1FBA029QJ",
+                    "rssi": -53,
+                    "wlanRSSI": -55,
+                    "wlanSNR": 44,
+                    "duration": 2534,
+                },
+            },
+        )
+        assert isinstance(activities[0], LockOperationActivity)
+        assert "LockOperationActivity" in str(activities[0])
+        assert activities[0].action == "unlatching"
+
+        activities = activities_from_pubnub_message(
+            lock,
+            dateutil.parser.parse("2017-12-10T05:48:30.272Z"),
+            {
+                "remoteEvent": 1,
                 "status": "kAugLockState_Unlocking",
                 "info": {
                     "action": "unlock",
@@ -287,6 +314,23 @@ class TestLockDetail(unittest.TestCase):
         assert "LockOperationActivity" in str(activities[0])
         assert activities[0].action == "unlock"
         assert activities[0].operated_by == "bob smith"
+
+        activities = activities_from_pubnub_message(
+            lock,
+            datetime.datetime.fromtimestamp(16844292526891571 / 1000000),
+            {
+                "status": "unlatched",
+                "callingUserID": "manualunlatch",
+                "doorState": "open",
+            },
+        )
+        assert isinstance(activities[0], LockOperationActivity)
+        assert "LockOperationActivity" in str(activities[0])
+        assert activities[0].action == "unlatch"
+        assert (
+            activities[0].activity_type is ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR
+        )
+        assert activities[0].operated_by is None
 
         activities = activities_from_pubnub_message(
             lock,
