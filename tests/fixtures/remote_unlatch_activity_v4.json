@@ -1,0 +1,14 @@
+{
+	"id": "3184ccab-d22e-4bd4-8029-6f4ca0518eaf",
+	"timestamp": 1710590181502,
+	"icon": "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/remote_unlatch@3x.png",
+	"action": "remote_unlatch",
+	"deviceID": "3ED27C5DB8304395AA4F381DC8F167BB",
+	"deviceType": "lock",
+	"user": {
+		"UserID": "83f02a1d-c08a-4c3d-9c30-3b66e185c7bd",
+		"FirstName": "89",
+		"LastName": "House"
+	},
+	"title": "<b>89 House</b> unlatched <b>Front Door</b> remotely"
+}

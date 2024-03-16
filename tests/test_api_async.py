@@ -28,6 +28,8 @@ from yalexs.api_common import (
     API_LOCK_ASYNC_URL,
     API_LOCK_URL,
     API_STATUS_ASYNC_URL,
+    API_UNLATCH_ASYNC_URL,
+    API_UNLATCH_URL,
     API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
     API_VALIDATE_VERIFICATION_CODE_URLS,
@@ -898,6 +900,43 @@ class TestApiAsync(aiounittest.AsyncTestCase):
 
         api = ApiAsync(ClientSession())
         await api.async_lock_async(ACCESS_TOKEN, lock_id)
+
+    @aioresponses()
+    async def test_async_unlatch(self, mock):
+        lock_id = 1234
+        mock.put(
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_UNLATCH_URL)
+            .format(lock_id=lock_id),
+            body='{"status": "unlatched"}',
+        )
+
+        api = ApiAsync(ClientSession())
+        status = await api.async_unlatch(ACCESS_TOKEN, lock_id)
+
+        self.assertEqual(LockStatus.UNLATCHED, status)
+
+    @aioresponses()
+    async def test_async_unlatch_async_old_bridge(self, mock):
+        lock_id = 1234
+
+        mock.put(
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_UNLATCH_ASYNC_URL)
+            .format(lock_id=lock_id)
+        )
+
+        api = ApiAsync(ClientSession())
+        await api.async_unlatch_async(ACCESS_TOKEN, lock_id, hyper_bridge=False)
+
+    @aioresponses()
+    async def test_async_unlatch_async_new_bridge(self, mock):
+        lock_id = 1234
+        base_url = ApiCommon(DEFAULT_BRAND).get_brand_url(API_UNLATCH_ASYNC_URL)
+        mock.put(f"{base_url}{HYPER_BRIDGE_PARAM}".format(lock_id=lock_id))
+
+        api = ApiAsync(ClientSession())
+        await api.async_unlatch_async(ACCESS_TOKEN, lock_id, hyper_bridge=True)
 
     @aioresponses()
     async def test_async_unlock(self, mock):

@@ -272,6 +272,25 @@ class TestActivity(unittest.TestCase):
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_lock@3x.png"
         )
 
+    def test_remote_unlatch_activity_v4(self):
+        remote_unlatch_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("remote_unlatch_activity_v4.json"))
+        )
+        assert remote_unlatch_activity.activity_type == ActivityType.LOCK_OPERATION
+        assert remote_unlatch_activity.operated_by == "89 House"
+        assert remote_unlatch_activity.operated_remote is True
+        assert remote_unlatch_activity.operated_keypad is False
+        assert remote_unlatch_activity.operated_manual is False
+        assert remote_unlatch_activity.operated_tag is False
+        assert (
+            remote_unlatch_activity.operator_image_url
+            == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/remote_unlatch@3x.png"
+        )
+        assert (
+            remote_unlatch_activity.operator_thumbnail_url
+            == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/remote_unlatch@3x.png"
+        )
+
     def test_remote_unlock_activity_v4(self):
         remote_unlock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("remote_unlock_activity_v4.json"))
@@ -326,6 +345,24 @@ class TestActivity(unittest.TestCase):
         assert (
             manual_lock_activity.operator_thumbnail_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png"
+        )
+
+    def test_manual_unlatch_activity_v4(self):
+        manual_unlatch_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("manual_unlatch_activity.json"))
+        )
+        assert manual_unlatch_activity.operated_by == "Manual Unlatch"
+        assert manual_unlatch_activity.operated_remote is False
+        assert manual_unlatch_activity.operated_keypad is False
+        assert manual_unlatch_activity.operated_manual is True
+        assert manual_unlatch_activity.operated_tag is False
+        assert (
+            manual_unlatch_activity.operator_image_url
+            == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/unlatch@3x.png"
+        )
+        assert (
+            manual_unlatch_activity.operator_thumbnail_url
+            == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/unlatch@3x.png"
         )
 
     def test_manual_unlock_activity_v4(self):
