@@ -13,6 +13,8 @@ from .activity import (
     ACTION_LOCK_JAMMED,
     ACTION_LOCK_LOCK,
     ACTION_LOCK_LOCKING,
+    ACTION_LOCK_UNLATCH,
+    ACTION_LOCK_UNLATCHING,
     ACTION_LOCK_UNLOCK,
     ACTION_LOCK_UNLOCKING,
     SOURCE_PUBNUB,
@@ -88,10 +90,14 @@ def activities_from_pubnub_message(
             lock_status = determine_lock_status(status)
             if lock_status == LockStatus.LOCKED:
                 _add_activity(activities, activity_dict, ACTION_LOCK_LOCK)
+            elif lock_status == LockStatus.UNLATCHED:
+                _add_activity(activities, activity_dict, ACTION_LOCK_UNLATCH)
             elif lock_status == LockStatus.UNLOCKED:
                 _add_activity(activities, activity_dict, ACTION_LOCK_UNLOCK)
             elif lock_status == LockStatus.LOCKING:
                 _add_activity(activities, activity_dict, ACTION_LOCK_LOCKING)
+            elif lock_status == LockStatus.UNLATCHING:
+                _add_activity(activities, activity_dict, ACTION_LOCK_UNLATCHING)
             elif lock_status == LockStatus.UNLOCKING:
                 _add_activity(activities, activity_dict, ACTION_LOCK_UNLOCKING)
             elif lock_status == LockStatus.JAMMED:

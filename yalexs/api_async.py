@@ -25,6 +25,8 @@ from .api_common import (
     API_RETRY_ATTEMPTS,
     API_RETRY_TIME,
     API_STATUS_ASYNC_URL,
+    API_UNLATCH_ASYNC_URL,
+    API_UNLATCH_URL,
     API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
     HEADER_ACCEPT_VERSION,
@@ -274,6 +276,58 @@ class ApiAsync(ApiCommon):
         """
         return _convert_lock_result_to_activities(
             await self._async_lock(access_token, lock_id)
+        )
+
+    async def _async_unlatch(self, access_token: str, lock_id: str) -> dict[str, Any]:
+        return await self._async_call_lock_operation(
+            API_UNLATCH_URL, access_token, lock_id
+        )
+
+    async def async_unlatch(self, access_token: str, lock_id: str) -> LockStatus:
+        """Execute a remote unlatch operation.
+
+        Returns a LockStatus state.
+        """
+        return determine_lock_status(
+            (await self._async_unlatch(access_token, lock_id)).get("status")
+        )
+
+    async def async_unlatch_async(
+        self, access_token: str, lock_id: str, hyper_bridge=True
+    ) -> str:
+        """Queue a remote unlatch operation and get the response via pubnub."""
+        if hyper_bridge:
+            return await self._async_call_async_lock_operation(
+                f"{API_UNLATCH_ASYNC_URL}{HYPER_BRIDGE_PARAM}", access_token, lock_id
+            )
+        return await self._async_call_async_lock_operation(
+            API_UNLATCH_ASYNC_URL, access_token, lock_id
+        )
+
+    async def async_unlatch_return_activities(
+        self, access_token: str, lock_id: str
+    ) -> list[ActivityTypes]:
+        """Execute a remote lock operation.
+
+        Returns an array of one or more yalexs.activity.Activity objects
+
+        If the lock supports door sense one of the activities
+        will include the current door state.
+        """
+        return _convert_lock_result_to_activities(
+            await self._async_unlatch(access_token, lock_id)
+        )
+
+    async def async_status_async(
+        self, access_token: str, lock_id: str, hyper_bridge=True
+    ) -> str:
+        """Queue a remote unlatch operation and get the status via pubnub."""
+        if hyper_bridge:
+            return await self._async_call_async_lock_operation(
+                f"{API_STATUS_ASYNC_URL}{HYPER_BRIDGE_PARAM}", access_token, lock_id
+            )
+        return await self._async_call_async_lock_operation(
+            API_STATUS_ASYNC_URL, access_token, lock_id
         )
 
     async def _async_unlock(self, access_token: str, lock_id: str) -> dict[str, Any]:
