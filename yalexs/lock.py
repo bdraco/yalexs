@@ -12,6 +12,8 @@ from .users import cache_user_info
 
 LOCKED_STATUS = ("locked", "kAugLockState_Locked", "kAugLockState_SecureMode")
 LOCKING_STATUS = ("kAugLockState_Locking",)
+UNLATCHED_STATUS = ("unlatched", "kAugLockState_Unlatched")
+UNLATCHING_STATUS = ("kAugLockState_Unlatching",)
 UNLOCKED_STATUS = ("unlocked", "kAugLockState_Unlocked")
 UNLOCKING_STATUS = ("kAugLockState_Unlocking",)
 JAMMED_STATUS = (
@@ -237,9 +239,11 @@ class LockDetail(DeviceDetail):
 
 class LockStatus(Enum):
     LOCKED = "locked"
+    UNLATCHED = "unlatched"
     UNLOCKED = "unlocked"
     UNKNOWN = "unknown"
     LOCKING = "locking"
+    UNLATCHING = "unlatching"
     UNLOCKING = "unlocking"
     JAMMED = "jammed"
 
@@ -254,8 +258,12 @@ class LockDoorStatus(Enum):
 def determine_lock_status(status):
     if status in LOCKED_STATUS:
         return LockStatus.LOCKED
+    if status in UNLATCHED_STATUS:
+        return LockStatus.UNLATCHED
     if status in UNLOCKED_STATUS:
         return LockStatus.UNLOCKED
+    if status in UNLATCHING_STATUS:
+        return LockStatus.UNLATCHING
     if status in UNLOCKING_STATUS:
         return LockStatus.UNLOCKING
     if status in LOCKING_STATUS:
