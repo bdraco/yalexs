@@ -28,6 +28,8 @@ from yalexs.api_common import (
     API_LOCK_ASYNC_URL,
     API_LOCK_URL,
     API_STATUS_ASYNC_URL,
+    API_UNLATCH_ASYNC_URL,
+    API_UNLATCH_URL,
     API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
     API_VALIDATE_VERIFICATION_CODE_URLS,
@@ -562,6 +564,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(
             dateutil.parser.parse("2017-12-10T04:48:30.272Z"), lock.door_state_datetime
         )
+
+        lock.lock_status = LockStatus.UNLATCHED
+        self.assertEqual(LockStatus.UNLATCHED, lock.lock_status)
 
         lock.lock_status = LockStatus.UNLOCKED
         self.assertEqual(LockStatus.UNLOCKED, lock.lock_status)
