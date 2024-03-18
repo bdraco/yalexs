@@ -1,0 +1,9 @@
+{
+	"id": "21a911fb-e1aa-4d42-8751-390f4876f3d0",
+	"timestamp": 1710573735000,
+	"icon": "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/unlatch@3x.png",
+	"action": "manual_unlatch",
+	"deviceID": "3ED27C5DB8304395AA4F381DC8F167BB",
+	"deviceType": "lock",
+	"title": "<b>Front Door</b> unlatched manually"
+}

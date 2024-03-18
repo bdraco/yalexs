@@ -20,25 +20,33 @@ from yalexs.activity import (
     ACTION_DOORBELL_IMAGE_CAPTURE,
     ACTION_DOORBELL_MOTION_DETECTED,
     ACTION_HOMEKEY_LOCK,
+    ACTION_HOMEKEY_UNLATCH,
     ACTION_HOMEKEY_UNLOCK,
     ACTION_LOCK_AUTO_LOCK,
     ACTION_LOCK_BLE_LOCK,
+    ACTION_LOCK_BLE_UNLATCH,
     ACTION_LOCK_BLE_UNLOCK,
     ACTION_LOCK_DOORBELL_BUTTON_PUSHED,
     ACTION_LOCK_JAMMED,
     ACTION_LOCK_LOCK,
     ACTION_LOCK_LOCKING,
     ACTION_LOCK_MANUAL_LOCK,
+    ACTION_LOCK_MANUAL_UNLATCH,
     ACTION_LOCK_MANUAL_UNLOCK,
     ACTION_LOCK_ONETOUCHLOCK,
     ACTION_LOCK_ONETOUCHLOCK_2,
+    ACTION_LOCK_PIN_UNLATCH,
     ACTION_LOCK_PIN_UNLOCK,
     ACTION_LOCK_REMOTE_LOCK,
+    ACTION_LOCK_REMOTE_UNLATCH,
     ACTION_LOCK_REMOTE_UNLOCK,
+    ACTION_LOCK_UNLATCH,
+    ACTION_LOCK_UNLATCHING,
     ACTION_LOCK_UNLOCK,
     ACTION_LOCK_UNLOCKING,
     ACTION_RF_LOCK,
     ACTION_RF_SECURE,
+    ACTION_RF_UNLATCH,
     ACTION_RF_UNLOCK,
     ACTIVITY_ACTION_STATES,
     ACTIVITY_ACTIONS_BRIDGE_OPERATION,
@@ -74,6 +82,7 @@ class TestActivity(unittest.TestCase):
             ACTIVITY_ACTION_STATES[ACTION_LOCK_ONETOUCHLOCK], LockStatus.LOCKED
         )
         self.assertIs(ACTIVITY_ACTION_STATES[ACTION_LOCK_LOCK], LockStatus.LOCKED)
+        self.assertIs(ACTIVITY_ACTION_STATES[ACTION_LOCK_UNLATCH], LockStatus.UNLATCHED)
         self.assertIs(ACTIVITY_ACTION_STATES[ACTION_LOCK_UNLOCK], LockStatus.UNLOCKED)
         self.assertIs(ACTIVITY_ACTION_STATES[ACTION_DOOR_CLOSED], LockDoorStatus.CLOSED)
         self.assertIs(ACTIVITY_ACTION_STATES[ACTION_DOOR_OPEN], LockDoorStatus.OPEN)
@@ -104,23 +113,31 @@ class TestActivity(unittest.TestCase):
             [
                 ACTION_RF_SECURE,
                 ACTION_RF_LOCK,
+                ACTION_RF_UNLATCH,
                 ACTION_RF_UNLOCK,
                 ACTION_LOCK_AUTO_LOCK,
                 ACTION_LOCK_ONETOUCHLOCK,
                 ACTION_LOCK_ONETOUCHLOCK_2,
                 ACTION_LOCK_LOCK,
+                ACTION_LOCK_UNLATCH,
                 ACTION_LOCK_UNLOCK,
                 ACTION_LOCK_LOCKING,
+                ACTION_LOCK_UNLATCHING,
                 ACTION_LOCK_UNLOCKING,
                 ACTION_HOMEKEY_LOCK,
+                ACTION_HOMEKEY_UNLATCH,
                 ACTION_HOMEKEY_UNLOCK,
                 ACTION_LOCK_JAMMED,
                 ACTION_LOCK_BLE_LOCK,
+                ACTION_LOCK_BLE_UNLATCH,
                 ACTION_LOCK_BLE_UNLOCK,
                 ACTION_LOCK_REMOTE_LOCK,
+                ACTION_LOCK_REMOTE_UNLATCH,
                 ACTION_LOCK_REMOTE_UNLOCK,
+                ACTION_LOCK_PIN_UNLATCH,
                 ACTION_LOCK_PIN_UNLOCK,
                 ACTION_LOCK_MANUAL_LOCK,
+                ACTION_LOCK_MANUAL_UNLATCH,
                 ACTION_LOCK_MANUAL_UNLOCK,
             ],
         )
@@ -255,6 +272,25 @@ class TestActivity(unittest.TestCase):
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_lock@3x.png"
         )
 
+    def test_remote_unlatch_activity_v4(self):
+        remote_unlatch_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("remote_unlatch_activity_v4.json"))
+        )
+        assert remote_unlatch_activity.activity_type == ActivityType.LOCK_OPERATION
+        assert remote_unlatch_activity.operated_by == "89 House"
+        assert remote_unlatch_activity.operated_remote is True
+        assert remote_unlatch_activity.operated_keypad is False
+        assert remote_unlatch_activity.operated_manual is False
+        assert remote_unlatch_activity.operated_tag is False
+        assert (
+            remote_unlatch_activity.operator_image_url
+            == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/remote_unlatch@3x.png"
+        )
+        assert (
+            remote_unlatch_activity.operator_thumbnail_url
+            == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/remote_unlatch@3x.png"
+        )
+
     def test_remote_unlock_activity_v4(self):
         remote_unlock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("remote_unlock_activity_v4.json"))
@@ -309,6 +345,24 @@ class TestActivity(unittest.TestCase):
         assert (
             manual_lock_activity.operator_thumbnail_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png"
+        )
+
+    def test_manual_unlatch_activity_v4(self):
+        manual_unlatch_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("manual_unlatch_activity.json"))
+        )
+        assert manual_unlatch_activity.operated_by == "Manual Unlatch"
+        assert manual_unlatch_activity.operated_remote is False
+        assert manual_unlatch_activity.operated_keypad is False
+        assert manual_unlatch_activity.operated_manual is True
+        assert manual_unlatch_activity.operated_tag is False
+        assert (
+            manual_unlatch_activity.operator_image_url
+            == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/unlatch@3x.png"
+        )
+        assert (
+            manual_unlatch_activity.operator_thumbnail_url
+            == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/unlatch@3x.png"
         )
 
     def test_manual_unlock_activity_v4(self):

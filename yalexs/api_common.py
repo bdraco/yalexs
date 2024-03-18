@@ -55,8 +55,10 @@ API_GET_LOCK_STATUS_URL = "/locks/{lock_id}/status"
 API_GET_PINS_URL = "/locks/{lock_id}/pins"
 API_LOCK_URL = "/remoteoperate/{lock_id}/lock"
 API_UNLOCK_URL = "/remoteoperate/{lock_id}/unlock"
+API_UNLATCH_URL = "/remoteoperate/{lock_id}/unlatch"
 API_LOCK_ASYNC_URL = "/remoteoperate/{lock_id}/lock?v=2.3.1&type=async"
 API_UNLOCK_ASYNC_URL = "/remoteoperate/{lock_id}/unlock?v=2.3.1&type=async"
+API_UNLATCH_ASYNC_URL = "/remoteoperate/{lock_id}/unlatch?v=2.3.1&type=async"
 API_STATUS_ASYNC_URL = (
     "/remoteoperate/{lock_id}/status?v=2.3.1&type=async&intent=wakeup"
 )

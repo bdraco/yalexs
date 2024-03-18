@@ -13,6 +13,7 @@ from .api_common import (
     API_LOCK_URL,
     API_RETRY_ATTEMPTS,
     API_RETRY_TIME,
+    API_UNLATCH_URL,
     API_UNLOCK_URL,
     HEADER_ACCEPT_VERSION,
     HEADER_AUGUST_ACCESS_TOKEN,
@@ -182,6 +183,26 @@ class Api(ApiCommon):
         will include the current door state.
         """
         return _convert_lock_result_to_activities(self._lock(access_token, lock_id))
+
+    def _unlatch(self, access_token, lock_id):
+        return self._call_lock_operation(API_UNLATCH_URL, access_token, lock_id)
+
+    def unlatch(self, access_token, lock_id):
+        """Execute a remote unlatch operation.
+
+        Returns a LockStatus state.
+        """
+        return determine_lock_status(self._unlatch(access_token, lock_id).get("status"))
+
+    def unlatch_return_activities(self, access_token, lock_id):
+        """Execute a remote lock operation.
+
+        Returns an array of one or more yalexs.activity.Activity objects
+
+        If the lock supports door sense one of the activities
+        will include the current door state.
+        """
+        return _convert_lock_result_to_activities(self._unlatch(access_token, lock_id))
 
     def _unlock(self, access_token, lock_id):
         return self._call_lock_operation(API_UNLOCK_URL, access_token, lock_id)

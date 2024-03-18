@@ -21,6 +21,7 @@ from yalexs.api_common import (
     API_GET_PINS_URL,
     API_GET_USER_URL,
     API_LOCK_URL,
+    API_UNLATCH_URL,
     API_UNLOCK_URL,
     ApiCommon,
 )
@@ -472,6 +473,22 @@ class TestApi(unittest.TestCase):
         self.assertEqual(LockDoorStatus.CLOSED, door_status)
 
     @requests_mock.Mocker()
+    def test_get_lock_status_with_unlatched_response(self, mock):
+        lock_id = 1234
+        mock.register_uri(
+            "get",
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_GET_LOCK_STATUS_URL)
+            .format(lock_id=lock_id),
+            text='{"status": "kAugLockState_Unlatched"}',
+        )
+
+        api = Api()
+        status = api.get_lock_status(ACCESS_TOKEN, lock_id)
+
+        self.assertEqual(LockStatus.UNLATCHED, status)
+
+    @requests_mock.Mocker()
     def test_get_lock_status_with_unlocked_response(self, mock):
         lock_id = 1234
         mock.register_uri(
@@ -739,6 +756,22 @@ class TestApi(unittest.TestCase):
         status = api.lock(ACCESS_TOKEN, lock_id)
 
         self.assertEqual(LockStatus.LOCKED, status)
+
+    @requests_mock.Mocker()
+    def test_unlatch(self, mock):
+        lock_id = 1234
+        mock.register_uri(
+            "put",
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_UNLATCH_URL)
+            .format(lock_id=lock_id),
+            text='{"status": "unlatched"}',
+        )
+
+        api = Api()
+        status = api.unlatch(ACCESS_TOKEN, lock_id)
+
+        self.assertEqual(LockStatus.UNLATCHED, status)
 
     @requests_mock.Mocker()
     def test_unlock(self, mock):
