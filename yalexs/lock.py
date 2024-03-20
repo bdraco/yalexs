@@ -23,7 +23,7 @@ JAMMED_STATUS = (
 
 CLOSED_STATUS = ("closed", "kAugLockDoorState_Closed", "kAugDoorState_Closed")
 OPEN_STATUS = ("open", "kAugLockDoorState_Open", "kAugDoorState_Open")
-DISABLE_STATUS = ("init", "", None)
+DISABLE_STATUS = ("init", "kAugDoorState_Init", "", None)
 
 LOCK_STATUS_KEY = "status"
 DOOR_STATE_KEY = "doorState"
