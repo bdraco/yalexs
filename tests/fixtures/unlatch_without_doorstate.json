@@ -19,6 +19,7 @@
       "lockStatusChanged":true,
       "serial":"serial"
    },
+   "doorState":"kAugDoorState_Init",
    "retryCount":1,
    "totalTime":1720,
    "resultsFromOperationCache":false
