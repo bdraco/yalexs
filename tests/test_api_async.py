@@ -785,7 +785,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         )
 
         api = ApiAsync(ClientSession())
-        activities = await api.async_unlock_return_activities(ACCESS_TOKEN, lock_id)
+        activities = await api.async_unlatch_return_activities(ACCESS_TOKEN, lock_id)
         expected_unlatch_dt = (
             dateutil.parser.parse("2024-03-20T06:39:42.192Z")
             .astimezone(tz=tzlocal())
