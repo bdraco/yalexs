@@ -1,0 +1,25 @@
+{
+   "status":"kAugLockState_Unlatched",
+   "info":{
+      "action":"unlatch",
+      "startTime":"2024-03-20T06:39:42.192Z",
+      "context":{
+         "transactionID":"transid",
+         "startDate":"2024-03-20T06:39:42.189Z",
+         "retryCount":1
+      },
+      "lockType":"lock_version_17",
+      "serialNumber":"serialnum",
+      "rssi":0,
+      "wlanRSSI":-37,
+      "wlanSNR":-1,
+      "duration":1694,
+      "lockID":"ABC123",
+      "bridgeID":"bridgeid",
+      "lockStatusChanged":true,
+      "serial":"serial"
+   },
+   "retryCount":1,
+   "totalTime":1720,
+   "resultsFromOperationCache":false
+}
