@@ -219,8 +219,8 @@ class Activity:
         self._source = source
         self._activity_type = activity_type
         self._data = data
-        self._entities = data.get("entities", {})
-        self._info = data.get("info", {})
+        self._entities: dict[str, Any] = data.get("entities", {})
+        self._info: dict[str, Any] = data.get("info", {})
 
     def __repr__(self):
         """Return the representation."""
@@ -290,7 +290,7 @@ class BaseDoorbellMotionActivity(Activity):
     ) -> None:
         """Initialize doorbell motion activity."""
         super().__init__(source, activity_type, data)
-        self._image: dict[str, Any] | None = data.get("info", {}).get("image")
+        self._image: dict[str, Any] | None = self._info.get("image")
         self._content_token = data.get("doorbell", {}).get("contentToken")
 
     def __repr__(self):
@@ -387,9 +387,6 @@ class LockOperationActivity(Activity):
     def __init__(self, source: str, data: dict[str, Any]) -> None:
         """Initialize lock operation activity."""
         super().__init__(source, ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR, data)
-
-        operator_image_url: str | None = None
-        operator_thumbnail_url: str | None = None
         operated_by: str | None = None
         calling_user = self.calling_user
         first_name: str | None = calling_user.get("FirstName")
@@ -413,6 +410,15 @@ class LockOperationActivity(Activity):
             operated_by = f"{first_name} {last_name}"
             self._activity_type = ActivityType.LOCK_OPERATION
 
+        self._operated_by = operated_by
+
+    @cached_property
+    def _operator_image_urls(self) -> tuple[str | None, str | None]:
+        """Return the image URLs of the lock operator."""
+        operator_image_url: str | None = None
+        operator_thumbnail_url: str | None = None
+        calling_user = self.calling_user
+
         image_info = calling_user.get("imageInfo") or calling_user
         original = image_info.get("original")
 
@@ -431,12 +437,13 @@ class LockOperationActivity(Activity):
         else:
             operator_thumbnail_url = None
 
+        yale_user = self.yale_user
         if yale_user and not operator_image_url and not operator_thumbnail_url:
             operator_image_url = yale_user.image_url
             operator_thumbnail_url = yale_user.thumbnail_url
 
         if not operator_thumbnail_url:
-            if icon := data.get("icon"):
+            if icon := self._data.get("icon"):
                 operator_thumbnail_url = icon
 
         if operator_thumbnail_url and not operator_image_url:
@@ -444,9 +451,7 @@ class LockOperationActivity(Activity):
         if operator_image_url and not operator_thumbnail_url:
             operator_thumbnail_url = operator_image_url
 
-        self._operated_by = operated_by
-        self._operator_image_url = operator_image_url
-        self._operator_thumbnail_url = operator_thumbnail_url
+        return operator_image_url, operator_thumbnail_url
 
     def __repr__(self):
         """Return the representation."""
@@ -511,12 +516,12 @@ class LockOperationActivity(Activity):
     @cached_property
     def operator_image_url(self):
         """URL to the image of the lock operator."""
-        return self._operator_image_url
+        return self._operator_image_urls[0]
 
     @cached_property
     def operator_thumbnail_url(self):
         """URL to the thumbnail of the lock operator."""
-        return self._operator_thumbnail_url
+        return self._operator_image_urls[1]
 
 
 class DoorOperationActivity(Activity):
