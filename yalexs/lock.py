@@ -29,10 +29,11 @@ LOCK_STATUS_KEY = "status"
 DOOR_STATE_KEY = "doorState"
 
 DOORMAN_MODEL_TYPES = {7, 10}
-
+UNLATCH_MODEL_TYPES = {17}
 
 # Type 7 is a doorman
 # Type 10 is a doorman in the Swedish market
+# Type 17 is a Linus L2
 class Lock(Device):
     def __init__(self, device_id, data):
         super().__init__(
@@ -117,6 +118,10 @@ class LockDetail(DeviceDetail):
     @cached_property
     def doorbell(self) -> bool:
         return self._data["Type"] in DOORMAN_MODEL_TYPES
+
+    @cached_property
+    def unlatch(self) -> bool:
+        return self._data["Type"] in UNLATCH_MODEL_TYPES
 
     @cached_property
     def battery_level(self):
