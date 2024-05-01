@@ -442,7 +442,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_lock_with_unlatch(self, mock):
         mock.get(
-            ApiCommon(Brand.YALE_HOME)
+            ApiCommon(DEFAULT_BRAND)
             .get_brand_url(API_GET_LOCK_URL)
             .format(lock_id="68895DD075A1444FAD4C00B273EEEF28"),
             body=load_fixture("lock_with_unlatch.online.json"),
