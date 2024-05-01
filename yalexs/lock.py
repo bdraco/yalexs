@@ -31,6 +31,7 @@ DOOR_STATE_KEY = "doorState"
 DOORMAN_MODEL_TYPES = {7, 10}
 UNLATCH_MODEL_TYPES = {17}
 
+
 # Type 7 is a doorman
 # Type 10 is a doorman in the Swedish market
 # Type 17 is a Linus L2
