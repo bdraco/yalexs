@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="yalexs",
-    version="3.0.0",
+    version="3.0.1",
     python_requires=">=3.9",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
