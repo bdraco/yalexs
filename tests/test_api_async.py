@@ -778,7 +778,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     async def test_async_unlatch_return_activities_from_fixture(self, mock):
         lock_id = 1234
         mock.put(
-            ApiCommon(Brand.YALE_HOME)
+            ApiCommon(DEFAULT_BRAND)
             .get_brand_url(API_UNLATCH_URL)
             .format(lock_id=lock_id),
             body=load_fixture("unlatch.json"),
@@ -872,7 +872,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
     ):
         lock_id = 1234
         mock.put(
-            ApiCommon(Brand.YALE_HOME)
+            ApiCommon(DEFAULT_BRAND)
             .get_brand_url(API_UNLATCH_URL)
             .format(lock_id=lock_id),
             body=load_fixture("unlatch_without_doorstate.json"),
