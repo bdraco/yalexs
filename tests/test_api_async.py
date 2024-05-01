@@ -792,6 +792,38 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(activities[0].activity_end_time, expected_lock_dt)
 
     @aioresponses()
+    async def test_async_unlatch_return_activities_from_fixture(self, mock):
+        lock_id = 1234
+        mock.put(
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_UNLATCH_URL)
+            .format(lock_id=lock_id),
+            body=load_fixture("unlatch.json"),
+        )
+
+        api = ApiAsync(ClientSession())
+        activities = await api.async_unlatch_return_activities(ACCESS_TOKEN, lock_id)
+        expected_unlatch_dt = (
+            dateutil.parser.parse("2024-03-20T06:39:42.192Z")
+            .astimezone(tz=tzlocal())
+            .replace(tzinfo=None)
+        )
+
+        self.assertEqual(len(activities), 2)
+        self.assertIsInstance(activities[0], yalexs.activity.LockOperationActivity)
+        self.assertEqual(activities[0].device_id, "ABC123")
+        self.assertEqual(activities[0].device_type, "lock")
+        self.assertEqual(activities[0].action, "unlatch")
+        self.assertEqual(activities[0].activity_start_time, expected_unlatch_dt)
+        self.assertEqual(activities[0].activity_end_time, expected_unlatch_dt)
+        self.assertIsInstance(activities[1], yalexs.activity.DoorOperationActivity)
+        self.assertEqual(activities[1].device_id, "ABC123")
+        self.assertEqual(activities[1].device_type, "lock")
+        self.assertEqual(activities[1].action, "dooropen")
+        self.assertEqual(activities[1].activity_start_time, expected_unlatch_dt)
+        self.assertEqual(activities[1].activity_end_time, expected_unlatch_dt)
+
+    @aioresponses()
     async def test_async_unlock_return_activities_from_fixture(self, mock):
         lock_id = 1234
         mock.put(
@@ -850,6 +882,34 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(activities[0].action, "lock")
         self.assertEqual(activities[0].activity_start_time, expected_lock_dt)
         self.assertEqual(activities[0].activity_end_time, expected_lock_dt)
+
+    @aioresponses()
+    async def test_async_unlatch_return_activities_from_fixture_with_no_doorstate(
+        self, mock
+    ):
+        lock_id = 1234
+        mock.put(
+            ApiCommon(DEFAULT_BRAND)
+            .get_brand_url(API_UNLATCH_URL)
+            .format(lock_id=lock_id),
+            body=load_fixture("unlatch_without_doorstate.json"),
+        )
+
+        api = ApiAsync(ClientSession())
+        activities = await api.async_unlatch_return_activities(ACCESS_TOKEN, lock_id)
+        expected_unlatch_dt = (
+            dateutil.parser.parse("2024-03-20T06:39:42.192Z")
+            .astimezone(tz=tzlocal())
+            .replace(tzinfo=None)
+        )
+
+        self.assertEqual(len(activities), 1)
+        self.assertIsInstance(activities[0], yalexs.activity.LockOperationActivity)
+        self.assertEqual(activities[0].device_id, "ABC123")
+        self.assertEqual(activities[0].device_type, "lock")
+        self.assertEqual(activities[0].action, "unlatch")
+        self.assertEqual(activities[0].activity_start_time, expected_unlatch_dt)
+        self.assertEqual(activities[0].activity_end_time, expected_unlatch_dt)
 
     @aioresponses()
     async def test_async_unlock_return_activities_from_fixture_with_no_doorstate(
