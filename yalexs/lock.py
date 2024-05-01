@@ -120,7 +120,7 @@ class LockDetail(DeviceDetail):
         return self._data["Type"] in DOORMAN_MODEL_TYPES
 
     @cached_property
-    def unlatch(self) -> bool:
+    def unlatch_supported(self) -> bool:
         return self._data["Type"] in UNLATCH_MODEL_TYPES
 
     @cached_property

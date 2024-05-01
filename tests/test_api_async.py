@@ -397,7 +397,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         )
 
         assert lock.doorbell is False
-        assert lock.unlatch is False
+        assert lock.unlatch_supported is False
         self.assertEqual("A6697750D607098BAE8D6BAA11EF8063", lock.device_id)
         self.assertEqual("Front Door Lock", lock.device_name)
         self.assertEqual("000000000000", lock.house_id)
@@ -453,7 +453,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
             ACCESS_TOKEN, "68895DD075A1444FAD4C00B273EEEF28"
         )
 
-        assert lock.unlatch is True
+        assert lock.unlatch_supported is True
 
     @aioresponses()
     async def test_async_get_v2_lock_detail_bridge_online(self, mock):
