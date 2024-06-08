@@ -1,9 +1,9 @@
 {
-	"id": "9fe32136-08b2-48b3-93cc-63a88c1c8236",
-	"timestamp": 1665527802000,
-	"icon": "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png",
-	"action": "manual_lock",
-	"deviceID": "3ED27C5DB8304395AA4F381DC8F167BB",
-	"deviceType": "lock",
-	"title": "<b>Front Door</b> locked manually"
+  "id": "9fe32136-08b2-48b3-93cc-63a88c1c8236",
+  "timestamp": 1665527802000,
+  "icon": "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png",
+  "action": "manual_lock",
+  "deviceID": "3ED27C5DB8304395AA4F381DC8F167BB",
+  "deviceType": "lock",
+  "title": "<b>Front Door</b> locked manually"
 }

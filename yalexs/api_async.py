@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import asyncio
-from http import HTTPStatus
 import logging
+from http import HTTPStatus
 from typing import Any
 
 from aiohttp import (

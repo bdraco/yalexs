@@ -1,6 +1,7 @@
 # Known Activity Actions
 
 ## doorclosed
+
 ```
 {
   "entities": {
@@ -38,6 +39,7 @@
   }
 }
 ```
+
 ## dooropen
 
 ```
@@ -174,6 +176,7 @@
   }
 }
 ```
+
 ## onetouchlock
 
 ```

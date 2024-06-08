@@ -1,14 +1,14 @@
 {
-	"id": "b4e50f6c-730a-4ae1-991e-e5231d727c11",
-	"timestamp": 1665388800273,
-	"icon": "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_lock@3x.png",
-	"action": "remote_lock",
-	"deviceID": "102A6A4F31584849971D11807272E7A8",
-	"deviceType": "lock",
-	"user": {
-		"UserID": "83f02a1d-c08a-4c3d-9c30-3b66e185c7bd",
-		"FirstName": "89",
-		"LastName": "House"
-	},
-	"title": "<b>89 House</b> locked <b>Gate</b> remotely"
+  "id": "b4e50f6c-730a-4ae1-991e-e5231d727c11",
+  "timestamp": 1665388800273,
+  "icon": "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_lock@3x.png",
+  "action": "remote_lock",
+  "deviceID": "102A6A4F31584849971D11807272E7A8",
+  "deviceType": "lock",
+  "user": {
+    "UserID": "83f02a1d-c08a-4c3d-9c30-3b66e185c7bd",
+    "FirstName": "89",
+    "LastName": "House"
+  },
+  "title": "<b>89 House</b> locked <b>Gate</b> remotely"
 }

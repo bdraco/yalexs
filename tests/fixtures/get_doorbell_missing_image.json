@@ -54,9 +54,7 @@
     "updated_at": "2017-12-10T08:05:13.650Z"
   },
   "doorbellServerURL": "https://doorbells.august.com",
-  "caps": [
-    "reconnect"
-  ],
+  "caps": ["reconnect"],
   "dvrSubscriptionSetupDone": true,
   "status_timestamp": 1512811834532,
   "LockID": "BBBB1F5F11114C24CCCC97571DD6AAAA",

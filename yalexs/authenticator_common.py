@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-from enum import Enum
 import json
 import logging
-from typing import Any
 import uuid
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any
 
 import jwt
 
@@ -156,7 +156,7 @@ class AuthenticatorCommon:
         # '%Y-%m-%dT%H:%M:%S.%fZ'
         # from the get_session api call
         # It is important we store access_token_expires formatted
-        # the same way for compatbility
+        # the same way for compatibility
         self._authentication = Authentication(
             self._authentication.state,
             install_id=self._authentication.install_id,

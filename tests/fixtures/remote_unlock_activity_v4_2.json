@@ -1,15 +1,15 @@
 {
-	"id": "bcb7055e-01e2-4591-aff8-3293863dac4e",
-	"timestamp": 1665529103770,
-	"icon": "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_unlock@3x.png",
-	"action": "remote_unlock",
-	"deviceID": "2ED27C5DB8304395AA4F381DC8F167BB",
-	"deviceType": "lock",
-	"user": {
-		"UserID": "a551bc9a-5211-4fb9-810f-c67a4d68303b",
-		"FirstName": "Zipper",
-		"LastName": "Zoomer",
-		"thumbnail": "https://d33mytkkohwnk6.cloudfront.net/user/a45daa08-f4b0-4251-aacd-7bf5475851e5.jpg"
-	},
-	"title": "<b>Zipper Zoomer</b> unlocked <b>Front Door</b> remotely"
+  "id": "bcb7055e-01e2-4591-aff8-3293863dac4e",
+  "timestamp": 1665529103770,
+  "icon": "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/remote_unlock@3x.png",
+  "action": "remote_unlock",
+  "deviceID": "2ED27C5DB8304395AA4F381DC8F167BB",
+  "deviceType": "lock",
+  "user": {
+    "UserID": "a551bc9a-5211-4fb9-810f-c67a4d68303b",
+    "FirstName": "Zipper",
+    "LastName": "Zoomer",
+    "thumbnail": "https://d33mytkkohwnk6.cloudfront.net/user/a45daa08-f4b0-4251-aacd-7bf5475851e5.jpg"
+  },
+  "title": "<b>Zipper Zoomer</b> unlocked <b>Front Door</b> remotely"
 }

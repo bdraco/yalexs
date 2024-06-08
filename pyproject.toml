@@ -1,0 +1,123 @@
+[tool.poetry]
+name = "yalexs"
+version = "3.1.0"
+description = "Python API for Yale Access (formerly August) Smart Lock and Doorbell"
+authors = ["J. Nick Koston <nick@koston.org>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/bdraco/yalexs"
+documentation = "https://yalexs.readthedocs.io"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+packages = [
+    { include = "yalexs", from = "." },
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/bdraco/yalexs/issues"
+"Changelog" = "https://github.com/bdraco/yalexs/blob/main/CHANGELOG.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+ciso8601 = ">=2.1.3"
+pyjwt = "^2.8.0"
+requests = "^2.32.3"
+python-dateutil = "^2.9.0.post0"
+aiohttp = "^3.9.5"
+aiofiles = "^23.2.1"
+pubnub = ">=7.4.1"
+typing-extensions = ">=4.5.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0"
+pytest-cov = "^3.0"
+aioresponses = "^0.7.6"
+requests-mock = "^1.12.1"
+aiounittest = "^1.4.2"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+myst-parser = ">=0.16"
+sphinx = ">=4.0"
+sphinx-rtd-theme = ">=1.0"
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:tool.poetry.version"]
+version_variables = [
+    "yalexs/__init__.py:__version__",
+]
+build_command = "pip install poetry && poetry build"
+
+[tool.semantic_release.changelog]
+exclude_commit_patterns = [
+    "chore*",
+    "ci*",
+]
+
+[tool.semantic_release.changelog.environment]
+keep_trailing_newline = true
+
+[tool.semantic_release.branches.main]
+match = "main"
+
+[tool.semantic_release.branches.noop]
+match = "(?!main$)"
+prerelease = true
+
+[tool.pytest.ini_options]
+addopts = "-v -Wdefault --cov=yalexs --cov-report=term-missing:skip-covered"
+pythonpath = ["src"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "@overload",
+    "if TYPE_CHECKING",
+    "raise NotImplementedError",
+]
+
+[tool.isort]
+profile = "black"
+known_first_party = ["yalexs", "tests"]
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+mypy_path = "src/"
+no_implicit_optional = true
+show_error_codes = true
+warn_unreachable = true
+warn_unused_ignores = true
+exclude = [
+    'docs/.*',
+    'setup.py',
+]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+allow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "docs.*"
+ignore_errors = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

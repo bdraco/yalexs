@@ -1,9 +1,9 @@
 {
-	"id": "c410074a-4cb9-4552-8a4e-68d3abb9117d",
-	"timestamp": 1665378987000,
-	"icon": "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/auto_lock@3x.png",
-	"action": "auto_lock",
-	"deviceID": "3ED27C5DB8304395AA4F381DC8F167BB",
-	"deviceType": "lock",
-	"title": "<b>Front Door</b> was Auto-Locked"
+  "id": "c410074a-4cb9-4552-8a4e-68d3abb9117d",
+  "timestamp": 1665378987000,
+  "icon": "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/auto_lock@3x.png",
+  "action": "auto_lock",
+  "deviceID": "3ED27C5DB8304395AA4F381DC8F167BB",
+  "deviceType": "lock",
+  "title": "<b>Front Door</b> was Auto-Locked"
 }

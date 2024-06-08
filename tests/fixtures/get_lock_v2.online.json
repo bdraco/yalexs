@@ -1,73 +1,77 @@
 {
-	"LockName": "Front Door",
-	"Type": 2,
-	"Created": "2020-07-25T20:36:08.329Z",
-	"Updated": "2020-07-25T20:36:08.329Z",
-	"LockID": "snip",
-	"HouseID": "snip",
-	"HouseName": "snip",
-	"Calibrated": false,
-	"timeZone": "Europe/Lisbon",
-	"battery": 0.9615767335162673,
-	"supportsEntryCodes": false,
-	"remoteOperateSecret": "snip",
-	"skuNumber": "AUG-SL02-M02-S02",
-	"macAddress": "snip",
-	"SerialNumber": "snip",
-	"LockStatus": {
-		"status": "locked",
-		"dateTime": "2022-01-14T21:03:10.231Z",
-		"isLockStatusChanged": false,
-		"valid": true
-	},
-	"currentFirmwareVersion": "3.0.44-3.0.29",
-	"homeKitEnabled": false,
-	"zWaveEnabled": false,
-	"isGalileo": false,
-	"Bridge": {
-		"_id": "abc",
-		"mfgBridgeID": "C5WIC00090",
-		"deviceModel": "august-connect",
-		"firmwareVersion": "2.2.15",
-		"operative": true,
-		"status": {
-			"current": "online",
-			"lastOnline": "2022-01-14T07:59:07.651Z",
-			"updated": "2022-01-14T07:59:07.651Z",
-			"lastOffline": "2022-01-12T20:22:11.488Z"
-		},
-		"locks": [{
-			"_id": "someid",
-			"LockID": "lock123",
-			"macAddress": "snip"
-		}],
-		"hyperBridge": false
-	},
-	"OfflineKeys": {
-		"created": [],
-		"loaded": [{
-			"created": "2022-01-14T21:14:50.153Z",
-			"key": "XXXXXX",
-			"slot": 1,
-			"UserID": "XXXXXX",
-			"loaded": "2022-01-14T21:14:54.568Z"
-		}],
-		"deleted": [],
-		"createdhk": []
-	},
-	"parametersToSet": {},
-	"users": {},
-	"pubsubChannel": "snip",
-	"ruleHash": {},
-	"invitations": [],
-	"cameras": [],
-	"geofenceLimits": {
-		"ios": {
-			"debounceInterval": 90,
-			"gpsAccuracyMultiplier": 2.5,
-			"maximumGeofence": 5000,
-			"minimumGeofence": 100,
-			"minGPSAccuracyRequired": 80
-		}
-	}
+  "LockName": "Front Door",
+  "Type": 2,
+  "Created": "2020-07-25T20:36:08.329Z",
+  "Updated": "2020-07-25T20:36:08.329Z",
+  "LockID": "snip",
+  "HouseID": "snip",
+  "HouseName": "snip",
+  "Calibrated": false,
+  "timeZone": "Europe/Lisbon",
+  "battery": 0.9615767335162673,
+  "supportsEntryCodes": false,
+  "remoteOperateSecret": "snip",
+  "skuNumber": "AUG-SL02-M02-S02",
+  "macAddress": "snip",
+  "SerialNumber": "snip",
+  "LockStatus": {
+    "status": "locked",
+    "dateTime": "2022-01-14T21:03:10.231Z",
+    "isLockStatusChanged": false,
+    "valid": true
+  },
+  "currentFirmwareVersion": "3.0.44-3.0.29",
+  "homeKitEnabled": false,
+  "zWaveEnabled": false,
+  "isGalileo": false,
+  "Bridge": {
+    "_id": "abc",
+    "mfgBridgeID": "C5WIC00090",
+    "deviceModel": "august-connect",
+    "firmwareVersion": "2.2.15",
+    "operative": true,
+    "status": {
+      "current": "online",
+      "lastOnline": "2022-01-14T07:59:07.651Z",
+      "updated": "2022-01-14T07:59:07.651Z",
+      "lastOffline": "2022-01-12T20:22:11.488Z"
+    },
+    "locks": [
+      {
+        "_id": "someid",
+        "LockID": "lock123",
+        "macAddress": "snip"
+      }
+    ],
+    "hyperBridge": false
+  },
+  "OfflineKeys": {
+    "created": [],
+    "loaded": [
+      {
+        "created": "2022-01-14T21:14:50.153Z",
+        "key": "XXXXXX",
+        "slot": 1,
+        "UserID": "XXXXXX",
+        "loaded": "2022-01-14T21:14:54.568Z"
+      }
+    ],
+    "deleted": [],
+    "createdhk": []
+  },
+  "parametersToSet": {},
+  "users": {},
+  "pubsubChannel": "snip",
+  "ruleHash": {},
+  "invitations": [],
+  "cameras": [],
+  "geofenceLimits": {
+    "ios": {
+      "debounceInterval": 90,
+      "gpsAccuracyMultiplier": 2.5,
+      "maximumGeofence": 5000,
+      "minimumGeofence": 100,
+      "minGPSAccuracyRequired": 80
+    }
+  }
 }
