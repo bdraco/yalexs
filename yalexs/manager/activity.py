@@ -15,7 +15,7 @@ from yalexs.util import get_latest_activity
 
 from .const import ACTIVITY_UPDATE_INTERVAL
 from .gateway import Gateway
-from .subscriber import AugustSubscriberMixin
+from .subscriber import SubscriberMixin
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ def _async_cancel_future_scheduled_updates(cancels: list[asyncio.TimerHandle]) -
     cancels.clear()
 
 
-class ActivityStream(AugustSubscriberMixin):
+class ActivityStream(SubscriberMixin):
     """August activity stream handler."""
 
     def __init__(

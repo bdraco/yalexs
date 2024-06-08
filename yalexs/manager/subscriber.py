@@ -7,7 +7,7 @@ from datetime import timedelta
 from typing import Any, Callable
 
 
-class AugustSubscriberMixin:
+class SubscriberMixin:
     """Base implementation for a subscriber."""
 
     def __init__(self, update_interval: timedelta) -> None:
