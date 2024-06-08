@@ -460,7 +460,7 @@ def _raise_response_exceptions(response: ClientResponse) -> None:
     except ClientResponseError as err:
         if err.status in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
             raise AugustApiAIOHTTPError(
-                f"Authentication failed; Verify brand is correct: {err.message}", err
+                f"Authentication failed: Verify brand is correct: {err.message}", err
             ) from err
         if err.status == 422:
             raise AugustApiAIOHTTPError(
