@@ -15,7 +15,7 @@ class SubscriberMixin:
         super().__init__()
         self._update_interval_seconds = update_interval.total_seconds()
         self._subscriptions: dict[str, list[Callable[[], None]]] = {}
-        self._unsub_interval: Callable[[], None] | None = None
+        self._unsub_interval: asyncio.TimerHandle | None = None
         self._loop = asyncio.get_running_loop()
         self._refresh_task: asyncio.Task | None = None
 
@@ -53,7 +53,7 @@ class SubscriberMixin:
     def _async_cancel_update_interval(self) -> None:
         """Cancel the scheduled update."""
         if self._unsub_interval:
-            self._unsub_interval()
+            self._unsub_interval.cancel()
             self._unsub_interval = None
 
     def _async_setup_listeners(self) -> None:
