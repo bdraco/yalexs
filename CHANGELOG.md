@@ -2,6 +2,13 @@
 
 
 
+## v4.0.0 (2024-06-08)
+
+### Breaking
+
+* feat!: add manager (#109) ([`107a747`](https://github.com/bdraco/yalexs/commit/107a747d040c3a233845adaee1e8cbc0c27f05d0))
+
+
 ## v3.2.0 (2024-06-08)
 
 ### Feature
