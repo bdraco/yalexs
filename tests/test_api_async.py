@@ -1,19 +1,19 @@
-from datetime import datetime
 import os
+from datetime import datetime
 from unittest import mock
 from unittest.mock import patch
 
+import aiounittest
+import dateutil.parser
+import pytest
 from aiohttp import ClientOSError, ClientResponse, ClientSession
 from aiohttp.helpers import TimerNoop
 from aioresponses import CallbackResult, aioresponses
-import aiounittest
-import dateutil.parser
 from dateutil.tz import tzlocal, tzutc
-import pytest
 from yarl import URL
 
-from yalexs import api_async
 import yalexs.activity
+from yalexs import api_async
 from yalexs.api_async import ApiAsync, _raise_response_exceptions
 from yalexs.api_common import (
     API_GET_DOORBELL_URL,
@@ -1251,7 +1251,7 @@ class MockedResponse(ClientResponse):
     def __init__(self, *args, **kwargs):
         content = kwargs.pop("content", None)
         status = kwargs.pop("status", None)
-        super(MockedResponse, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._mocked_content = content
         self._mocked_status = status
 

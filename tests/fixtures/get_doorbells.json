@@ -35,9 +35,7 @@
       "updated_at": "2017-11-23T00:42:19.470Z"
     },
     "doorbellServerURL": "https://doorbells.august.com",
-    "caps": [
-      "reconnect"
-    ],
+    "caps": ["reconnect"],
     "recentImage": {
       "public_id": "GjtkxMwBKde5krHDrd7K",
       "version": 1511381838,

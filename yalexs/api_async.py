@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import asyncio
-from http import HTTPStatus
 import logging
+from http import HTTPStatus
 from typing import Any
 
 from aiohttp import (
@@ -460,7 +460,7 @@ def _raise_response_exceptions(response: ClientResponse) -> None:
     except ClientResponseError as err:
         if err.status in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
             raise AugustApiAIOHTTPError(
-                f"Authentication failed; Verify brand is correct: {err.message}", err
+                f"Authentication failed: Verify brand is correct: {err.message}", err
             ) from err
         if err.status == 422:
             raise AugustApiAIOHTTPError(

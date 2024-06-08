@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta, timezone
 import json
+from datetime import datetime, timedelta, timezone
 
+import aiounittest
 from aiohttp import ClientError, ClientSession
 from aioresponses import aioresponses
-import aiounittest
 from dateutil.tz import tzutc
 
 from yalexs.api_async import ApiAsync

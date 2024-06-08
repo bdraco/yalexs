@@ -55,9 +55,7 @@
     "updated_at": "2017-12-10T08:05:13.650Z"
   },
   "doorbellServerURL": "https://doorbells.august.com",
-  "caps": [
-    "reconnect"
-  ],
+  "caps": ["reconnect"],
   "recentImage": {
     "public_id": "qqqqt4ctmxwsysylaaaa",
     "version": 1512892814,
@@ -67,8 +65,7 @@
     "format": "jpg",
     "resource_type": "image",
     "created_at": "2017-12-10T08:01:35Z",
-    "tags": [
-    ],
+    "tags": [],
     "bytes": 24476,
     "type": "upload",
     "etag": "54966926be2e93f77d498a55f247661f",

@@ -4,8 +4,8 @@ import datetime
 import logging
 from typing import Any
 
-from aiohttp import ClientSession
 import requests
+from aiohttp import ClientSession
 
 from yalexs.exceptions import ContentTokenExpired
 

@@ -2,9 +2,9 @@ import json
 import os
 import unittest
 
+import aiounittest
 from aiohttp import ClientSession
 from aioresponses import aioresponses
-import aiounittest
 
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,

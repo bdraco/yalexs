@@ -1,13 +1,13 @@
-from datetime import datetime
 import os
 import unittest
+from datetime import datetime
 
 import dateutil.parser
+import requests_mock
 from dateutil.tz import tzlocal, tzutc
 from requests.exceptions import HTTPError
 from requests.models import Response
 from requests.structures import CaseInsensitiveDict
-import requests_mock
 
 import yalexs.activity
 from yalexs.api import Api, _raise_response_exceptions
@@ -907,7 +907,7 @@ class TestApi(unittest.TestCase):
 class MockedResponse(Response):
     def __init__(self, *args, **kwargs):
         content = kwargs.pop("content", None)
-        super(MockedResponse, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._mocked_content = content
 
     @property

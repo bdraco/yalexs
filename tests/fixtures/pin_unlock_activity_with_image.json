@@ -1,15 +1,15 @@
 {
-	"id": "2c57a32e-708f-4f2e-81ad-c92dd4eb1b6a",
-	"timestamp": 1665465005000,
-	"icon": "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/pin_unlock@3x.png",
-	"action": "pin_unlock",
-	"deviceID": "3ED27C5DB8304395AA4F381DC8F167BB",
-	"deviceType": "lock",
-	"user": {
-		"UserID": "sddsdssds-5211-4fb9-810f-c67a4d68303b",
-		"FirstName": "Zip",
-		"LastName": "Zoo",
-		"thumbnail": "https://d33mytkkohwnk6.cloudfront.net/user/abc.jpg"
-	},
-	"title": "user with entry code"
+  "id": "2c57a32e-708f-4f2e-81ad-c92dd4eb1b6a",
+  "timestamp": 1665465005000,
+  "icon": "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/pin_unlock@3x.png",
+  "action": "pin_unlock",
+  "deviceID": "3ED27C5DB8304395AA4F381DC8F167BB",
+  "deviceType": "lock",
+  "user": {
+    "UserID": "sddsdssds-5211-4fb9-810f-c67a4d68303b",
+    "FirstName": "Zip",
+    "LastName": "Zoo",
+    "thumbnail": "https://d33mytkkohwnk6.cloudfront.net/user/abc.jpg"
+  },
+  "title": "user with entry code"
 }

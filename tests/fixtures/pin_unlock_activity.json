@@ -1,14 +1,14 @@
 {
-	"id": "e05b1c22-71d1-44b8-8a4c-e729174a8972",
-	"timestamp": 1665378377000,
-	"icon": "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/pin_unlock@3x.png",
-	"action": "pin_unlock",
-	"deviceID": "3ED27C5DB830439CAA4F381DC8F16444",
-	"deviceType": "lock",
-	"user": {
-		"UserID": "xxxsasdd-230b-4c6a-8a5c-155043492f3b",
-		"FirstName": "Sample",
-		"LastName": "Person"
-	},
-	"title": "<b>Sample Person</b> unlocked <b>Front Door</b> with entry code"
+  "id": "e05b1c22-71d1-44b8-8a4c-e729174a8972",
+  "timestamp": 1665378377000,
+  "icon": "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/pin_unlock@3x.png",
+  "action": "pin_unlock",
+  "deviceID": "3ED27C5DB830439CAA4F381DC8F16444",
+  "deviceType": "lock",
+  "user": {
+    "UserID": "xxxsasdd-230b-4c6a-8a5c-155043492f3b",
+    "FirstName": "Sample",
+    "LastName": "Person"
+  },
+  "title": "<b>Sample Person</b> unlocked <b>Front Door</b> with entry code"
 }
