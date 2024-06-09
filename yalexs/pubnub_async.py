@@ -128,9 +128,13 @@ def async_create_pubnub(
     pubnub.subscribe().channels(subscriptions.channels).execute()
 
     async def _async_unsub():
-        pubnub.unsubscribe_all()
+        _LOGGER.debug("Removing listeners PubNub")
         pubnub.remove_listener(subscriptions)
+        _LOGGER.debug("Unsubscribing from PubNub")
+        pubnub.unsubscribe_all()
         await asyncio.sleep(0)  # The unsubscribe_all() is not blocking
+        _LOGGER.debug("Stopping PubNub")
         await pubnub.stop()
+        _LOGGER.debug("PubNub stopped")
 
     return _async_unsub
