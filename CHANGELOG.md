@@ -2,6 +2,13 @@
 
 
 
+## v5.0.1 (2024-06-09)
+
+### Fix
+
+* fix: typing on async_create_pubnub (#111) ([`c02b3e8`](https://github.com/bdraco/yalexs/commit/c02b3e82dcb9ec540a090bbb90cdf9b0ac0b26be))
+
+
 ## v5.0.0 (2024-06-09)
 
 ### Breaking
