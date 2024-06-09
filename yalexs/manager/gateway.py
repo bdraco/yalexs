@@ -4,10 +4,9 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
-from collections.abc import Mapping
 from http import HTTPStatus
 from pathlib import Path
-from typing import Any, TypedDict
+from typing import TypedDict
 
 from aiohttp import ClientError, ClientResponseError, ClientSession
 
@@ -59,7 +58,7 @@ class Gateway:
         self._aiohttp_session = aiohttp_session
         self._token_refresh_lock = asyncio.Lock()
         self._config_path = config_path
-        self._config: Mapping[str, Any] | None = None
+        self._config: Config | None = None
         self._loop = asyncio.get_running_loop()
 
     @property
