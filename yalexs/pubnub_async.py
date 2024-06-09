@@ -1,5 +1,6 @@
 """Connect to pubnub."""
 
+import asyncio
 import datetime
 import logging
 from collections.abc import Coroutine
@@ -126,6 +127,9 @@ def async_create_pubnub(
     async def _async_unsub():
         _LOGGER.debug("Removing listeners PubNub")
         pubnub.remove_listener(subscriptions)
+        _LOGGER.debug("Unsubscribing from PubNub")
+        pubnub.unsubscribe_all()
+        await asyncio.sleep(0.1)  # Allow the unsubscribe to complete
         _LOGGER.debug("Stopping PubNub")
         await pubnub.stop()
         _LOGGER.debug("PubNub stopped")
