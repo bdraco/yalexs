@@ -112,7 +112,7 @@ class AugustPubNub(SubscribeCallback):
 
 def async_create_pubnub(
     user_uuid: str, subscriptions: AugustPubNub, brand: Brand = Brand.AUGUST
-) -> Coroutine[Any, Any, None]:
+) -> Callable[[], Coroutine[Any, Any, None]]:
     """Create a pubnub subscription."""
     tokens = PUBNUB_TOKENS[brand]
     pnconfig = PNConfiguration()
