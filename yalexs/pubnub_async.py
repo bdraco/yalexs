@@ -35,9 +35,7 @@ class AugustPubNub(SubscribeCallback):
         super().__init__(*args, **kwargs)
         self.connected = False
         self._device_channels: dict[str, str] = {}
-        self._subscriptions: set[
-            Callable[[str, datetime.datetime, dict[str, Any]], None]
-        ] = set()
+        self._subscriptions: set[UpdateCallbackType] = set()
 
     def presence(self, pubnub: AsyncioSubscriptionManager, presence):
         _LOGGER.debug("Received new presence: %s", presence)
