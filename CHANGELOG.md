@@ -2,6 +2,13 @@
 
 
 
+## v5.0.0 (2024-06-09)
+
+### Breaking
+
+* fix!: async_create_pubnub now returns a coro that needs to be awaited… (#110) ([`e1de91a`](https://github.com/bdraco/yalexs/commit/e1de91a428280808e20db6582472cd0e2fe938ba))
+
+
 ## v4.0.0 (2024-06-08)
 
 ### Breaking
