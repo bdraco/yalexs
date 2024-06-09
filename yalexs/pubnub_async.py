@@ -1,8 +1,10 @@
 """Connect to pubnub."""
 
+import asyncio
 import datetime
 import logging
 from collections.abc import Coroutine
+from functools import partial
 from typing import Any, Callable
 
 from pubnub.callbacks import SubscribeCallback
@@ -19,14 +21,23 @@ _LOGGER = logging.getLogger(__name__)
 
 UpdateCallbackType = Callable[[str, datetime.datetime, dict[str, Any]], None]
 
+SHOULD_RECONNECT_CATEGORIES = {
+    PNStatusCategory.PNUnknownCategory,
+    PNStatusCategory.PNUnexpectedDisconnectCategory,
+    PNStatusCategory.PNNetworkIssuesCategory,
+    PNStatusCategory.PNTimeoutCategory,
+}
+
 
 class AugustPubNub(SubscribeCallback):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize the AugustPubNub."""
         super().__init__(*args, **kwargs)
         self.connected = False
-        self._device_channels = {}
-        self._subscriptions = []
+        self._device_channels: dict[str, str] = {}
+        self._subscriptions: set[
+            Callable[[str, datetime.datetime, dict[str, Any]], None]
+        ] = set()
 
     def presence(self, pubnub: AsyncioSubscriptionManager, presence):
         _LOGGER.debug("Received new presence: %s", presence)
@@ -45,12 +56,7 @@ class AugustPubNub(SubscribeCallback):
             status.operation,
         )
 
-        if status.category in (
-            PNStatusCategory.PNUnknownCategory,
-            PNStatusCategory.PNUnexpectedDisconnectCategory,
-            PNStatusCategory.PNNetworkIssuesCategory,
-            PNStatusCategory.PNTimeoutCategory,
-        ):
+        if status.category in SHOULD_RECONNECT_CATEGORIES:
             self.connected = False
             pubnub.reconnect()
 
@@ -91,12 +97,11 @@ class AugustPubNub(SubscribeCallback):
 
         Returns a callable that can be used to unsubscribe.
         """
-        self._subscriptions.append(update_callback)
+        self._subscriptions.add(update_callback)
+        return partial(self._unsubscribe, update_callback)
 
-        def _unsubscribe():
-            self._subscriptions.remove(update_callback)
-
-        return _unsubscribe
+    def _unsubscribe(self, update_callback: UpdateCallbackType) -> None:
+        self._subscriptions.remove(update_callback)
 
     def register_device(self, device_detail: DeviceDetail) -> None:
         """Register a device to get updates."""
@@ -125,7 +130,9 @@ def async_create_pubnub(
     pubnub.subscribe().channels(subscriptions.channels).execute()
 
     async def _async_unsub():
-        pubnub.unsubscribe().channels(subscriptions.channels).execute()
+        pubnub.unsubscribe_all()
+        pubnub.remove_listener(subscriptions)
+        await asyncio.sleep(0)  # The unsubscribe_all() is not blocking
         await pubnub.stop()
 
     return _async_unsub
