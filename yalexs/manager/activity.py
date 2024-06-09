@@ -10,6 +10,7 @@ from aiohttp import ClientError
 
 from yalexs.activity import Activity, ActivityType
 from yalexs.api_async import ApiAsync
+from yalexs.backports.tasks import create_eager_task
 from yalexs.pubnub_async import AugustPubNub
 from yalexs.util import get_latest_activity
 
@@ -127,8 +128,8 @@ class ActivityStream(SubscriberMixin):
                 ACTIVITY_DEBOUNCE_COOLDOWN, self._async_future_update, house_id
             )
             return
-        self._update_tasks[house_id] = self._loop.create_task(
-            self._async_update_house_id(house_id)
+        self._update_tasks[house_id] = create_eager_task(
+            self._async_update_house_id(house_id), loop=self._loop
         )
 
     def async_schedule_house_id_refresh(self, house_id: str) -> None:

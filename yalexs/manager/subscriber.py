@@ -3,8 +3,12 @@ from __future__ import annotations
 
 import asyncio
 from abc import abstractmethod
+from collections import defaultdict
 from datetime import timedelta
+from functools import partial
 from typing import Any, Callable
+
+from yalexs.backports.tasks import create_eager_task
 
 
 class SubscriberMixin:
@@ -14,7 +18,9 @@ class SubscriberMixin:
         """Initialize an subscriber."""
         super().__init__()
         self._update_interval_seconds = update_interval.total_seconds()
-        self._subscriptions: dict[str, list[Callable[[], None]]] = {}
+        self._subscriptions: defaultdict[str, set[Callable[[], None]]] = defaultdict(
+            set
+        )
         self._unsub_interval: asyncio.TimerHandle | None = None
         self._loop = asyncio.get_running_loop()
         self._refresh_task: asyncio.Task | None = None
@@ -28,13 +34,8 @@ class SubscriberMixin:
         """
         if not self._subscriptions:
             self._async_setup_listeners()
-
-        self._subscriptions.setdefault(device_id, []).append(update_callback)
-
-        def _unsubscribe() -> None:
-            self.async_unsubscribe_device_id(device_id, update_callback)
-
-        return _unsubscribe
+        self._subscriptions[device_id].add(update_callback)
+        return partial(self.async_unsubscribe_device_id, device_id, update_callback)
 
     @abstractmethod
     async def _async_refresh(self) -> None:
@@ -46,8 +47,8 @@ class SubscriberMixin:
             self._update_interval_seconds,
             self._async_scheduled_refresh,
         )
-        self._refresh_task = asyncio.create_task(
-            self._async_refresh(), name=f"{self} schedule refresh"
+        self._refresh_task = create_eager_task(
+            self._async_refresh(), loop=self._loop, name=f"{self} schedule refresh"
         )
 
     def _async_cancel_update_interval(self) -> None:
@@ -76,15 +77,11 @@ class SubscriberMixin:
         self._subscriptions[device_id].remove(update_callback)
         if not self._subscriptions[device_id]:
             del self._subscriptions[device_id]
-
         if self._subscriptions:
             return
         self._async_cancel_update_interval()
 
     def async_signal_device_id_update(self, device_id: str) -> None:
         """Call the callbacks for a device_id."""
-        if not self._subscriptions.get(device_id):
-            return
-
-        for update_callback in self._subscriptions[device_id]:
+        for update_callback in self._subscriptions.get(device_id, ()):
             update_callback()
