@@ -33,6 +33,19 @@ from .lock import (
     determine_lock_status,
 )
 
+LOCK_STATUS_TO_ACTION = {
+    LockStatus.LOCKED: ACTION_LOCK_LOCK,
+    LockStatus.UNLATCHED: ACTION_LOCK_UNLATCH,
+    LockStatus.UNLOCKED: ACTION_LOCK_UNLOCK,
+    LockStatus.LOCKING: ACTION_LOCK_LOCKING,
+    LockStatus.UNLATCHING: ACTION_LOCK_UNLATCHING,
+    LockStatus.UNLOCKING: ACTION_LOCK_UNLOCKING,
+    LockStatus.JAMMED: ACTION_LOCK_JAMMED,
+}
+
+_BRIDGE_ACTIONS = {ACTION_BRIDGE_ONLINE, ACTION_BRIDGE_OFFLINE}
+
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -83,25 +96,10 @@ def activities_from_pubnub_message(
         if error.get("restCode") == 98 or error.get("name") == "ERRNO_BRIDGE_OFFLINE":
             _add_activity(activities, activity_dict, ACTION_BRIDGE_OFFLINE)
         elif status := message.get(LOCK_STATUS_KEY):
-            if status == ACTION_BRIDGE_ONLINE:
-                _add_activity(activities, activity_dict, ACTION_BRIDGE_ONLINE)
-            elif status == ACTION_BRIDGE_OFFLINE:
-                _add_activity(activities, activity_dict, ACTION_BRIDGE_OFFLINE)
-            lock_status = determine_lock_status(status)
-            if lock_status == LockStatus.LOCKED:
-                _add_activity(activities, activity_dict, ACTION_LOCK_LOCK)
-            elif lock_status == LockStatus.UNLATCHED:
-                _add_activity(activities, activity_dict, ACTION_LOCK_UNLATCH)
-            elif lock_status == LockStatus.UNLOCKED:
-                _add_activity(activities, activity_dict, ACTION_LOCK_UNLOCK)
-            elif lock_status == LockStatus.LOCKING:
-                _add_activity(activities, activity_dict, ACTION_LOCK_LOCKING)
-            elif lock_status == LockStatus.UNLATCHING:
-                _add_activity(activities, activity_dict, ACTION_LOCK_UNLATCHING)
-            elif lock_status == LockStatus.UNLOCKING:
-                _add_activity(activities, activity_dict, ACTION_LOCK_UNLOCKING)
-            elif lock_status == LockStatus.JAMMED:
-                _add_activity(activities, activity_dict, ACTION_LOCK_JAMMED)
+            if status in _BRIDGE_ACTIONS:
+                _add_activity(activities, activity_dict, status)
+            if action := LOCK_STATUS_TO_ACTION.get(determine_lock_status(status)):
+                _add_activity(activities, activity_dict, action)
         if door_state_raw := message.get(DOOR_STATE_KEY):
             door_state = determine_door_state(door_state_raw)
             if door_state == LockDoorStatus.OPEN:
