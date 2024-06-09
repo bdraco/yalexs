@@ -2,6 +2,13 @@
 
 
 
+## v5.2.0 (2024-06-09)
+
+### Feature
+
+* feat: improve performance of subscribers (#115) ([`98bb11a`](https://github.com/bdraco/yalexs/commit/98bb11a5eedd2188cca73d39e21101a57c6e3415))
+
+
 ## v5.1.2 (2024-06-09)
 
 ### Fix
