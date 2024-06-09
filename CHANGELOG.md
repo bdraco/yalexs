@@ -2,6 +2,13 @@
 
 
 
+## v5.1.0 (2024-06-09)
+
+### Feature
+
+* feat: cleanup pubnub code (#112) ([`67fc84a`](https://github.com/bdraco/yalexs/commit/67fc84a838bf584ce57e10a9294d066c4c0b67a6))
+
+
 ## v5.0.1 (2024-06-09)
 
 ### Fix
