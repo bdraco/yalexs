@@ -2,6 +2,13 @@
 
 
 
+## v5.1.1 (2024-06-09)
+
+### Fix
+
+* fix: cleanup duplicate code in pubnub (#113) ([`6c189e2`](https://github.com/bdraco/yalexs/commit/6c189e22af847a2760522d3f75c9ef7250cbeadc))
+
+
 ## v5.1.0 (2024-06-09)
 
 ### Feature
