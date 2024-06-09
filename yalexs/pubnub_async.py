@@ -81,14 +81,11 @@ class AugustPubNub(SubscribeCallback):
             message.timetoken,
             message.message,
         )
+        dt = datetime.datetime.fromtimestamp(
+            int(message.timetoken) / 10000000, tz=datetime.timezone.utc
+        )
         for callback in self._subscriptions:
-            callback(
-                device_id,
-                datetime.datetime.fromtimestamp(
-                    int(message.timetoken) / 10000000, tz=datetime.timezone.utc
-                ),
-                message.message,
-            )
+            callback(device_id, dt, message.message)
 
     def subscribe(self, update_callback: UpdateCallbackType) -> Callable[[], None]:
         """Add an callback subscriber.
