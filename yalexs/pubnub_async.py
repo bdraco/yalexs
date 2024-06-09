@@ -2,6 +2,7 @@
 
 import datetime
 import logging
+from collections.abc import Coroutine
 from typing import Any, Callable
 
 from pubnub.callbacks import SubscribeCallback
@@ -111,7 +112,7 @@ class AugustPubNub(SubscribeCallback):
 
 def async_create_pubnub(
     user_uuid: str, subscriptions: AugustPubNub, brand: Brand = Brand.AUGUST
-) -> Callable[[], None]:
+) -> Coroutine[Any, Any, None]:
     """Create a pubnub subscription."""
     tokens = PUBNUB_TOKENS[brand]
     pnconfig = PNConfiguration()
@@ -123,7 +124,8 @@ def async_create_pubnub(
     pubnub.add_listener(subscriptions)
     pubnub.subscribe().channels(subscriptions.channels).execute()
 
-    def _unsub():
+    async def _async_unsub():
         pubnub.unsubscribe().channels(subscriptions.channels).execute()
+        await pubnub.stop()
 
-    return _unsub
+    return _async_unsub
