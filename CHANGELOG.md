@@ -2,6 +2,13 @@
 
 
 
+## v5.1.2 (2024-06-09)
+
+### Fix
+
+* fix: allow pubnub unsub to complete since nothing currently waits (#114) ([`82b0c58`](https://github.com/bdraco/yalexs/commit/82b0c58a0ed64afa107145be2ad161039e6a8a3a))
+
+
 ## v5.1.1 (2024-06-09)
 
 ### Fix
