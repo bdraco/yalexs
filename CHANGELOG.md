@@ -2,6 +2,17 @@
 
 
 
+## v6.0.0 (2024-06-10)
+
+### Breaking
+
+* feat!: Add data module (#116) ([`14d6513`](https://github.com/bdraco/yalexs/commit/14d65137a3967d0a9f10264b49dc591f643d9f3a))
+
+### Fix
+
+* fix: bump commitlint to v6 (#117) ([`af95d48`](https://github.com/bdraco/yalexs/commit/af95d48665bb3e3c44a2b60b95600473a546b4df))
+
+
 ## v5.2.0 (2024-06-09)
 
 ### Feature
