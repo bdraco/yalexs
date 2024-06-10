@@ -61,7 +61,9 @@ def _restore_live_attrs(
 class YaleXSData(SubscriberMixin):
     """YaleXS Data coordinator object."""
 
-    def __init__(self, gateway: Gateway) -> None:
+    def __init__(
+        self, gateway: Gateway, error_exception_class: Exception = YaleXSError
+    ) -> None:
         """Init August data object."""
         super().__init__(MIN_TIME_BETWEEN_DETAIL_UPDATES)
         self._gateway = gateway
@@ -73,6 +75,7 @@ class YaleXSData(SubscriberMixin):
         self._house_ids: set[str] = set()
         self._pubnub_unsub: Callable[[], Coroutine[Any, Any, None]] | None = None
         self._initial_sync_task: asyncio.Task | None = None
+        self._error_exception_class = error_exception_class
 
     async def async_setup(self) -> None:
         """Async setup of august device data and activities."""
@@ -368,7 +371,7 @@ class YaleXSData(SubscriberMixin):
             device_name = self._get_device_name(device_id)
             if device_name is None:
                 device_name = f"DeviceID: {device_id}"
-            raise YaleXSError(f"{device_name}: {err}") from err
+            raise self._error_exception_class(f"{device_name}: {err}") from err
 
         return ret
 
