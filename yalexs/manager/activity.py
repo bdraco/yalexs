@@ -8,12 +8,11 @@ from time import monotonic
 
 from aiohttp import ClientError
 
-from yalexs.activity import Activity, ActivityType
-from yalexs.api_async import ApiAsync
-from yalexs.backports.tasks import create_eager_task
-from yalexs.pubnub_async import AugustPubNub
-from yalexs.util import get_latest_activity
-
+from ..activity import Activity, ActivityType
+from ..api_async import ApiAsync
+from ..backports.tasks import create_eager_task
+from ..pubnub_async import AugustPubNub
+from ..util import get_latest_activity
 from .const import ACTIVITY_UPDATE_INTERVAL
 from .gateway import Gateway
 from .subscriber import SubscriberMixin

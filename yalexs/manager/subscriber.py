@@ -2,16 +2,16 @@
 from __future__ import annotations
 
 import asyncio
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from collections import defaultdict
 from datetime import timedelta
 from functools import partial
 from typing import Any, Callable
 
-from yalexs.backports.tasks import create_eager_task
+from ..backports.tasks import create_eager_task
 
 
-class SubscriberMixin:
+class SubscriberMixin(ABC):
     """Base implementation for a subscriber."""
 
     def __init__(self, update_interval: timedelta) -> None:
