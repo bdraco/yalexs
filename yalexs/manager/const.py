@@ -20,3 +20,9 @@ DEFAULT_AUGUST_CONFIG_FILE: Final = ".august.conf"
 # Activity needs to be checked more frequently as the
 # doorbell motion and rings are included here
 ACTIVITY_UPDATE_INTERVAL = timedelta(seconds=10)
+
+
+# Limit battery, online, and hardware updates to hourly
+# in order to reduce the number of api requests and
+# avoid hitting rate limits
+MIN_TIME_BETWEEN_DETAIL_UPDATES = timedelta(hours=24)
