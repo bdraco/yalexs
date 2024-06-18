@@ -2,6 +2,13 @@
 
 
 
+## v6.1.1 (2024-06-18)
+
+### Fix
+
+* fix: handle teardown if setup is cancelled (#119) ([`cb50051`](https://github.com/bdraco/yalexs/commit/cb500517d3cb3a6a413fdd8515f3de21a6a0523b))
+
+
 ## v6.1.0 (2024-06-18)
 
 ### Feature
