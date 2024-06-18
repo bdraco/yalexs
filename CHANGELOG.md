@@ -2,6 +2,13 @@
 
 
 
+## v6.2.0 (2024-06-18)
+
+### Feature
+
+* feat: add async_get_doorbell_image method to the YaleXSData object (#120) ([`a33b842`](https://github.com/bdraco/yalexs/commit/a33b84237721f28a43c95dce81ec6400868a9e15))
+
+
 ## v6.1.1 (2024-06-18)
 
 ### Fix
