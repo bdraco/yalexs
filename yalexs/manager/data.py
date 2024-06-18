@@ -78,6 +78,11 @@ class YaleXSData(SubscriberMixin):
         self._initial_sync_task: asyncio.Task | None = None
         self._error_exception_class = error_exception_class
 
+    @property
+    def brand(self) -> Brand:
+        """Return the brand of the API."""
+        return self._gateway.api.brand
+
     async def async_setup(self) -> None:
         """Async setup of august device data and activities."""
         token = self._gateway.access_token
@@ -121,7 +126,7 @@ class YaleXSData(SubscriberMixin):
         await self.activity_stream.async_setup()
         pubnub.subscribe(self.async_pubnub_message)
         self._pubnub_unsub = async_create_pubnub(
-            user_data["UserID"], pubnub, self._gateway.api.brand
+            user_data["UserID"], pubnub, self.brand
         )
 
     async def _async_initial_sync(self) -> None:
@@ -396,7 +401,7 @@ class YaleXSData(SubscriberMixin):
         try:
             return await doorbell.async_get_doorbell_image(aiohttp_session, timeout)
         except ContentTokenExpired:
-            if self._gateway.api.brand != Brand.YALE_HOME:
+            if self.brand != Brand.YALE_HOME:
                 raise
             _LOGGER.debug(
                 "Error fetching camera image, updating content-token from api to retry"
