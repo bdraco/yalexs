@@ -402,6 +402,7 @@ class YaleXSData(SubscriberMixin):
                 "Error fetching camera image, updating content-token from api to retry"
             )
             await self.refresh_camera_by_id(device_id)
+            doorbell = self.get_device_detail(device_id)
             return await doorbell.async_get_doorbell_image(aiohttp_session, timeout)
 
     def _remove_inoperative_doorbells(self) -> None:
