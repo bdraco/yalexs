@@ -2,6 +2,13 @@
 
 
 
+## v6.1.0 (2024-06-18)
+
+### Feature
+
+* feat: abstract the need to check pubnub since it yale will use websocets (#118) ([`4aabe59`](https://github.com/bdraco/yalexs/commit/4aabe59cb19b9dcece2297900d325dca4e837175))
+
+
 ## v6.0.0 (2024-06-10)
 
 ### Breaking
