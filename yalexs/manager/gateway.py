@@ -10,12 +10,11 @@ from typing import TypedDict
 
 from aiohttp import ClientError, ClientResponseError, ClientSession
 
-from yalexs.api_async import ApiAsync
-from yalexs.authenticator_async import AuthenticationState, AuthenticatorAsync
-from yalexs.authenticator_common import Authentication
-from yalexs.const import DEFAULT_BRAND
-from yalexs.exceptions import AugustApiAIOHTTPError
-
+from ..api_async import ApiAsync
+from ..authenticator_async import AuthenticationState, AuthenticatorAsync
+from ..authenticator_common import Authentication
+from ..const import DEFAULT_BRAND
+from ..exceptions import AugustApiAIOHTTPError
 from .const import (
     CONF_ACCESS_TOKEN_CACHE_FILE,
     CONF_BRAND,
