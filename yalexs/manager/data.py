@@ -168,9 +168,10 @@ class YaleXSData(SubscriberMixin):
             await self._pubnub_unsub()
         if self.activity_stream:
             self.activity_stream.async_stop()
-        self._initial_sync_task.cancel()
-        with suppress(asyncio.CancelledError):
-            await self._initial_sync_task
+        if self._initial_sync_task:
+            self._initial_sync_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await self._initial_sync_task
 
     @property
     def doorbells(self) -> ValuesView[Doorbell]:
