@@ -2,6 +2,13 @@
 
 
 
+## v6.3.0 (2024-06-18)
+
+### Feature
+
+* feat: expose the brand on the data object for backwards compat (#121) ([`1e04f18`](https://github.com/bdraco/yalexs/commit/1e04f18c6c9479f680302f2afa2c352454ba2efc))
+
+
 ## v6.2.0 (2024-06-18)
 
 ### Feature
