@@ -11,11 +11,12 @@ from datetime import datetime
 from itertools import chain
 from typing import Any, ParamSpec, TypeVar
 
-from aiohttp import ClientError, ClientResponseError
+from aiohttp import ClientError, ClientResponseError, ClientSession
 
 from ..activity import ActivityTypes
 from ..backports.tasks import create_eager_task
-from ..doorbell import Doorbell, DoorbellDetail
+from ..const import Brand
+from ..doorbell import ContentTokenExpired, Doorbell, DoorbellDetail
 from ..exceptions import AugustApiAIOHTTPError
 from ..lock import Lock, LockDetail
 from ..pubnub_activity import activities_from_pubnub_message
@@ -120,7 +121,7 @@ class YaleXSData(SubscriberMixin):
         await self.activity_stream.async_setup()
         pubnub.subscribe(self.async_pubnub_message)
         self._pubnub_unsub = async_create_pubnub(
-            user_data["UserID"], pubnub, self.brand
+            user_data["UserID"], pubnub, self._gateway.api.brand
         )
 
     async def _async_initial_sync(self) -> None:
@@ -383,6 +384,26 @@ class YaleXSData(SubscriberMixin):
             raise self._error_exception_class(f"{device_name}: {err}") from err
 
         return ret
+
+    async def async_get_doorbell_image(
+        self,
+        device_id: str,
+        aiohttp_session: ClientSession,
+        timeout: float = 10.0,
+    ) -> bytes:
+        """Get the latest image from the doorbell."""
+        doorbell = self.get_device_detail(device_id)
+        try:
+            return await doorbell.async_get_doorbell_image(aiohttp_session, timeout)
+        except ContentTokenExpired:
+            if self._gateway.api.brand != Brand.YALE_HOME:
+                raise
+            _LOGGER.debug(
+                "Error fetching camera image, updating content-token from api to retry"
+            )
+            await self.refresh_camera_by_id(device_id)
+            doorbell = self.get_device_detail(device_id)
+            return await doorbell.async_get_doorbell_image(aiohttp_session, timeout)
 
     def _remove_inoperative_doorbells(self) -> None:
         for doorbell in list(self.doorbells):
