@@ -226,7 +226,8 @@ class YaleXSData(SubscriberMixin):
     def push_updates_connected(self) -> bool:
         """Return if the push updates are connected."""
         return (
-            self.activity_stream is not None and self.activity_stream.pubnub.connected
+            self.activity_stream is not None
+            and self.activity_stream.push_updates_connected
         )
 
     async def _async_refresh_device_detail_by_id(self, device_id: str) -> None:
