@@ -2,6 +2,13 @@
 
 
 
+## v6.4.0 (2024-06-19)
+
+### Feature
+
+* feat: abstract sources to tell which ones are push (#122) ([`7b0fdb9`](https://github.com/bdraco/yalexs/commit/7b0fdb90d4d67423c8e51fabc3098243e7805e8d))
+
+
 ## v6.3.0 (2024-06-18)
 
 ### Feature
