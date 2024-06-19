@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum, StrEnum
+from enum import Enum
 from typing import Any, Union
 
+from .backports.enum import StrEnum
 from .backports.functools import cached_property
 from .lock import LockDoorStatus, LockStatus
 from .time import epoch_to_datetime, parse_datetime
