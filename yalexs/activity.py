@@ -4,6 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Union
 
+from .backports.enum import StrEnum
 from .backports.functools import cached_property
 from .lock import LockDoorStatus, LockStatus
 from .time import epoch_to_datetime, parse_datetime
@@ -189,9 +190,20 @@ ACTIVITY_ACTION_STATES = {
     ACTION_LOCK_MANUAL_UNLOCK: LockStatus.UNLOCKED,
 }
 
-SOURCE_LOCK_OPERATE = "lock_operate"
-SOURCE_PUBNUB = "pubnub"
-SOURCE_LOG = "log"
+
+class Source(StrEnum):
+    """Source of the activity."""
+
+    LOCK_OPERATE = "lock_operate"
+    PUBNUB = "pubnub"
+    LOG = "log"
+    WEBSOCKET = "websocket"
+
+
+SOURCE_LOCK_OPERATE = Source.LOCK_OPERATE
+SOURCE_PUBNUB = Source.PUBNUB
+SOURCE_LOG = Source.LOG
+SOURCE_WEBSOCKET = Source.WEBSOCKET
 
 # If we get a lock operation activity with the same time stamp as a moving
 # activity we want to use the non-moving activity since its the completed state.
@@ -229,6 +241,11 @@ class Activity:
             f"activity_start_time={self.activity_start_time} "
             f"device_name={self.device_name}>"
         )
+
+    @cached_property
+    def was_pushed(self) -> bool:
+        """Return if the activity was pushed."""
+        return self._source in (SOURCE_PUBNUB, SOURCE_WEBSOCKET)
 
     @cached_property
     def source(self) -> str:

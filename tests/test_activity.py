@@ -57,6 +57,7 @@ from yalexs.activity import (
     ACTIVITY_ACTIONS_DOORBELL_VIEW,
     ACTIVITY_ACTIONS_LOCK_OPERATION,
     SOURCE_LOG,
+    SOURCE_WEBSOCKET,
     ActivityType,
     DoorbellDingActivity,
     LockOperationActivity,
@@ -485,3 +486,23 @@ class TestActivityApiAsync(aiounittest.AsyncTestCase):
             keypad_lock_activity.operator_thumbnail_url
             == "https://www.image.com/foo.jpeg"
         )
+
+    def test_websocket_activity(self):
+        manual_unlock_activity = LockOperationActivity(
+            SOURCE_WEBSOCKET, json.loads(load_fixture("manual_unlock_activity.json"))
+        )
+        assert manual_unlock_activity.operated_by == "Manual Unlock"
+        assert manual_unlock_activity.operated_remote is False
+        assert manual_unlock_activity.operated_keypad is False
+        assert manual_unlock_activity.operated_manual is True
+        assert manual_unlock_activity.operated_tag is False
+        assert (
+            manual_unlock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_unlock@3x.png"
+        )
+        assert (
+            manual_unlock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_unlock@3x.png"
+        )
+        assert manual_unlock_activity.source == SOURCE_WEBSOCKET
+        assert manual_unlock_activity.was_pushed is True
