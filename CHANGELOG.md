@@ -2,6 +2,13 @@
 
 
 
+## v6.4.1 (2024-06-23)
+
+### Fix
+
+* fix: blocking I/O in the event loop to stat the auth file (#123) ([`44ce0c4`](https://github.com/bdraco/yalexs/commit/44ce0c44c12c7c18ec12d83261346fdc25917afe))
+
+
 ## v6.4.0 (2024-06-19)
 
 ### Feature
