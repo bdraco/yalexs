@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 from datetime import datetime, timedelta, timezone
 
 import aiofiles
@@ -27,54 +26,57 @@ class AuthenticatorAsync(AuthenticatorCommon):
 
     _api: ApiAsync
 
-    async def async_setup_authentication(self) -> None:
-        access_token_cache_file = self._access_token_cache_file
-        if access_token_cache_file is not None and os.path.exists(
-            access_token_cache_file
-        ):
-            async with aiofiles.open(access_token_cache_file, "r") as file:
-                try:
-                    contents = await file.read()
-                    self._authentication = from_authentication_json(
-                        json.loads(contents)
-                    )
+    async def _read_access_token_file(
+        self,
+        access_token_cache_file: str,
+        file: aiofiles.threadpool.binary.AsyncBufferedIOBase,
+    ) -> None:
+        contents = await file.read()
+        self._authentication = from_authentication_json(json.loads(contents))
 
-                    # If token is to expire within 7 days then print a warning.
-                    if self._authentication.is_expired():
-                        _LOGGER.error("Token has expired.")
-                        self._authentication = Authentication(
-                            AuthenticationState.REQUIRES_AUTHENTICATION,
-                            install_id=self._install_id,
-                        )
-                    # If token is not expired but less then 7 days before it
-                    # will.
-                    elif (
-                        self._authentication.parsed_expiration_time()
-                        - datetime.now(timezone.utc)
-                    ) < timedelta(days=7):
-                        exp_time = self._authentication.access_token_expires
-                        _LOGGER.warning(
-                            "API Token is going to expire at %s "
-                            "hours. Deleting file %s will result "
-                            "in a new token being requested next"
-                            " time",
-                            exp_time,
-                            access_token_cache_file,
-                        )
+        # If token is to expire within 7 days then print a warning.
+        if self._authentication.is_expired():
+            _LOGGER.error("Token has expired.")
+            self._authentication = Authentication(
+                AuthenticationState.REQUIRES_AUTHENTICATION,
+                install_id=self._install_id,
+            )
+        # If token is not expired but less then 7 days before it
+        # will.
+        elif (
+            self._authentication.parsed_expiration_time() - datetime.now(timezone.utc)
+        ) < timedelta(days=7):
+            exp_time = self._authentication.access_token_expires
+            _LOGGER.warning(
+                "API Token is going to expire at %s "
+                "hours. Deleting file %s will result "
+                "in a new token being requested next"
+                " time",
+                exp_time,
+                access_token_cache_file,
+            )
+
+    async def async_setup_authentication(self) -> None:
+        if access_token_cache_file := self._access_token_cache_file:
+            try:
+                async with aiofiles.open(access_token_cache_file, "r") as file:
+                    await self._read_access_token_file(access_token_cache_file, file)
                     return
-                except json.decoder.JSONDecodeError as error:
-                    _LOGGER.error(
-                        "Unable to read cache file (%s): %s",
-                        access_token_cache_file,
-                        error,
-                    )
+            except FileNotFoundError:
+                _LOGGER.debug("Cache file not found: %s", access_token_cache_file)
+            except json.decoder.JSONDecodeError as error:
+                _LOGGER.error(
+                    "Unable to read cache file (%s): %s",
+                    access_token_cache_file,
+                    error,
+                )
 
         self._authentication = Authentication(
             AuthenticationState.REQUIRES_AUTHENTICATION, install_id=self._install_id
         )
 
     async def async_authenticate(self) -> Authentication:
-        if self._authentication.state == AuthenticationState.AUTHENTICATED:
+        if self._authentication.state is AuthenticationState.AUTHENTICATED:
             return self._authentication
 
         identifier = self._login_method + ":" + self._username
@@ -88,7 +90,7 @@ class AuthenticatorAsync(AuthenticatorCommon):
             install_id, response.headers, json_dict
         )
 
-        if authentication.state == AuthenticationState.AUTHENTICATED:
+        if authentication.state is AuthenticationState.AUTHENTICATED:
             await self._async_cache_authentication(authentication)
 
         return authentication
@@ -122,7 +124,7 @@ class AuthenticatorAsync(AuthenticatorCommon):
         if not self.should_refresh() and not force:
             return self._authentication
 
-        if self._authentication.state != AuthenticationState.AUTHENTICATED:
+        if self._authentication.state is not AuthenticationState.AUTHENTICATED:
             _LOGGER.warning("Tried to refresh access token when not authenticated")
             return self._authentication
 
