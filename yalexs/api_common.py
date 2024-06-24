@@ -88,7 +88,7 @@ def _api_headers(
 
 
 def _convert_lock_result_to_activities(
-    lock_json_dict: dict[str, Any]
+    lock_json_dict: dict[str, Any],
 ) -> list[ActivityTypes]:
     activities = []
     lock_info_json_dict = lock_json_dict.get("info", {})
