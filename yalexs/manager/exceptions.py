@@ -1,4 +1,5 @@
 """Exceptions for errors."""
+
 from __future__ import annotations
 
 
