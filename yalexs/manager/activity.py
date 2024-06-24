@@ -1,4 +1,5 @@
 """Consume the august activity stream."""
+
 from __future__ import annotations
 
 import asyncio
