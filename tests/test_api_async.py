@@ -406,7 +406,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         self.assertEqual(88, lock.battery_level)
         self.assertEqual("AUG-SL02-M02-S02", lock.model)
         self.assertEqual("Medium", lock.keypad.battery_level)
-        self.assertEqual(60, lock.keypad.battery_percentage)
+        self.assertEqual(62, lock.keypad.battery_percentage)
         self.assertEqual("5bc65c24e6ef2a263e1450a8", lock.keypad.device_id)
         self.assertIsInstance(lock.bridge, BridgeDetail)
         self.assertEqual(True, lock.bridge_is_online)
@@ -436,6 +436,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         lock = await api.async_get_lock_detail(
             ACCESS_TOKEN, "A6697750D607098BAE8D6BAA11EF8063"
         )
+        self.assertEqual(62, lock.keypad.battery_percentage)
 
         assert lock.doorbell is True
 
