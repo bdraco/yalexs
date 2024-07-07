@@ -2,6 +2,13 @@
 
 
 
+## v6.4.2 (2024-07-07)
+
+### Fix
+
+* fix: keypad battery level for non-english locales (#128) ([`cca641f`](https://github.com/bdraco/yalexs/commit/cca641ff829984f7144be7fccf29ca50816aa38b))
+
+
 ## v6.4.1 (2024-06-23)
 
 ### Fix
