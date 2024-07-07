@@ -1,8 +1,19 @@
 from .device import DeviceDetail
+from .backports.functools import cached_property
 
 BATTERY_LEVEL_FULL = "Full"
 BATTERY_LEVEL_MEDIUM = "Medium"
 BATTERY_LEVEL_LOW = "Low"
+
+_LEVEL_TO_VALUE = {
+    BATTERY_LEVEL_FULL: 100,
+    BATTERY_LEVEL_MEDIUM: 60,
+    BATTERY_LEVEL_LOW: 10,
+}
+
+_MAX_LEVEL = 200
+_MIN_LEVEL = 120
+_RATIO = 100 / (_MAX_LEVEL - _MIN_LEVEL)
 
 
 class KeypadDetail(DeviceDetail):
@@ -16,28 +27,22 @@ class KeypadDetail(DeviceDetail):
             None,
             data,
         )
-
+        self._battery_raw = data.get("batteryRaw")
         self._battery_level = data["batteryLevel"]
 
-    @property
+    @cached_property
     def model(self):
         return "AK-R1"
 
-    @property
+    @cached_property
     def battery_level(self):
         return self._battery_level
 
-    @property
+    @cached_property
     def battery_percentage(self):
         """Return an approximation of the battery percentage."""
+        if self._battery_raw:
+            return int(max(0, min(100, (self._battery_raw - _MIN_LEVEL) * _RATIO)))
         if not self._battery_level:
             return None
-
-        if self._battery_level == BATTERY_LEVEL_FULL:
-            return 100
-        if self._battery_level == BATTERY_LEVEL_MEDIUM:
-            return 60
-        if self._battery_level == BATTERY_LEVEL_LOW:
-            return 10
-
-        return 0
+        return _LEVEL_TO_VALUE.get(self._battery_level, 0)

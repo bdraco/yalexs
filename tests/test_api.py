@@ -319,7 +319,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(88, lock.battery_level)
         self.assertEqual("AUG-SL02-M02-S02", lock.model)
         self.assertEqual("Medium", lock.keypad.battery_level)
-        self.assertEqual(60, lock.keypad.battery_percentage)
+        self.assertEqual(62, lock.keypad.battery_percentage)
         self.assertEqual("5bc65c24e6ef2a263e1450a8", lock.keypad.device_id)
         self.assertIsInstance(lock.bridge, BridgeDetail)
         self.assertEqual(True, lock.bridge_is_online)
