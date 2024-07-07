@@ -41,8 +41,8 @@ class KeypadDetail(DeviceDetail):
     @cached_property
     def battery_percentage(self):
         """Return an approximation of the battery percentage."""
-        if self._battery_raw:
+        if self._battery_raw is not None:
             return int(max(0, min(100, (self._battery_raw - _MIN_LEVEL) * _RATIO)))
-        if not self._battery_level:
+        if self._battery_level is None:
             return None
         return _LEVEL_TO_VALUE.get(self._battery_level, 0)
