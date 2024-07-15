@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "yalexs"
-version = "6.4.2"
+version = "6.4.3"
 description = "Python API for Yale Access (formerly August) Smart Lock and Doorbell"
 authors = ["J. Nick Koston <nick@koston.org>"]
 license = "MIT"

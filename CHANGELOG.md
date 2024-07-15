@@ -2,6 +2,13 @@
 
 
 
+## v6.4.3 (2024-07-15)
+
+### Fix
+
+* fix: replace pubnub with freenub to keep MIT license (#130) ([`57e41af`](https://github.com/bdraco/yalexs/commit/57e41af16331d2031294107cd1f438fab3e3a524))
+
+
 ## v6.4.2 (2024-07-07)
 
 ### Fix
