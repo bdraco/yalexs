@@ -2,6 +2,13 @@
 
 
 
+## v6.4.4 (2024-08-05)
+
+### Fix
+
+* fix: tests with aiohttp &gt;= 3.10.0 (#134) ([`a25deb4`](https://github.com/bdraco/yalexs/commit/a25deb453a19854cd5f5c7eb1cc3114718248880))
+
+
 ## v6.4.3 (2024-07-15)
 
 ### Fix
