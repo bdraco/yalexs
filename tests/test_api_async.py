@@ -1187,7 +1187,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         )
         assert last_args["json"] == {"code": "123456", "email": "emailaddress"}
 
-    def test__raise_response_exceptions(self):
+    async def test__raise_response_exceptions(self):
         loop = mock.Mock()
         request_info = mock.Mock()
         request_info.status.return_value = 428
