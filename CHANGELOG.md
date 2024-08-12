@@ -2,6 +2,13 @@
 
 
 
+## v6.5.0 (2024-08-12)
+
+### Feature
+
+* feat: cleanup activity construction code (#136) ([`b994c0b`](https://github.com/bdraco/yalexs/commit/b994c0be4f3500abc954a718a77c78fa332498f2))
+
+
 ## v6.4.4 (2024-08-05)
 
 ### Fix
