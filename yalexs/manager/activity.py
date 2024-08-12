@@ -53,9 +53,9 @@ class ActivityStream(SubscriberMixin):
         self._august_gateway = august_gateway
         self._api = api
         self._house_ids = house_ids
-        self._latest_activities: defaultdict[str, dict[ActivityType, Activity]] = (
-            defaultdict(dict)
-        )
+        self._latest_activities: defaultdict[
+            str, dict[ActivityType, Activity | None]
+        ] = defaultdict(lambda: defaultdict(lambda: None))
         self._did_first_update = False
         self.pubnub = pubnub
         self._update_tasks: dict[str, asyncio.Task] = {}
@@ -216,7 +216,7 @@ class ActivityStream(SubscriberMixin):
             device_activities = latest_activities[device_id]
             # Ignore activities that are older than the latest one unless it is a non
             # locking or unlocking activity with the exact same start time.
-            last_activity = device_activities.get(activity_type)
+            last_activity = device_activities[activity_type]
             # The activity stream can have duplicate activities. So we need
             # to call get_latest_activity to figure out if if the activity
             # is actually newer than the last one.
