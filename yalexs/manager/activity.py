@@ -53,7 +53,9 @@ class ActivityStream(SubscriberMixin):
         self._august_gateway = august_gateway
         self._api = api
         self._house_ids = house_ids
-        self._latest_activities: dict[str, dict[ActivityType, Activity]] = {}
+        self._latest_activities: defaultdict[str, dict[ActivityType, Activity]] = (
+            defaultdict(dict)
+        )
         self._did_first_update = False
         self.pubnub = pubnub
         self._update_tasks: dict[str, asyncio.Task] = {}
@@ -211,7 +213,7 @@ class ActivityStream(SubscriberMixin):
         for activity in activities:
             device_id = activity.device_id
             activity_type = activity.activity_type
-            device_activities = latest_activities.setdefault(device_id, {})
+            device_activities = latest_activities[device_id]
             # Ignore activities that are older than the latest one unless it is a non
             # locking or unlocking activity with the exact same start time.
             last_activity = device_activities.get(activity_type)

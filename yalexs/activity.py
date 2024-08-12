@@ -155,7 +155,7 @@ MANUAL_ACTIONS = {
     ACTION_LOCK_MANUAL_UNLOCK,
 }
 
-ACTIVITY_ACTION_STATES = {
+ACTIVITY_ACTION_STATES: dict[str, LockStatus | LockDoorStatus] = {
     ACTION_RF_SECURE: LockStatus.LOCKED,
     ACTION_RF_LOCK: LockStatus.LOCKED,
     ACTION_RF_UNLATCH: LockStatus.UNLATCHED,
@@ -207,7 +207,17 @@ SOURCE_WEBSOCKET = Source.WEBSOCKET
 
 # If we get a lock operation activity with the same time stamp as a moving
 # activity we want to use the non-moving activity since its the completed state.
-MOVING_STATES = {LockStatus.UNLOCKING, LockStatus.UNLATCHING, LockStatus.LOCKING}
+MOVING_STATES: set[LockStatus | LockDoorStatus] = {
+    LockStatus.UNLOCKING,
+    LockStatus.UNLATCHING,
+    LockStatus.LOCKING,
+}
+
+ACTIVITY_MOVING_STATES = {
+    action
+    for action, action_state in ACTIVITY_ACTION_STATES.items()
+    if action_state in MOVING_STATES
+}
 
 
 class ActivityType(Enum):
@@ -224,15 +234,10 @@ class ActivityType(Enum):
 class Activity:
     """Base class for activities."""
 
-    def __init__(
-        self, source: str, activity_type: ActivityType, data: dict[str, Any]
-    ) -> None:
+    def __init__(self, source: str, data: dict[str, Any]) -> None:
         """Initialize activity."""
         self._source = source
-        self._activity_type = activity_type
         self._data = data
-        self._entities: dict[str, Any] = data.get("entities", {})
-        self._info: dict[str, Any] = data.get("info", {})
 
     def __repr__(self):
         """Return the representation."""
@@ -241,6 +246,16 @@ class Activity:
             f"activity_start_time={self.activity_start_time} "
             f"device_name={self.device_name}>"
         )
+
+    @cached_property
+    def _entities(self) -> dict[str, Any]:
+        """Return the entities of the activity."""
+        return self._data.get("entities", {})
+
+    @cached_property
+    def _info(self) -> dict[str, Any]:
+        """Return the info of the activity."""
+        return self._data.get("info", {})
 
     @cached_property
     def was_pushed(self) -> bool:
@@ -302,14 +317,6 @@ class Activity:
 class BaseDoorbellMotionActivity(Activity):
     """Base class for doorbell motion activities."""
 
-    def __init__(
-        self, source: str, activity_type: ActivityType, data: dict[str, Any]
-    ) -> None:
-        """Initialize doorbell motion activity."""
-        super().__init__(source, activity_type, data)
-        self._image: dict[str, Any] | None = self._info.get("image")
-        self._content_token = data.get("doorbell", {}).get("contentToken")
-
     def __repr__(self):
         return (
             f"<{self.__class__.__name__} action={self.action} activity_type={self.activity_type} "
@@ -318,6 +325,16 @@ class BaseDoorbellMotionActivity(Activity):
             f"image_url={self.image_url}>"
             f"content_token={self.content_token}"
         )
+
+    @cached_property
+    def _image(self) -> dict[str, Any] | None:
+        """Return the image of the activity."""
+        return self._info.get("image")
+
+    @cached_property
+    def _content_token(self) -> str | None:
+        """Return the content token of the activity."""
+        return self._data.get("doorbell", {}).get("contentToken")
 
     @cached_property
     def image_url(self):
@@ -346,17 +363,13 @@ class BaseDoorbellMotionActivity(Activity):
 class DoorbellMotionActivity(BaseDoorbellMotionActivity):
     """A motion activity."""
 
-    def __init__(self, source: str, data: dict[str, Any]) -> None:
-        """Initialize doorbell motion activity."""
-        super().__init__(source, ActivityType.DOORBELL_MOTION, data)
+    _activity_type = ActivityType.DOORBELL_MOTION
 
 
 class DoorbellImageCaptureActivity(BaseDoorbellMotionActivity):
     """A motion activity with an image."""
 
-    def __init__(self, source: str, data: dict[str, Any]) -> None:
-        """Initialize doorbell motion activity."""
-        super().__init__(source, ActivityType.DOORBELL_IMAGE_CAPTURE, data)
+    _activity_type = ActivityType.DOORBELL_IMAGE_CAPTURE
 
 
 class DoorbellBaseActionActivity(Activity):
@@ -385,25 +398,23 @@ class DoorbellBaseActionActivity(Activity):
 class DoorbellDingActivity(DoorbellBaseActionActivity):
     """Doorbell ding activity."""
 
-    def __init__(self, source: str, data: dict[str, Any]) -> None:
-        """Initialize doorbell ding activity."""
-        super().__init__(source, ActivityType.DOORBELL_DING, data)
+    _activity_type = ActivityType.DOORBELL_DING
 
 
 class DoorbellViewActivity(DoorbellBaseActionActivity):
     """Doorbell view activity."""
 
-    def __init__(self, source: str, data: dict[str, Any]) -> None:
-        """Initialize doorbell view activity."""
-        super().__init__(source, ActivityType.DOORBELL_VIEW, data)
+    _activity_type = ActivityType.DOORBELL_VIEW
 
 
 class LockOperationActivity(Activity):
     """Lock operation activity."""
 
+    _activity_type = ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR
+
     def __init__(self, source: str, data: dict[str, Any]) -> None:
         """Initialize lock operation activity."""
-        super().__init__(source, ActivityType.LOCK_OPERATION_WITHOUT_OPERATOR, data)
+        super().__init__(source, data)
         operated_by: str | None = None
         calling_user = self.calling_user
         first_name: str | None = calling_user.get("FirstName")
@@ -544,17 +555,13 @@ class LockOperationActivity(Activity):
 class DoorOperationActivity(Activity):
     """Door operation activity."""
 
-    def __init__(self, source: str, data: dict[str, Any]) -> None:
-        """Initialize door operation activity."""
-        super().__init__(source, ActivityType.DOOR_OPERATION, data)
+    _activity_type = ActivityType.DOOR_OPERATION
 
 
 class BridgeOperationActivity(Activity):
     """Bridge operation activity."""
 
-    def __init__(self, source: str, data: dict[str, Any]) -> None:
-        """Initialize bridge operation activity."""
-        super().__init__(source, ActivityType.BRIDGE_OPERATION, data)
+    _activity_type = ActivityType.BRIDGE_OPERATION
 
 
 ActivityTypes = Union[
