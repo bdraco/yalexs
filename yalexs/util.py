@@ -2,13 +2,14 @@ import datetime
 import random
 import ssl
 from functools import cache
-from typing import Optional, Union
+from typing import Optional, Union, TYPE_CHECKING
 
 from .activity import (
     ACTION_BRIDGE_OFFLINE,
     ACTION_BRIDGE_ONLINE,
     ACTIVITY_ACTION_STATES,
     MOVING_STATES,
+    ACTIVITY_MOVING_STATES,
     BridgeOperationActivity,
     DoorbellImageCaptureActivity,
     DoorbellMotionActivity,
@@ -18,35 +19,38 @@ from .activity import (
 from .const import CONFIGURATION_URLS, Brand
 from .lock import LockDetail
 
+LockActivityTypes = Union[
+    LockOperationActivity, DoorOperationActivity, BridgeOperationActivity
+]
+DoorbellActivityTypes = Union[
+    DoorbellImageCaptureActivity, DoorbellMotionActivity, BridgeOperationActivity
+]
+
+if TYPE_CHECKING:
+    from .doorbell import DoorbellDetail
+
 
 def get_latest_activity(
-    activity1: Optional[
-        Union[LockOperationActivity, DoorOperationActivity, BridgeOperationActivity]
-    ],
-    activity2: Optional[
-        Union[LockOperationActivity, DoorOperationActivity, BridgeOperationActivity]
-    ],
-) -> Optional[
-    Union[LockOperationActivity, DoorOperationActivity, BridgeOperationActivity]
-]:
+    activity1: Optional[LockActivityTypes], activity2: Optional[LockActivityTypes]
+) -> Optional[LockActivityTypes]:
     """Return the latest activity."""
-    if not activity1:
-        return activity2
-    if not activity2:
-        return activity1
-    if (
-        activity1.activity_start_time <= activity2.activity_start_time
-        and ACTIVITY_ACTION_STATES.get(activity2.action) not in MOVING_STATES
-    ):
-        return activity2
-    return activity1
+    return (
+        activity2
+        if (
+            not activity1
+            or (
+                activity2
+                and activity2.action not in ACTIVITY_MOVING_STATES
+                and activity1.activity_start_time <= activity2.activity_start_time
+            )
+        )
+        else activity1
+    )
 
 
 def update_lock_detail_from_activity(
     lock_detail: LockDetail,
-    activity: Union[
-        LockOperationActivity, DoorOperationActivity, BridgeOperationActivity
-    ],
+    activity: LockActivityTypes,
 ) -> bool:
     """Update the LockDetail from an activity."""
     activity_end_time_utc = as_utc_from_local(activity.activity_end_time)
@@ -82,7 +86,9 @@ def update_lock_detail_from_activity(
     return True
 
 
-def update_doorbell_image_from_activity(doorbell_detail, activity):
+def update_doorbell_image_from_activity(
+    doorbell_detail: "DoorbellDetail", activity: DoorbellActivityTypes
+) -> bool:
     """Update the DoorDetail from an activity with a new image."""
     if activity.device_id != doorbell_detail.device_id:
         raise ValueError
