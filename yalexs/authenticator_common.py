@@ -98,9 +98,9 @@ class AuthenticatorCommon:
     def __init__(
         self,
         api: ApiCommon,
-        login_method: str,
-        username: str,
-        password: str,
+        login_method: str | None,
+        username: str | None,
+        password: str | None,
         install_id: str | None = None,
         access_token_cache_file: str | None = None,
         access_token_renewal_threshold: timedelta = DEFAULT_RENEWAL_THRESHOLD,
