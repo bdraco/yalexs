@@ -73,30 +73,33 @@ class Gateway:
         self._access_token_cache_file = file
         return self._config_path.joinpath(file)
 
-    async def async_setup(self, conf: Config) -> None:
+    async def async_setup(
+        self, conf: Config, authenticator: AuthenticatorAsync | None = None
+    ) -> None:
         """Create the api and authenticator objects."""
         if conf.get(VERIFICATION_CODE_KEY):
             return
 
-        access_token_cache_file_path = self.async_configure_access_token_cache_file(
-            conf[CONF_USERNAME], conf.get(CONF_ACCESS_TOKEN_CACHE_FILE)
-        )
         self._config = conf
-
         self.api = ApiAsync(
             self._aiohttp_session,
             timeout=self._config.get(CONF_TIMEOUT, DEFAULT_TIMEOUT),
             brand=self._config.get(CONF_BRAND, DEFAULT_BRAND),
         )
-
-        self.authenticator = AuthenticatorAsync(
-            self.api,
-            self._config[CONF_LOGIN_METHOD],
-            self._config[CONF_USERNAME],
-            self._config.get(CONF_PASSWORD, ""),
-            install_id=self._config.get(CONF_INSTALL_ID),
-            access_token_cache_file=access_token_cache_file_path,
-        )
+        if authenticator:
+            self.authenticator = authenticator
+        else:
+            access_token_cache_file_path = self.async_configure_access_token_cache_file(
+                conf[CONF_USERNAME], conf.get(CONF_ACCESS_TOKEN_CACHE_FILE)
+            )
+            self.authenticator = AuthenticatorAsync(
+                self.api,
+                self._config[CONF_LOGIN_METHOD],
+                self._config[CONF_USERNAME],
+                self._config.get(CONF_PASSWORD, ""),
+                install_id=self._config.get(CONF_INSTALL_ID),
+                access_token_cache_file=access_token_cache_file_path,
+            )
 
         await self.authenticator.async_setup_authentication()
 
@@ -104,7 +107,8 @@ class Gateway:
         """Authenticate with the details provided to setup."""
         try:
             self.authentication = await self.authenticator.async_authenticate()
-            if self.authentication.state == AuthenticationState.AUTHENTICATED:
+            auth_state = self.authentication.state
+            if auth_state is AuthenticationState.AUTHENTICATED:
                 # Call the locks api to verify we are actually
                 # authenticated because we can be authenticated
                 # by have no access
@@ -122,14 +126,14 @@ class Gateway:
             _LOGGER.error("Unable to connect to August service: %s", str(ex))
             raise CannotConnect from ex
 
-        if self.authentication.state == AuthenticationState.BAD_PASSWORD:
+        if auth_state is AuthenticationState.BAD_PASSWORD:
             raise InvalidAuth
 
-        if self.authentication.state == AuthenticationState.REQUIRES_VALIDATION:
+        if auth_state is AuthenticationState.REQUIRES_VALIDATION:
             raise RequireValidation
 
-        if self.authentication.state != AuthenticationState.AUTHENTICATED:
-            _LOGGER.error("Unknown authentication state: %s", self.authentication.state)
+        if auth_state is not AuthenticationState.AUTHENTICATED:
+            _LOGGER.error("Unknown authentication state: %s", auth_state)
             raise InvalidAuth
 
         return self.authentication

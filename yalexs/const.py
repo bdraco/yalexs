@@ -7,6 +7,7 @@ class Brand(StrEnum):
     AUGUST = "august"
     YALE_ACCESS = "yale_access"
     YALE_HOME = "yale_home"
+    YALE_GLOBAL = "yale_global"
 
 
 DEFAULT_BRAND = Brand.AUGUST
@@ -15,18 +16,21 @@ BASE_URLS = {
     Brand.AUGUST: "https://api-production.august.com",
     Brand.YALE_ACCESS: "https://api-production.august.com",
     Brand.YALE_HOME: "https://api.aaecosystem.com",
+    Brand.YALE_GLOBAL: "https://api.aaecosystem.com",
 }
 
 BRANDS = {
     Brand.AUGUST: "August",
     Brand.YALE_ACCESS: "Yale Access",
     Brand.YALE_HOME: "Yale Home",
+    Brand.YALE_GLOBAL: "Yale Global",
 }
 
 BRANDING = {
     Brand.AUGUST: "august",
     Brand.YALE_ACCESS: "yale",
     Brand.YALE_HOME: "yale",
+    Brand.YALE_GLOBAL: "yale",
 }
 
 PUBNUB_TOKENS = {
@@ -42,10 +46,12 @@ PUBNUB_TOKENS = {
         "subscribe": "sub-c-c9c38d4d-5796-46c9-9262-af20cf6a1d42",
         "publish": "pub-c-353e8881-cf58-4b26-9baf-96f296de0677",
     },
+    # YALE_GLOBAL uses WebSockets
 }
 
 CONFIGURATION_URLS = {
     Brand.AUGUST: "https://account.august.com",
     Brand.YALE_ACCESS: "https://account.august.com",
     Brand.YALE_HOME: "https://account.aaecosystem.com",
+    Brand.YALE_GLOBAL: "https://account.aaecosystem.com",
 }
