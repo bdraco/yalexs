@@ -46,7 +46,13 @@ PUBNUB_TOKENS = {
         "subscribe": "sub-c-c9c38d4d-5796-46c9-9262-af20cf6a1d42",
         "publish": "pub-c-353e8881-cf58-4b26-9baf-96f296de0677",
     },
-    # YALE_GLOBAL uses WebSockets
+    # YALE_GLOBAL will eventually WebSockets for push updates
+    # but for now we will use the same as YALE_HOME until we
+    # can finish the WebSockets implementation
+    Brand.YALE_GLOBAL: {
+        "subscribe": "sub-c-c9c38d4d-5796-46c9-9262-af20cf6a1d42",
+        "publish": "pub-c-353e8881-cf58-4b26-9baf-96f296de0677",
+    },
 }
 
 CONFIGURATION_URLS = {
