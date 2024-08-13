@@ -183,7 +183,9 @@ class ActivityStream(SubscriberMixin):
         _LOGGER.debug("Updating device activity for house id %s", house_id)
         try:
             activities = await self._api.async_get_house_activities(
-                self._august_gateway.access_token, house_id, limit=limit
+                await self._august_gateway.async_get_access_token(),
+                house_id,
+                limit=limit,
             )
         except ClientError as ex:
             _LOGGER.error(
