@@ -2,6 +2,13 @@
 
 
 
+## v7.1.0 (2024-08-13)
+
+### Feature
+
+* feat: allow passing an auth class (#142) ([`377d75c`](https://github.com/bdraco/yalexs/commit/377d75cb4cb2cee6d0294fbf3acebb1b3c39798c))
+
+
 ## v7.0.0 (2024-08-13)
 
 ### Breaking
