@@ -2,6 +2,13 @@
 
 
 
+## v7.1.2 (2024-08-13)
+
+### Fix
+
+* fix: handle empty login method for oauth (#144) ([`b686ceb`](https://github.com/bdraco/yalexs/commit/b686ceba5fde4247c32803730fe17106125e6544))
+
+
 ## v7.1.1 (2024-08-13)
 
 ### Fix
