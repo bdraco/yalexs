@@ -12,9 +12,9 @@ from yalexs.api_common import (
     API_GET_SESSION_URL,
     API_SEND_VERIFICATION_CODE_URLS,
     API_VALIDATE_VERIFICATION_CODE_URLS,
-    HEADER_AUGUST_ACCESS_TOKEN,
     ApiCommon,
 )
+from yalexs.const import HEADER_AUGUST_ACCESS_TOKEN
 from yalexs.authenticator_async import (
     AuthenticationState,
     AuthenticatorAsync,

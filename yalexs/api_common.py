@@ -7,7 +7,7 @@ import logging
 from typing import Any
 
 from .activity import ACTION_TO_CLASS, SOURCE_LOCK_OPERATE, SOURCE_LOG, ActivityTypes
-from .const import BASE_URLS, BRANDING, Brand
+from .const import BASE_URLS, BRANDING, Brand, BRAND_CONFIG, DEFAULT_BRAND, BrandConfig
 from .doorbell import Doorbell
 from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
 from .time import parse_datetime
@@ -17,16 +17,11 @@ API_RETRY_TIME = 2.5
 API_RETRY_ATTEMPTS = 10
 
 HEADER_ACCEPT_VERSION = "Accept-Version"
-HEADER_AUGUST_ACCESS_TOKEN = "x-august-access-token"  # nosec
-HEADER_AUGUST_API_KEY = "x-august-api-key"
-HEADER_AUGUST_BRANDING = "x-august-branding"
 HEADER_AUGUST_COUNTRY = "x-august-country"
 HEADER_CONTENT_TYPE = "Content-Type"
 HEADER_USER_AGENT = "User-Agent"
 
 
-HEADER_VALUE_API_KEY_OLD = "7cab4bbd-2693-4fc1-b99b-dec0fb20f9d4"
-HEADER_VALUE_API_KEY = "d9984f29-07a6-816e-e1c9-44ec9d1be431"
 HEADER_VALUE_CONTENT_TYPE = "application/json; charset=UTF-8"
 HEADER_VALUE_USER_AGENT = "August/Luna-22.17.0 (Android; SDK 31; gphone64_arm64)"
 HEADER_VALUE_ACCEPT_VERSION = "0.0.1"
@@ -71,18 +66,22 @@ _LOGGER = logging.getLogger(__name__)
 def _api_headers(
     access_token: str | None = None, brand: Brand | None = None
 ) -> dict[str, str]:
+    brand_config: BrandConfig = BRAND_CONFIG.get(brand, BRAND_CONFIG[DEFAULT_BRAND])
+
     headers = {
         HEADER_ACCEPT_VERSION: HEADER_VALUE_ACCEPT_VERSION,
-        HEADER_AUGUST_API_KEY: HEADER_VALUE_API_KEY,
+        brand_config.api_key_header: brand_config.api_key,
         HEADER_CONTENT_TYPE: HEADER_VALUE_CONTENT_TYPE,
         HEADER_USER_AGENT: HEADER_VALUE_USER_AGENT,
         HEADER_AUGUST_COUNTRY: HEADER_VALUE_AUGUST_COUNTRY,
     }
 
-    headers[HEADER_AUGUST_BRANDING] = BRANDING.get(brand, HEADER_VALUE_AUGUST_BRANDING)
+    headers[brand_config.branding_header] = BRANDING.get(
+        brand, HEADER_VALUE_AUGUST_BRANDING
+    )
 
     if access_token:
-        headers[HEADER_AUGUST_ACCESS_TOKEN] = access_token
+        headers[brand_config.access_token_header] = access_token
 
     return headers
 
