@@ -109,7 +109,9 @@ class ApiAsync(ApiCommon):
             )
         )
 
-    async def async_get_doorbells(self, access_token: str) -> Doorbell:
+    async def async_get_doorbells(self, access_token: str) -> list[Doorbell]:
+        if not self.brand_supports_doorbells:
+            return []
         response = await self._async_dict_to_api(
             self._build_get_doorbells_request(access_token)
         )

@@ -11,6 +11,7 @@ from .const import BASE_URLS, BRANDING, Brand, BRAND_CONFIG, DEFAULT_BRAND, Bran
 from .doorbell import Doorbell
 from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
 from .time import parse_datetime
+from .backports.functools import cached_property
 
 API_EXCEPTION_RETRY_TIME = 0.1
 API_RETRY_TIME = 2.5
@@ -63,10 +64,14 @@ API_GET_USER_URL = "/users/me"
 _LOGGER = logging.getLogger(__name__)
 
 
+def _get_brand_config(brand: Brand) -> BrandConfig:
+    return BRAND_CONFIG.get(brand, BRAND_CONFIG[DEFAULT_BRAND])
+
+
 def _api_headers(
     access_token: str | None = None, brand: Brand | None = None
 ) -> dict[str, str]:
-    brand_config: BrandConfig = BRAND_CONFIG.get(brand, BRAND_CONFIG[DEFAULT_BRAND])
+    brand_config = _get_brand_config(brand)
 
     headers = {
         HEADER_ACCEPT_VERSION: HEADER_VALUE_ACCEPT_VERSION,
@@ -169,6 +174,12 @@ class ApiCommon:
         """Init."""
         self._base_url = BASE_URLS[brand]
         self.brand = brand
+        self.brand_config = _get_brand_config(brand)
+
+    @cached_property
+    def brand_supports_doorbells(self) -> bool:
+        """Return if the brand supports doorbells."""
+        return self.brand_config.supports_doorbells
 
     def get_brand_url(self, url_str: str) -> str:
         """Get url."""
