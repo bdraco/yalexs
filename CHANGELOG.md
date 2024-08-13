@@ -2,6 +2,13 @@
 
 
 
+## v7.1.1 (2024-08-13)
+
+### Fix
+
+* fix: handle oauth when there is no username saved (#143) ([`317f674`](https://github.com/bdraco/yalexs/commit/317f6747a0a09129de9c44ae8e2872ea060571c9))
+
+
 ## v7.1.0 (2024-08-13)
 
 ### Feature
