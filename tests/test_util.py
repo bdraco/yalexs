@@ -13,7 +13,7 @@ from yalexs.activity import (
     DoorOperationActivity,
     LockOperationActivity,
 )
-from yalexs.api import _convert_lock_result_to_activities
+from yalexs.api_common import _convert_lock_result_to_activities
 from yalexs.const import Brand
 from yalexs.doorbell import DoorbellDetail
 from yalexs.lock import LockDetail, LockDoorStatus, LockStatus

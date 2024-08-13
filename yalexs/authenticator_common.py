@@ -9,7 +9,7 @@ from typing import Any
 
 import jwt
 
-from .api import HEADER_AUGUST_ACCESS_TOKEN, ApiCommon
+from .api_common import HEADER_AUGUST_ACCESS_TOKEN, ApiCommon
 from .time import parse_datetime
 
 # The default time before expiration to refresh a token
