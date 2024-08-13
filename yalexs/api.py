@@ -231,14 +231,9 @@ class Api(ApiCommon):
         ).headers[HEADER_AUGUST_ACCESS_TOKEN]
 
     def _dict_to_api(self, api_dict):
-        url = api_dict["url"]
-        method = api_dict["method"]
-        access_token = api_dict.get("access_token", None)
-        del api_dict["url"]
-        del api_dict["method"]
-        if access_token:
-            del api_dict["access_token"]
-
+        url = api_dict.pop("url")
+        method = api_dict.pop("method")
+        access_token = api_dict.pop("access_token", None)
         payload = api_dict.get("params") or api_dict.get("json")
 
         if "headers" not in api_dict:
