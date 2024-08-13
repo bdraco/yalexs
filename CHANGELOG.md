@@ -2,6 +2,17 @@
 
 
 
+## v7.0.0 (2024-08-13)
+
+### Breaking
+
+* feat!: remove sync api (#141) ([`6a0db94`](https://github.com/bdraco/yalexs/commit/6a0db9426e4ba586a3449ff2a7d549f0035a1255))
+
+### Feature
+
+* feat: add yale global brand (#140) ([`597e9f9`](https://github.com/bdraco/yalexs/commit/597e9f9bc6693093dc1bdeb2c56b41ba22d161ca))
+
+
 ## v6.6.0 (2024-08-13)
 
 ### Feature
