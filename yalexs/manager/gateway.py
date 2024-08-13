@@ -13,7 +13,7 @@ from aiohttp import ClientError, ClientResponseError, ClientSession
 
 from ..api_async import ApiAsync
 from ..authenticator_async import AuthenticationState, AuthenticatorAsync
-from ..authenticator_common import Authentication, AuthenticatorCommon
+from ..authenticator_common import Authentication
 from ..const import DEFAULT_BRAND
 from ..exceptions import AugustApiAIOHTTPError
 from .const import (
@@ -74,7 +74,7 @@ class Gateway:
         return self._config_path.joinpath(file)
 
     async def async_setup(
-        self, conf: Config, authenticator: AuthenticatorCommon | None = None
+        self, conf: Config, authenticator: AuthenticatorAsync | None = None
     ) -> None:
         """Create the api and authenticator objects."""
         if conf.get(VERIFICATION_CODE_KEY):
