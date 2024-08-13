@@ -9,7 +9,8 @@ from typing import Any
 
 import jwt
 
-from .api_common import HEADER_AUGUST_ACCESS_TOKEN, ApiCommon
+from .api_common import ApiCommon
+from .const import HEADER_ACCESS_TOKEN, HEADER_AUGUST_ACCESS_TOKEN
 from .time import parse_datetime
 
 # The default time before expiration to refresh a token
@@ -120,7 +121,10 @@ class AuthenticatorCommon:
         response_headers: dict[str, Any],
         json_dict: dict[str, Any],
     ) -> Authentication:
-        access_token = response_headers[HEADER_AUGUST_ACCESS_TOKEN]
+        access_token = (
+            response_headers.get(HEADER_ACCESS_TOKEN)
+            or response_headers[HEADER_AUGUST_ACCESS_TOKEN]
+        )
         access_token_expires = json_dict["expiresAt"]
         v_password = json_dict["vPassword"]
         v_install_id = json_dict["vInstallId"]

@@ -1,6 +1,7 @@
 """Constants."""
 
 from .backports.enum import StrEnum
+from dataclasses import dataclass
 
 
 class Brand(StrEnum):
@@ -31,6 +32,67 @@ BRANDING = {
     Brand.YALE_ACCESS: "yale",
     Brand.YALE_HOME: "yale",
     Brand.YALE_GLOBAL: "yale",
+}
+
+
+@dataclass
+class BrandConfig:
+    """Brand configuration."""
+
+    name: str
+    branding: str
+    access_token_header: str
+    api_key_header: str
+    branding_header: str
+    api_key: str
+
+
+HEADER_VALUE_API_KEY_OLD = "7cab4bbd-2693-4fc1-b99b-dec0fb20f9d4"
+HEADER_VALUE_API_KEY = "d9984f29-07a6-816e-e1c9-44ec9d1be431"
+
+HEADER_AUGUST_ACCESS_TOKEN = "x-august-access-token"  # nosec
+HEADER_AUGUST_API_KEY = "x-august-api-key"  # nosec
+HEADER_AUGUST_BRANDING = "x-august-branding"
+
+HEADER_ACCESS_TOKEN = "x-access-token"  # nosec
+HEADER_API_KEY = "x-api-key"  # nosec
+HEADER_BRANDING = "x-branding"
+
+BRAND_CONFIG: dict[Brand, BrandConfig] = {
+    Brand.AUGUST: BrandConfig(
+        name="August",
+        branding="august",
+        access_token_header=HEADER_AUGUST_ACCESS_TOKEN,
+        api_key_header=HEADER_AUGUST_API_KEY,
+        branding_header=HEADER_AUGUST_BRANDING,
+        api_key=HEADER_VALUE_API_KEY,
+    ),
+    Brand.YALE_ACCESS: BrandConfig(
+        name="Yale Access",
+        branding="yale",
+        access_token_header=HEADER_AUGUST_ACCESS_TOKEN,
+        api_key_header=HEADER_AUGUST_API_KEY,
+        branding_header=HEADER_AUGUST_BRANDING,
+        api_key=HEADER_VALUE_API_KEY,
+    ),
+    Brand.YALE_HOME: BrandConfig(
+        name="Yale Home",
+        branding="yale",
+        access_token_header=HEADER_ACCESS_TOKEN,
+        api_key_header=HEADER_API_KEY,
+        branding_header=HEADER_BRANDING,
+        api_key=HEADER_VALUE_API_KEY,
+    ),
+    Brand.YALE_GLOBAL: BrandConfig(
+        name="Yale Global",
+        branding="yale",
+        access_token_header=HEADER_ACCESS_TOKEN,
+        api_key_header=HEADER_API_KEY,
+        branding_header=HEADER_BRANDING,
+        # Sadly we currently do not have a way to avoid
+        # having the API key in the code
+        api_key="d16a1029-d823-4b55-a4ce-a769a9b56f0e",
+    ),
 }
 
 PUBNUB_TOKENS = {

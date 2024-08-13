@@ -17,6 +17,7 @@ from aiohttp import (
     ServerDisconnectedError,
 )
 
+from .const import HEADER_ACCESS_TOKEN, HEADER_AUGUST_ACCESS_TOKEN
 from .activity import ActivityTypes
 from .api_common import (
     API_EXCEPTION_RETRY_TIME,
@@ -30,7 +31,6 @@ from .api_common import (
     API_UNLOCK_ASYNC_URL,
     API_UNLOCK_URL,
     HEADER_ACCEPT_VERSION,
-    HEADER_AUGUST_ACCESS_TOKEN,
     HYPER_BRIDGE_PARAM,
     ApiCommon,
     _api_headers,
@@ -372,11 +372,15 @@ class ApiAsync(ApiCommon):
 
     async def async_refresh_access_token(self, access_token: str) -> str:
         """Obtain a new api token."""
-        return (
-            await self._async_dict_to_api(
-                self._build_refresh_access_token_request(access_token)
-            )
-        ).headers[HEADER_AUGUST_ACCESS_TOKEN]
+        response = await self._async_dict_to_api(
+            self._build_refresh_access_token_request(access_token)
+        )
+        response_headers = response.headers
+        access_token = (
+            response_headers.get(HEADER_ACCESS_TOKEN)
+            or response_headers[HEADER_AUGUST_ACCESS_TOKEN]
+        )
+        return access_token
 
     async def _async_dict_to_api(self, api_dict: dict[str, Any]) -> ClientResponse:
         url = api_dict.pop("url")
