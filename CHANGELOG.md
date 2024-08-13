@@ -2,6 +2,13 @@
 
 
 
+## v8.0.2 (2024-08-13)
+
+### Fix
+
+* fix: library version pins being too narrow (#149) ([`9cd8b13`](https://github.com/bdraco/yalexs/commit/9cd8b13475b50662f81885f9a7948d2f782a2616))
+
+
 ## v8.0.1 (2024-08-13)
 
 ### Fix
