@@ -90,7 +90,8 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         api_key_header=HEADER_API_KEY,
         branding_header=HEADER_BRANDING,
         # Sadly we currently do not have a way to avoid
-        # having the API key in the code
+        # having the API key in the code because it must
+        # run on the user's device
         api_key="d16a1029-d823-4b55-a4ce-a769a9b56f0e",
     ),
 }
