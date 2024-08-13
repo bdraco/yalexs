@@ -87,13 +87,17 @@ class Gateway:
             brand=self._config.get(CONF_BRAND, DEFAULT_BRAND),
         )
         klass = authenticator_class or AuthenticatorAsync
-        access_token_cache_file_path = self.async_configure_access_token_cache_file(
-            conf[CONF_USERNAME], conf.get(CONF_ACCESS_TOKEN_CACHE_FILE)
-        )
+        username = conf.get(CONF_USERNAME)
+        access_token_cache_file_path: str | None = None
+        if username:
+            access_token_cache_file_path = self.async_configure_access_token_cache_file(
+                conf[CONF_USERNAME], conf.get(CONF_ACCESS_TOKEN_CACHE_FILE)
+            )
+
         self.authenticator = klass(
             self.api,
             self._config[CONF_LOGIN_METHOD],
-            self._config[CONF_USERNAME],
+            username,
             self._config.get(CONF_PASSWORD, ""),
             install_id=self._config.get(CONF_INSTALL_ID),
             access_token_cache_file=access_token_cache_file_path,
@@ -110,7 +114,9 @@ class Gateway:
                 # Call the locks api to verify we are actually
                 # authenticated because we can be authenticated
                 # by have no access
-                await self.api.async_get_operable_locks(self.access_token)
+                await self.api.async_get_operable_locks(
+                    await self.async_get_access_token()
+                )
         except AugustApiAIOHTTPError as ex:
             if ex.auth_failed:
                 raise InvalidAuth from ex
