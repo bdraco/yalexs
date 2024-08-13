@@ -45,6 +45,7 @@ class BrandConfig:
     api_key_header: str
     branding_header: str
     api_key: str
+    supports_doorbells: bool
 
 
 HEADER_VALUE_API_KEY_OLD = "7cab4bbd-2693-4fc1-b99b-dec0fb20f9d4"
@@ -66,6 +67,7 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         api_key_header=HEADER_AUGUST_API_KEY,
         branding_header=HEADER_AUGUST_BRANDING,
         api_key=HEADER_VALUE_API_KEY,
+        supports_doorbells=True,
     ),
     Brand.YALE_ACCESS: BrandConfig(
         name="Yale Access",
@@ -74,6 +76,7 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         api_key_header=HEADER_AUGUST_API_KEY,
         branding_header=HEADER_AUGUST_BRANDING,
         api_key=HEADER_VALUE_API_KEY,
+        supports_doorbells=True,
     ),
     Brand.YALE_HOME: BrandConfig(
         name="Yale Home",
@@ -82,6 +85,7 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         api_key_header=HEADER_API_KEY,
         branding_header=HEADER_BRANDING,
         api_key=HEADER_VALUE_API_KEY,
+        supports_doorbells=True,
     ),
     Brand.YALE_GLOBAL: BrandConfig(
         name="Yale Global",
@@ -93,6 +97,7 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         # having the API key in the code because it must
         # run on the user's device
         api_key="d16a1029-d823-4b55-a4ce-a769a9b56f0e",
+        supports_doorbells=False,
     ),
 }
 
