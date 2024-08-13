@@ -85,7 +85,7 @@ class YaleXSData(SubscriberMixin):
 
     async def async_setup(self) -> None:
         """Async setup of august device data and activities."""
-        token = self._gateway.access_token
+        token = await self._gateway.async_get_access_token()
         # This used to be a gather but it was less reliable with august's recent api changes.
         locks: list[Lock] = await self._api.async_get_operable_locks(token) or []
         doorbells: list[Doorbell] = await self._api.async_get_doorbells(token) or []
@@ -115,7 +115,7 @@ class YaleXSData(SubscriberMixin):
 
     async def async_setup_activity_stream(self) -> None:
         """Set up the activity stream."""
-        token = self._gateway.access_token
+        token = await self._gateway.async_get_access_token()
         user_data = await self._api.async_get_user(token)
         pubnub = AugustPubNub()
         for device in self._device_detail_by_id.values():
@@ -275,7 +275,9 @@ class YaleXSData(SubscriberMixin):
         _LOGGER.debug("Started retrieving detail for %s (%s)", device_name, device_id)
 
         try:
-            detail = await api_call(self._gateway.access_token, device_id)
+            detail = await api_call(
+                await self._gateway.async_get_access_token(), device_id
+            )
         except ClientError as ex:
             _LOGGER.error(
                 "Request error trying to retrieve %s details for %s. %s",
@@ -310,7 +312,7 @@ class YaleXSData(SubscriberMixin):
         return await self._async_call_api_op_requires_bridge(
             device_id,
             self._api.async_lock_return_activities,
-            self._gateway.access_token,
+            await self._gateway.async_get_access_token(),
             device_id,
         )
 
@@ -319,7 +321,7 @@ class YaleXSData(SubscriberMixin):
         return await self._async_call_api_op_requires_bridge(
             device_id,
             self._api.async_status_async,
-            self._gateway.access_token,
+            await self._gateway.async_get_access_token(),
             device_id,
             hyper_bridge,
         )
@@ -329,7 +331,7 @@ class YaleXSData(SubscriberMixin):
         return await self._async_call_api_op_requires_bridge(
             device_id,
             self._api.async_lock_async,
-            self._gateway.access_token,
+            await self._gateway.async_get_access_token(),
             device_id,
             hyper_bridge,
         )
@@ -339,7 +341,7 @@ class YaleXSData(SubscriberMixin):
         return await self._async_call_api_op_requires_bridge(
             device_id,
             self._api.async_unlatch_return_activities,
-            self._gateway.access_token,
+            await self._gateway.async_get_access_token(),
             device_id,
         )
 
@@ -348,7 +350,7 @@ class YaleXSData(SubscriberMixin):
         return await self._async_call_api_op_requires_bridge(
             device_id,
             self._api.async_unlatch_async,
-            self._gateway.access_token,
+            await self._gateway.async_get_access_token(),
             device_id,
             hyper_bridge,
         )
@@ -358,7 +360,7 @@ class YaleXSData(SubscriberMixin):
         return await self._async_call_api_op_requires_bridge(
             device_id,
             self._api.async_unlock_return_activities,
-            self._gateway.access_token,
+            await self._gateway.async_get_access_token(),
             device_id,
         )
 
@@ -367,7 +369,7 @@ class YaleXSData(SubscriberMixin):
         return await self._async_call_api_op_requires_bridge(
             device_id,
             self._api.async_unlock_async,
-            self._gateway.access_token,
+            await self._gateway.async_get_access_token(),
             device_id,
             hyper_bridge,
         )

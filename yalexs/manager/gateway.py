@@ -61,9 +61,8 @@ class Gateway:
         self._config: Config | None = None
         self._loop = asyncio.get_running_loop()
 
-    @property
-    def access_token(self) -> str:
-        """Access token for the api."""
+    async def async_get_access_token(self) -> str:
+        """Get the access token."""
         return self.authentication.access_token
 
     def async_configure_access_token_cache_file(
