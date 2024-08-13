@@ -74,7 +74,7 @@ class Gateway:
         return self._config_path.joinpath(file)
 
     async def async_setup(
-        self, conf: Config, authenticator: AuthenticatorAsync | None = None
+        self, conf: Config, authenticator_class: type[AuthenticatorAsync] | None = None
     ) -> None:
         """Create the api and authenticator objects."""
         if conf.get(VERIFICATION_CODE_KEY):
@@ -86,20 +86,18 @@ class Gateway:
             timeout=self._config.get(CONF_TIMEOUT, DEFAULT_TIMEOUT),
             brand=self._config.get(CONF_BRAND, DEFAULT_BRAND),
         )
-        if authenticator:
-            self.authenticator = authenticator
-        else:
-            access_token_cache_file_path = self.async_configure_access_token_cache_file(
-                conf[CONF_USERNAME], conf.get(CONF_ACCESS_TOKEN_CACHE_FILE)
-            )
-            self.authenticator = AuthenticatorAsync(
-                self.api,
-                self._config[CONF_LOGIN_METHOD],
-                self._config[CONF_USERNAME],
-                self._config.get(CONF_PASSWORD, ""),
-                install_id=self._config.get(CONF_INSTALL_ID),
-                access_token_cache_file=access_token_cache_file_path,
-            )
+        klass = authenticator_class or AuthenticatorAsync
+        access_token_cache_file_path = self.async_configure_access_token_cache_file(
+            conf[CONF_USERNAME], conf.get(CONF_ACCESS_TOKEN_CACHE_FILE)
+        )
+        self.authenticator = klass(
+            self.api,
+            self._config[CONF_LOGIN_METHOD],
+            self._config[CONF_USERNAME],
+            self._config.get(CONF_PASSWORD, ""),
+            install_id=self._config.get(CONF_INSTALL_ID),
+            access_token_cache_file=access_token_cache_file_path,
+        )
 
         await self.authenticator.async_setup_authentication()
 
