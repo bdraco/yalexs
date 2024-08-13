@@ -2,6 +2,17 @@
 
 
 
+## v8.0.0 (2024-08-13)
+
+### Breaking
+
+* feat!: add yale global support (#146) ([`5dc4bd7`](https://github.com/bdraco/yalexs/commit/5dc4bd7c41561e09a5e34440a163ae5d4b27a3af))
+
+### Fix
+
+* fix: force release (#147) ([`b409c80`](https://github.com/bdraco/yalexs/commit/b409c80eaefc854938449d66419ae49f843efd73))
+
+
 ## v7.1.3 (2024-08-13)
 
 ### Fix
