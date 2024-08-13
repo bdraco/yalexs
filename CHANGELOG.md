@@ -2,6 +2,13 @@
 
 
 
+## v8.0.1 (2024-08-13)
+
+### Fix
+
+* fix: doorbells are not supported with yale global brand (#148) ([`a85ca5c`](https://github.com/bdraco/yalexs/commit/a85ca5ccf33fc082452ab2b790912aaa61bdbd0c))
+
+
 ## v8.0.0 (2024-08-13)
 
 ### Breaking
