@@ -13,7 +13,7 @@ from aiohttp import ClientError, ClientResponseError, ClientSession
 
 from ..api_async import ApiAsync
 from ..authenticator_async import AuthenticationState, AuthenticatorAsync
-from ..authenticator_common import Authentication
+from ..authenticator_common import Authentication, AuthenticatorCommon
 from ..const import DEFAULT_BRAND
 from ..exceptions import AugustApiAIOHTTPError
 from .const import (
@@ -73,30 +73,33 @@ class Gateway:
         self._access_token_cache_file = file
         return self._config_path.joinpath(file)
 
-    async def async_setup(self, conf: Config) -> None:
+    async def async_setup(
+        self, conf: Config, authenticator: AuthenticatorCommon | None = None
+    ) -> None:
         """Create the api and authenticator objects."""
         if conf.get(VERIFICATION_CODE_KEY):
             return
 
-        access_token_cache_file_path = self.async_configure_access_token_cache_file(
-            conf[CONF_USERNAME], conf.get(CONF_ACCESS_TOKEN_CACHE_FILE)
-        )
         self._config = conf
-
         self.api = ApiAsync(
             self._aiohttp_session,
             timeout=self._config.get(CONF_TIMEOUT, DEFAULT_TIMEOUT),
             brand=self._config.get(CONF_BRAND, DEFAULT_BRAND),
         )
-
-        self.authenticator = AuthenticatorAsync(
-            self.api,
-            self._config[CONF_LOGIN_METHOD],
-            self._config[CONF_USERNAME],
-            self._config.get(CONF_PASSWORD, ""),
-            install_id=self._config.get(CONF_INSTALL_ID),
-            access_token_cache_file=access_token_cache_file_path,
-        )
+        if authenticator:
+            self.authenticator = authenticator
+        else:
+            access_token_cache_file_path = self.async_configure_access_token_cache_file(
+                conf[CONF_USERNAME], conf.get(CONF_ACCESS_TOKEN_CACHE_FILE)
+            )
+            self.authenticator = AuthenticatorAsync(
+                self.api,
+                self._config[CONF_LOGIN_METHOD],
+                self._config[CONF_USERNAME],
+                self._config.get(CONF_PASSWORD, ""),
+                install_id=self._config.get(CONF_INSTALL_ID),
+                access_token_cache_file=access_token_cache_file_path,
+            )
 
         await self.authenticator.async_setup_authentication()
 
