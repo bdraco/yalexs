@@ -2,6 +2,13 @@
 
 
 
+## v6.5.1 (2024-08-13)
+
+### Fix
+
+* fix: cleanup _async_dict_to_api for oauth conversion (#138) ([`a41474d`](https://github.com/bdraco/yalexs/commit/a41474d98bc1f56fe014f9a1ac09c32aed7afc14))
+
+
 ## v6.5.0 (2024-08-12)
 
 ### Feature
