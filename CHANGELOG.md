@@ -2,6 +2,13 @@
 
 
 
+## v6.6.0 (2024-08-13)
+
+### Feature
+
+* feat: make fetching the access token a coro (#139) ([`451080d`](https://github.com/bdraco/yalexs/commit/451080d50f261566cb8a4feeeac6a92e5b76634d))
+
+
 ## v6.5.1 (2024-08-13)
 
 ### Fix
