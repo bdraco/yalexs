@@ -96,7 +96,7 @@ class Gateway:
 
         self.authenticator = klass(
             self.api,
-            self._config[CONF_LOGIN_METHOD],
+            self._config.get(CONF_LOGIN_METHOD),
             username,
             self._config.get(CONF_PASSWORD, ""),
             install_id=self._config.get(CONF_INSTALL_ID),
