@@ -107,7 +107,8 @@ class Gateway:
         """Authenticate with the details provided to setup."""
         try:
             self.authentication = await self.authenticator.async_authenticate()
-            if self.authentication.state == AuthenticationState.AUTHENTICATED:
+            auth_state = self.authentication.state
+            if auth_state is AuthenticationState.AUTHENTICATED:
                 # Call the locks api to verify we are actually
                 # authenticated because we can be authenticated
                 # by have no access
@@ -125,14 +126,14 @@ class Gateway:
             _LOGGER.error("Unable to connect to August service: %s", str(ex))
             raise CannotConnect from ex
 
-        if self.authentication.state == AuthenticationState.BAD_PASSWORD:
+        if auth_state is AuthenticationState.BAD_PASSWORD:
             raise InvalidAuth
 
-        if self.authentication.state == AuthenticationState.REQUIRES_VALIDATION:
+        if auth_state is AuthenticationState.REQUIRES_VALIDATION:
             raise RequireValidation
 
-        if self.authentication.state != AuthenticationState.AUTHENTICATED:
-            _LOGGER.error("Unknown authentication state: %s", self.authentication.state)
+        if auth_state is not AuthenticationState.AUTHENTICATED:
+            _LOGGER.error("Unknown authentication state: %s", auth_state)
             raise InvalidAuth
 
         return self.authentication
