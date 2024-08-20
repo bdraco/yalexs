@@ -41,7 +41,7 @@ from .api_common import (
 )
 from .const import DEFAULT_BRAND
 from .doorbell import Doorbell, DoorbellDetail
-from .exceptions import AugustApiAIOHTTPError
+from .exceptions import AugustApiAIOHTTPError, YaleApiError, InvalidAuth
 from .lock import (
     Lock,
     LockDetail,
@@ -460,24 +460,24 @@ def _raise_response_exceptions(response: ClientResponse) -> None:
         response.raise_for_status()
     except ClientResponseError as err:
         if err.status in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
-            raise AugustApiAIOHTTPError(
+            raise InvalidAuth(
                 f"Authentication failed: Verify brand is correct: {err.message}", err
             ) from err
         if err.status == 422:
-            raise AugustApiAIOHTTPError(
+            raise YaleApiError(
                 f"The operation failed because the bridge (connect) is offline: {err.message}",
                 err,
             ) from err
         if err.status == 423:
-            raise AugustApiAIOHTTPError(
+            raise YaleApiError(
                 f"The operation failed because the bridge (connect) is in use: {err.message}",
                 err,
             ) from err
         if err.status == 408:
-            raise AugustApiAIOHTTPError(
+            raise YaleApiError(
                 f"The operation timed out because the bridge (connect) failed to respond: {err.message}",
                 err,
             ) from err
-        raise AugustApiAIOHTTPError(
+        raise YaleApiError(
             f"The operation failed with error code {err.status}: {err.message}.", err
         ) from err
