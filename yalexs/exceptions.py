@@ -8,9 +8,14 @@ from aiohttp import ClientError, ClientResponseError
 class AugustApiAIOHTTPError(Exception):
     """An yale access api error with a friendly user consumable string."""
 
-    def __init__(self, message: str, aiohttp_client_error: ClientError) -> None:
+    def __init__(
+        self,
+        message: str | None = None,
+        aiohttp_client_error: ClientError | None = None,
+    ) -> None:
         """Initialize the error."""
-        super().__init__(message)
+        super().__init__(message or type(self).__name__)
+        self.aiohttp_client_error = aiohttp_client_error
         self.status = (
             isinstance(aiohttp_client_error, ClientResponseError)
             and aiohttp_client_error.status

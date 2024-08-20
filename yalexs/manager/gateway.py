@@ -119,16 +119,16 @@ class Gateway:
                 )
         except AugustApiAIOHTTPError as ex:
             if ex.auth_failed:
-                raise InvalidAuth from ex
-            raise CannotConnect from ex
+                raise InvalidAuth(ex.args[0], ex.aiohttp_client_error) from ex
+            raise CannotConnect(ex.args[0], ex.aiohttp_client_error) from ex
         except ClientResponseError as ex:
             if ex.status == HTTPStatus.UNAUTHORIZED:
-                raise InvalidAuth from ex
+                raise InvalidAuth(ex.args[0], ex) from ex
 
-            raise CannotConnect from ex
+            raise CannotConnect(ex.args[0], ex) from ex
         except ClientError as ex:
             _LOGGER.error("Unable to connect to August service: %s", str(ex))
-            raise CannotConnect from ex
+            raise CannotConnect(ex.args[0], ex) from ex
 
         if auth_state is AuthenticationState.BAD_PASSWORD:
             raise InvalidAuth
