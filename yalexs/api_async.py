@@ -41,7 +41,7 @@ from .api_common import (
 )
 from .const import DEFAULT_BRAND
 from .doorbell import Doorbell, DoorbellDetail
-from .exceptions import AugustApiAIOHTTPError, YaleApiError, InvalidAuth
+from .exceptions import YaleApiError, InvalidAuth
 from .lock import (
     Lock,
     LockDetail,
@@ -427,7 +427,7 @@ class ApiAsync(ApiCommon):
                 # We may get [Errno 104] Connection reset by peer or a
                 # transient disconnect/SSL error
                 if attempts == API_RETRY_ATTEMPTS:
-                    raise AugustApiAIOHTTPError(
+                    raise YaleApiError(
                         f"Failed to connect to August API: {ex}", ex
                     ) from ex
                 await asyncio.sleep(API_EXCEPTION_RETRY_TIME)
