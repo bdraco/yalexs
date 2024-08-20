@@ -2,6 +2,13 @@
 
 
 
+## v8.1.1 (2024-08-20)
+
+### Fix
+
+* fix: handle 429 error was yale error (#154) ([`e450a76`](https://github.com/bdraco/yalexs/commit/e450a7667250d3c4b69bd5459628fa45346b15e2))
+
+
 ## v8.1.0 (2024-08-20)
 
 ### Feature
