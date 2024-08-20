@@ -2,6 +2,13 @@
 
 
 
+## v8.1.2 (2024-08-20)
+
+### Fix
+
+* fix: ensure subclassed AugustApiAIOHTTPError is back-compat (#155) ([`8304c3b`](https://github.com/bdraco/yalexs/commit/8304c3bca9ab6260662c87e1b51698b48bef9bf5))
+
+
 ## v8.1.1 (2024-08-20)
 
 ### Fix
