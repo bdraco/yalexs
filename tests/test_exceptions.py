@@ -29,10 +29,8 @@ def test_august_api_aio_http_error_reraise():
         mock.MagicMock(),
         status=401,
     )
-    try:
-        raise AugustApiAIOHTTPError("test", mock_client_response_error)
-    except AugustApiAIOHTTPError as ex:
-        assert str(ex) == "test"
-        assert ex.auth_failed is True
-        assert ex.aiohttp_client_error is mock_client_response_error
-        assert ex.args == ("test",)
+    ex = AugustApiAIOHTTPError("test", mock_client_response_error)
+    assert str(ex) == "test"
+    assert ex.auth_failed is True
+    assert ex.aiohttp_client_error is mock_client_response_error
+    assert ex.args == ("test",)
