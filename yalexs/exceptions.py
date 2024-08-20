@@ -3,7 +3,6 @@ from __future__ import annotations
 from http import HTTPStatus
 
 from aiohttp import ClientError, ClientResponseError
-from requests.exceptions import HTTPError
 
 
 class AugustApiAIOHTTPError(Exception):
@@ -22,8 +21,24 @@ class AugustApiAIOHTTPError(Exception):
         )
 
 
-class AugustApiHTTPError(HTTPError):
+class YaleApiError(AugustApiAIOHTTPError):
     """An yale access api error with a friendly user consumable string."""
+
+
+class RequireValidation(Exception):
+    """Error to indicate we require validation (2fa)."""
+
+
+class CannotConnect(YaleApiError):
+    """Error to indicate we cannot connect."""
+
+
+class InvalidAuth(YaleApiError):
+    """Error to indicate there is invalid auth."""
+
+
+class YaleXSError(Exception):
+    """Base error."""
 
 
 class ContentTokenExpired(Exception):
