@@ -6,6 +6,7 @@ from yalexs.exceptions import (
     YaleXSError,
     AugustApiAIOHTTPError,
 )
+import pytest
 
 from unittest import mock
 from aiohttp import ClientResponseError
@@ -42,10 +43,12 @@ def test_subclassed_august_api_aio_http_error_reraise():
         mock.MagicMock(),
         status=401,
     )
-    try:
-        raise YaleApiError("test", mock_client_response_error)
-    except AugustApiAIOHTTPError as ex:
-        assert str(ex) == "test"
-        assert ex.auth_failed is True
-        assert ex.aiohttp_client_error is mock_client_response_error
-        assert ex.args == ("test",)
+    with pytest.raises(InvalidAuth, match="test"):
+        try:
+            raise YaleApiError("test", mock_client_response_error)
+        except AugustApiAIOHTTPError as ex:
+            assert str(ex) == "test"
+            assert ex.auth_failed is True
+            assert ex.aiohttp_client_error is mock_client_response_error
+            assert ex.args == ("test",)
+            raise InvalidAuth(ex.args[0], ex) from ex
