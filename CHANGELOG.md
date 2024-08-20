@@ -2,6 +2,13 @@
 
 
 
+## v8.1.0 (2024-08-20)
+
+### Feature
+
+* feat: cleanup exceptions to avoid duplication (#153) ([`51af44e`](https://github.com/bdraco/yalexs/commit/51af44e64abb0a804179cef12b1dda903cbff7c5))
+
+
 ## v8.0.2 (2024-08-13)
 
 ### Fix
