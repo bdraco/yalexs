@@ -2,6 +2,13 @@
 
 
 
+## v8.1.4 (2024-08-22)
+
+### Fix
+
+* fix: add missing commitlint config (#157) ([`26d7a4a`](https://github.com/bdraco/yalexs/commit/26d7a4a0f011ca8e5ca2c18d1c6ec2876bccd0da))
+
+
 ## v8.1.3 (2024-08-22)
 
 ### Fix
