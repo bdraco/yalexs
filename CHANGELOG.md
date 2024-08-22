@@ -2,6 +2,13 @@
 
 
 
+## v8.1.3 (2024-08-22)
+
+### Fix
+
+* fix: timestamp division for datetime generation in tests (#156) ([`446d3ec`](https://github.com/bdraco/yalexs/commit/446d3eceb74f9838b55299d310a39d6ee061cadc))
+
+
 ## v8.1.2 (2024-08-20)
 
 ### Fix
