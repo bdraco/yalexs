@@ -2,6 +2,13 @@
 
 
 
+## v8.3.1 (2024-08-23)
+
+### Fix
+
+* fix: always send brand header (#160) ([`c0b1fad`](https://github.com/bdraco/yalexs/commit/c0b1fadde651d24ada25f54ef8d0c70ff04bc992))
+
+
 ## v8.3.0 (2024-08-23)
 
 ### Feature
