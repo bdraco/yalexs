@@ -248,6 +248,8 @@ class YaleXSData(SubscriberMixin):
         )
 
     async def _async_refresh_device_detail_by_id(self, device_id: str) -> None:
+        if self._shutdown:
+            return
         if device_id in self._locks_by_id:
             if self.activity_stream and self.push_updates_connected:
                 saved_attrs = _save_live_attrs(self._device_detail_by_id[device_id])
