@@ -79,6 +79,7 @@ class YaleXSData(SubscriberMixin):
         self._pubnub_unsub: Callable[[], Coroutine[Any, Any, None]] | None = None
         self._initial_sync_task: asyncio.Task | None = None
         self._error_exception_class = error_exception_class
+        self._shutdown: bool = False
 
     @cached_property
     def brand(self) -> Brand:
@@ -176,14 +177,15 @@ class YaleXSData(SubscriberMixin):
 
     async def async_stop(self, *args: Any) -> None:
         """Stop the subscriptions."""
-        if self._pubnub_unsub:
-            await self._pubnub_unsub()
+        self._shutdown = True
         if self.activity_stream:
             self.activity_stream.async_stop()
         if self._initial_sync_task:
             self._initial_sync_task.cancel()
             with suppress(asyncio.CancelledError):
                 await self._initial_sync_task
+        if self._pubnub_unsub:
+            await self._pubnub_unsub()
 
     @property
     def doorbells(self) -> ValuesView[Doorbell]:
@@ -200,6 +202,8 @@ class YaleXSData(SubscriberMixin):
         return self._device_detail_by_id[device_id]
 
     async def _async_refresh(self, time: datetime) -> None:
+        if self._shutdown:
+            return
         await self._async_refresh_device_detail_by_ids(self._subscriptions.keys())
 
     async def _async_refresh_device_detail_by_ids(
