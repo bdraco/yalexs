@@ -2,6 +2,13 @@
 
 
 
+## v8.3.0 (2024-08-23)
+
+### Feature
+
+* feat: add require oauth flag (#159) ([`a336e47`](https://github.com/bdraco/yalexs/commit/a336e47abee337700ba4f851fb1e70be75d8c263))
+
+
 ## v8.2.0 (2024-08-23)
 
 ### Feature
