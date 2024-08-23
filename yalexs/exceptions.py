@@ -45,6 +45,11 @@ class InvalidAuth(YaleApiError):
 class RateLimited(YaleApiError):
     """Error to indicate we are rate limited."""
 
+    def __init__(self, message: str, next_allowed: float) -> None:
+        """Initialize the error."""
+        super().__init__(message)
+        self.next_allowed = next_allowed
+
 
 class YaleXSError(Exception):
     """Base error."""

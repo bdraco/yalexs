@@ -30,8 +30,11 @@ class RateLimitCheck:
         now = time.monotonic()
         next_allowed = (self._client_wakeups[token] + RATE_LIMIT_WAKEUP_INTERVAL) - now
         if next_allowed < now:
-            min_next_allowed = int((now - next_allowed) / 60)
-            raise RateLimited(f"Rate limited, try again in {min_next_allowed} minutes")
+            min_until_next_allowed = int((now - next_allowed) / 60)
+            raise RateLimited(
+                f"Rate limited, try again in {min_until_next_allowed} minutes",
+                next_allowed,
+            )
 
     async def register_wakeup(self, token: str) -> None:
         """Register a wakeup for the client."""
