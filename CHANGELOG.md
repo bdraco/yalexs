@@ -2,6 +2,13 @@
 
 
 
+## v8.2.0 (2024-08-23)
+
+### Feature
+
+* feat: implement rate limit checker to avoid getting blocked (#158) ([`7dfb92b`](https://github.com/bdraco/yalexs/commit/7dfb92b93b591e8e54c7158048c1ccbdd4a3a3ad))
+
+
 ## v8.1.4 (2024-08-22)
 
 ### Fix
