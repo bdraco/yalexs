@@ -2,6 +2,25 @@
 
 
 
+## v8.3.3 (2024-08-23)
+
+### Fix
+
+* fix: shutdown faster by doing pubnub shutdown last (#162)
+
+* fix: shutdown faster by doing pubnub shutdown last
+
+* more guards
+
+* fix: move rate limit check sooner to avoid getting blocked
+
+* fix: move rate limit check sooner to avoid getting blocked
+
+* fix: ensure rate limit kicks in on failure as well
+
+* fix: register point ([`735ba94`](https://github.com/bdraco/yalexs/commit/735ba9421ea211c43bb72fc7043e2e408108f949))
+
+
 ## v8.3.2 (2024-08-23)
 
 ### Fix
