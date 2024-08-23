@@ -31,7 +31,7 @@ class RateLimitCheck:
         last_time = self._client_wakeups[token]
         next_allowed = last_time + RATE_LIMIT_WAKEUP_INTERVAL
         if next_allowed > now:
-            min_until_next_allowed = int((now - next_allowed) / 60)
+            min_until_next_allowed = int((next_allowed - now) / 60)
             raise RateLimited(
                 f"Rate limited, try again in {min_until_next_allowed} minutes",
                 next_allowed,
