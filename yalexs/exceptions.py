@@ -42,6 +42,10 @@ class InvalidAuth(YaleApiError):
     """Error to indicate there is invalid auth."""
 
 
+class RateLimited(YaleApiError):
+    """Error to indicate we are rate limited."""
+
+
 class YaleXSError(Exception):
     """Base error."""
 

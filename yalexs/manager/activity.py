@@ -111,6 +111,7 @@ class ActivityStream(SubscriberMixin):
     async def _async_refresh(self) -> None:
         """Update the activity stream from August."""
         # This is the only place we refresh the api token
+        self._async_cancel_future_updates()
         await self._august_gateway.async_refresh_access_token_if_needed()
         if self.push_updates_connected:
             _LOGGER.debug("Skipping update because pubnub is connected")

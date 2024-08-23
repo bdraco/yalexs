@@ -26,6 +26,7 @@ from .const import MIN_TIME_BETWEEN_DETAIL_UPDATES
 from .exceptions import CannotConnect, YaleXSError
 from .gateway import Gateway
 from .subscriber import SubscriberMixin
+from .ratelimit import _RateLimitChecker
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -86,6 +87,8 @@ class YaleXSData(SubscriberMixin):
     async def async_setup(self) -> None:
         """Async setup of august device data and activities."""
         token = await self._gateway.async_get_access_token()
+        await _RateLimitChecker.check_rate_limit(token)
+
         # This used to be a gather but it was less reliable with august's recent api changes.
         locks: list[Lock] = await self._api.async_get_operable_locks(token) or []
         doorbells: list[Doorbell] = await self._api.async_get_doorbells(token) or []
@@ -112,6 +115,8 @@ class YaleXSData(SubscriberMixin):
             self._initial_sync_task = create_eager_task(
                 self._async_initial_sync(), name="august-initial-sync"
             )
+
+        await _RateLimitChecker.register_wakeup(token)
 
     async def async_setup_activity_stream(self) -> None:
         """Set up the activity stream."""
@@ -317,6 +322,14 @@ class YaleXSData(SubscriberMixin):
         )
 
     async def async_status_async(self, device_id: str, hyper_bridge: bool) -> str:
+        """Request status of the device but do not wait for a response since it will come via pubnub."""
+        token = await self._gateway.async_get_access_token()
+        _RateLimitChecker.check_rate_limit(token)
+        result = await self._async_status_async(device_id, hyper_bridge)
+        await _RateLimitChecker.register_wakeup(token)
+        return result
+
+    async def _async_status_async(self, device_id: str, hyper_bridge: bool) -> str:
         """Request status of the device but do not wait for a response since it will come via pubnub."""
         return await self._async_call_api_op_requires_bridge(
             device_id,
