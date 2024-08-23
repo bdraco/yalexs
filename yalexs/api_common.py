@@ -77,13 +77,9 @@ def _api_headers(
         HEADER_ACCEPT_VERSION: HEADER_VALUE_ACCEPT_VERSION,
         brand_config.api_key_header: brand_config.api_key,
         HEADER_CONTENT_TYPE: HEADER_VALUE_CONTENT_TYPE,
-        HEADER_USER_AGENT: HEADER_VALUE_USER_AGENT,
         HEADER_AUGUST_COUNTRY: HEADER_VALUE_AUGUST_COUNTRY,
+        brand_config.branding_header: BRANDING.get(brand, HEADER_VALUE_AUGUST_BRANDING),
     }
-
-    headers[brand_config.branding_header] = BRANDING.get(
-        brand, HEADER_VALUE_AUGUST_BRANDING
-    )
 
     if access_token:
         headers[brand_config.access_token_header] = access_token
