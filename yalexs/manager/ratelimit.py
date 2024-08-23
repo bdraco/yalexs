@@ -5,12 +5,10 @@ from __future__ import annotations
 from ..exceptions import RateLimited
 from collections import defaultdict
 import time
-from typing import TYPE_CHECKING
 
 RATE_LIMIT_WAKEUP_INTERVAL = 60 * 26
 
-if TYPE_CHECKING:
-    pass
+_NEVER_TIME = -RATE_LIMIT_WAKEUP_INTERVAL
 
 
 class RateLimitCheck:
@@ -25,14 +23,14 @@ class RateLimitCheck:
 
     def __init__(self) -> None:
         """Initialize the rate limit checker."""
-        self._client_wakeups: defaultdict[str, float] = defaultdict(float)
+        self._client_wakeups: defaultdict[str, float] = defaultdict(_NEVER_TIME)
 
     async def check_rate_limit(self, token: str) -> None:
         """Check if the client is rate limited."""
         now = time.monotonic()
         next_allowed = now - (self._client_wakeups[token] + RATE_LIMIT_WAKEUP_INTERVAL)
         if next_allowed < now:
-            min_next_allowed = int(now - next_allowed) / 60
+            min_next_allowed = int((now - next_allowed) / 60)
             raise RateLimited(f"Rate limited, try again in {min_next_allowed} minutes")
 
     async def register_wakeup(self, token: str) -> None:
