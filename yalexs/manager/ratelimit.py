@@ -23,7 +23,7 @@ class RateLimitCheck:
 
     def __init__(self) -> None:
         """Initialize the rate limit checker."""
-        self._client_wakeups: defaultdict[str, float] = defaultdict(_NEVER_TIME)
+        self._client_wakeups: defaultdict[str, float] = defaultdict(lambda: _NEVER_TIME)
 
     async def check_rate_limit(self, token: str) -> None:
         """Check if the client is rate limited."""
