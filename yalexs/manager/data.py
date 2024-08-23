@@ -324,7 +324,7 @@ class YaleXSData(SubscriberMixin):
     async def async_status_async(self, device_id: str, hyper_bridge: bool) -> str:
         """Request status of the device but do not wait for a response since it will come via pubnub."""
         token = await self._gateway.async_get_access_token()
-        _RateLimitChecker.check_rate_limit(token)
+        await _RateLimitChecker.check_rate_limit(token)
         result = await self._async_status_async(device_id, hyper_bridge)
         await _RateLimitChecker.register_wakeup(token)
         return result
