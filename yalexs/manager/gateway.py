@@ -114,7 +114,6 @@ class Gateway:
             await _RateLimitChecker.check_rate_limit(token)
             auth_state = self.authentication.state
             if auth_state is AuthenticationState.AUTHENTICATED:
-                await _RateLimitChecker.register_wakeup(token)
                 # Call the locks api to verify we are actually
                 # authenticated because we can be authenticated
                 # by have no access
