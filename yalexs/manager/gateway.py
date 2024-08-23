@@ -15,7 +15,7 @@ from ..api_async import ApiAsync
 from ..authenticator_async import AuthenticationState, AuthenticatorAsync
 from ..authenticator_common import Authentication
 from ..const import DEFAULT_BRAND
-from ..exceptions import AugustApiAIOHTTPError
+from ..exceptions import AugustApiAIOHTTPError, RateLimited
 from .const import (
     CONF_ACCESS_TOKEN_CACHE_FILE,
     CONF_BRAND,
@@ -29,6 +29,7 @@ from .const import (
     VERIFICATION_CODE_KEY,
 )
 from .exceptions import CannotConnect, InvalidAuth, RequireValidation
+from .ratelimit import _RateLimitChecker
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -109,6 +110,8 @@ class Gateway:
         """Authenticate with the details provided to setup."""
         try:
             self.authentication = await self.authenticator.async_authenticate()
+            token = await self.async_get_access_token()
+            await _RateLimitChecker.check_rate_limit(token)
             auth_state = self.authentication.state
             if auth_state is AuthenticationState.AUTHENTICATED:
                 # Call the locks api to verify we are actually
@@ -117,6 +120,8 @@ class Gateway:
                 await self.api.async_get_operable_locks(
                     await self.async_get_access_token()
                 )
+        except RateLimited:
+            raise
         except AugustApiAIOHTTPError as ex:
             if ex.auth_failed:
                 raise InvalidAuth(ex.args[0], ex.aiohttp_client_error) from ex

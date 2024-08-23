@@ -79,6 +79,7 @@ class YaleXSData(SubscriberMixin):
         self._pubnub_unsub: Callable[[], Coroutine[Any, Any, None]] | None = None
         self._initial_sync_task: asyncio.Task | None = None
         self._error_exception_class = error_exception_class
+        self._shutdown: bool = False
 
     @cached_property
     def brand(self) -> Brand:
@@ -89,6 +90,7 @@ class YaleXSData(SubscriberMixin):
         """Async setup of august device data and activities."""
         token = await self._gateway.async_get_access_token()
         await _RateLimitChecker.check_rate_limit(token)
+        await _RateLimitChecker.register_wakeup(token)
 
         # This used to be a gather but it was less reliable with august's recent api changes.
         locks: list[Lock] = await self._api.async_get_operable_locks(token) or []
@@ -116,8 +118,6 @@ class YaleXSData(SubscriberMixin):
             self._initial_sync_task = create_eager_task(
                 self._async_initial_sync(), name="august-initial-sync"
             )
-
-        await _RateLimitChecker.register_wakeup(token)
 
     async def async_setup_activity_stream(self) -> None:
         """Set up the activity stream."""
@@ -176,14 +176,15 @@ class YaleXSData(SubscriberMixin):
 
     async def async_stop(self, *args: Any) -> None:
         """Stop the subscriptions."""
-        if self._pubnub_unsub:
-            await self._pubnub_unsub()
+        self._shutdown = True
         if self.activity_stream:
             self.activity_stream.async_stop()
         if self._initial_sync_task:
             self._initial_sync_task.cancel()
             with suppress(asyncio.CancelledError):
                 await self._initial_sync_task
+        if self._pubnub_unsub:
+            await self._pubnub_unsub()
 
     @property
     def doorbells(self) -> ValuesView[Doorbell]:
@@ -200,6 +201,8 @@ class YaleXSData(SubscriberMixin):
         return self._device_detail_by_id[device_id]
 
     async def _async_refresh(self, time: datetime) -> None:
+        if self._shutdown:
+            return
         await self._async_refresh_device_detail_by_ids(self._subscriptions.keys())
 
     async def _async_refresh_device_detail_by_ids(
@@ -244,6 +247,8 @@ class YaleXSData(SubscriberMixin):
         )
 
     async def _async_refresh_device_detail_by_id(self, device_id: str) -> None:
+        if self._shutdown:
+            return
         if device_id in self._locks_by_id:
             if self.activity_stream and self.push_updates_connected:
                 saved_attrs = _save_live_attrs(self._device_detail_by_id[device_id])
