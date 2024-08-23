@@ -29,6 +29,7 @@ from .const import (
     VERIFICATION_CODE_KEY,
 )
 from .exceptions import CannotConnect, InvalidAuth, RequireValidation
+from .ratelimit import _RateLimitChecker
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -104,6 +105,9 @@ class Gateway:
         )
 
         await self.authenticator.async_setup_authentication()
+        token = await self.async_get_access_token()
+        await _RateLimitChecker.check_rate_limit(token)
+        await _RateLimitChecker.register_wakeup(token)
 
     async def async_authenticate(self) -> Authentication:
         """Authenticate with the details provided to setup."""
