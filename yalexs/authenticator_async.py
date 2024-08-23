@@ -76,6 +76,9 @@ class AuthenticatorAsync(AuthenticatorCommon):
         )
 
     async def async_authenticate(self) -> Authentication:
+        if self._api.brand_config.require_oauth:
+            raise RuntimeError(f"OAuth is required for brand {self._api.brand}")
+
         if self._authentication.state is AuthenticationState.AUTHENTICATED:
             return self._authentication
 
