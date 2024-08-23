@@ -2,6 +2,13 @@
 
 
 
+## v8.3.2 (2024-08-23)
+
+### Fix
+
+* fix: check for oauth required in async_authenticate to avoid auth being cleared (#161) ([`a849351`](https://github.com/bdraco/yalexs/commit/a849351d130c1781544c50236115f386252b20e1))
+
+
 ## v8.3.1 (2024-08-23)
 
 ### Fix
