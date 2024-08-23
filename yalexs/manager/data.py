@@ -27,6 +27,7 @@ from .exceptions import CannotConnect, YaleXSError
 from .gateway import Gateway
 from .subscriber import SubscriberMixin
 from .ratelimit import _RateLimitChecker
+from ..backports.functools import cached_property
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ class YaleXSData(SubscriberMixin):
         self._initial_sync_task: asyncio.Task | None = None
         self._error_exception_class = error_exception_class
 
-    @property
+    @cached_property
     def brand(self) -> Brand:
         """Return the brand of the API."""
         return self._gateway.api.brand
