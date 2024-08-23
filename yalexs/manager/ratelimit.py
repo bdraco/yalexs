@@ -28,7 +28,7 @@ class RateLimitCheck:
     async def check_rate_limit(self, token: str) -> None:
         """Check if the client is rate limited."""
         now = time.monotonic()
-        next_allowed = now - (self._client_wakeups[token] + RATE_LIMIT_WAKEUP_INTERVAL)
+        next_allowed = (self._client_wakeups[token] + RATE_LIMIT_WAKEUP_INTERVAL) - now
         if next_allowed < now:
             min_next_allowed = int((now - next_allowed) / 60)
             raise RateLimited(f"Rate limited, try again in {min_next_allowed} minutes")
