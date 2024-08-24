@@ -13,27 +13,6 @@ class Brand(StrEnum):
 
 DEFAULT_BRAND = Brand.AUGUST
 
-BASE_URLS = {
-    Brand.AUGUST: "https://api-production.august.com",
-    Brand.YALE_ACCESS: "https://api-production.august.com",
-    Brand.YALE_HOME: "https://api.aaecosystem.com",
-    Brand.YALE_GLOBAL: "https://api.aaecosystem.com",
-}
-
-BRANDS = {
-    Brand.AUGUST: "August",
-    Brand.YALE_ACCESS: "Yale Access",
-    Brand.YALE_HOME: "Yale Home",
-    Brand.YALE_GLOBAL: "Yale Global",
-}
-
-BRANDING = {
-    Brand.AUGUST: "august",
-    Brand.YALE_ACCESS: "yale",
-    Brand.YALE_HOME: "yale",
-    Brand.YALE_GLOBAL: "yale",
-}
-
 
 @dataclass
 class BrandConfig:
@@ -47,6 +26,8 @@ class BrandConfig:
     api_key: str
     supports_doorbells: bool
     require_oauth: bool
+    base_url: str
+    configuration_url: str
 
 
 HEADER_VALUE_API_KEY_OLD = "7cab4bbd-2693-4fc1-b99b-dec0fb20f9d4"
@@ -70,6 +51,8 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         api_key=HEADER_VALUE_API_KEY,
         supports_doorbells=True,
         require_oauth=False,
+        base_url="https://api-production.august.com",
+        configuration_url="https://account.august.com",
     ),
     Brand.YALE_ACCESS: BrandConfig(
         name="Yale Access",
@@ -80,6 +63,8 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         api_key=HEADER_VALUE_API_KEY,
         supports_doorbells=True,
         require_oauth=False,
+        base_url="https://api-production.august.com",
+        configuration_url="https://account.august.com",
     ),
     Brand.YALE_HOME: BrandConfig(
         name="Yale Home",
@@ -90,6 +75,8 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         api_key=HEADER_VALUE_API_KEY,
         supports_doorbells=True,
         require_oauth=False,
+        base_url="https://api.aaecosystem.com",
+        configuration_url="https://account.aaecosystem.com",
     ),
     Brand.YALE_GLOBAL: BrandConfig(
         name="Yale Global",
@@ -103,7 +90,26 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         api_key="d16a1029-d823-4b55-a4ce-a769a9b56f0e",
         supports_doorbells=False,
         require_oauth=True,
+        base_url="https://api.aaecosystem.com",
+        configuration_url="https://account.aaecosystem.com",
     ),
+}
+
+BRANDS = {brand: brand_config.name for brand, brand_config in BRAND_CONFIG.items()}
+BRANDS_WITHOUT_OAUTH = {
+    brand: brand_config.name
+    for brand, brand_config in BRAND_CONFIG.items()
+    if not brand_config.require_oauth
+}
+BRANDING = {
+    brand: brand_config.branding for brand, brand_config in BRAND_CONFIG.items()
+}
+BASE_URLS = {
+    brand: brand_config.base_url for brand, brand_config in BRAND_CONFIG.items()
+}
+CONFIGURATION_URLS = {
+    brand: brand_config.configuration_url
+    for brand, brand_config in BRAND_CONFIG.items()
 }
 
 PUBNUB_TOKENS = {
@@ -126,11 +132,4 @@ PUBNUB_TOKENS = {
         "subscribe": "sub-c-c9c38d4d-5796-46c9-9262-af20cf6a1d42",
         "publish": "pub-c-353e8881-cf58-4b26-9baf-96f296de0677",
     },
-}
-
-CONFIGURATION_URLS = {
-    Brand.AUGUST: "https://account.august.com",
-    Brand.YALE_ACCESS: "https://account.august.com",
-    Brand.YALE_HOME: "https://account.aaecosystem.com",
-    Brand.YALE_GLOBAL: "https://account.aaecosystem.com",
 }
