@@ -5,7 +5,7 @@ from __future__ import annotations
 import datetime
 import logging
 from typing import Any
-
+from functools import cache
 from .activity import ACTION_TO_CLASS, SOURCE_LOCK_OPERATE, SOURCE_LOG, ActivityTypes
 from .const import BASE_URLS, BRANDING, Brand, BRAND_CONFIG, DEFAULT_BRAND, BrandConfig
 from .doorbell import Doorbell
@@ -61,30 +61,40 @@ API_STATUS_ASYNC_URL = (
 HYPER_BRIDGE_PARAM = "&connection=persistent"
 API_GET_USER_URL = "/users/me"
 API_WEBSOCKET_SUBSCRIBERS = "/websocket/subscribers"
+API_WEBSOCKET_SUBSCRIBERS_WITH_SUBSCRIBER_ID = "/websocket/subscribers/{subscriber_id}"
 
 _LOGGER = logging.getLogger(__name__)
 
 
+@cache
 def _get_brand_config(brand: Brand) -> BrandConfig:
     return BRAND_CONFIG.get(brand, BRAND_CONFIG[DEFAULT_BRAND])
+
+
+def api_auth_headers(
+    access_token: str | None = None, brand: Brand | None = None
+) -> dict[str, str]:
+    brand_config = _get_brand_config(brand)
+    base_headers = {
+        brand_config.api_key_header: brand_config.api_key,
+        brand_config.branding_header: BRANDING.get(brand, HEADER_VALUE_AUGUST_BRANDING),
+    }
+    if access_token:
+        base_headers[brand_config.access_token_header] = access_token
+    return base_headers
 
 
 def _api_headers(
     access_token: str | None = None, brand: Brand | None = None
 ) -> dict[str, str]:
-    brand_config = _get_brand_config(brand)
-
-    headers = {
-        HEADER_ACCEPT_VERSION: HEADER_VALUE_ACCEPT_VERSION,
-        brand_config.api_key_header: brand_config.api_key,
-        HEADER_CONTENT_TYPE: HEADER_VALUE_CONTENT_TYPE,
-        HEADER_AUGUST_COUNTRY: HEADER_VALUE_AUGUST_COUNTRY,
-        brand_config.branding_header: BRANDING.get(brand, HEADER_VALUE_AUGUST_BRANDING),
-    }
-
-    if access_token:
-        headers[brand_config.access_token_header] = access_token
-
+    headers = api_auth_headers(access_token, brand)
+    headers.update(
+        {
+            HEADER_ACCEPT_VERSION: HEADER_VALUE_ACCEPT_VERSION,
+            HEADER_CONTENT_TYPE: HEADER_VALUE_CONTENT_TYPE,
+            HEADER_AUGUST_COUNTRY: HEADER_VALUE_AUGUST_COUNTRY,
+        }
+    )
     return headers
 
 
@@ -311,18 +321,37 @@ class ApiCommon:
             "url": self.get_brand_url(API_GET_HOUSES_URL),
         }
 
-    def _build_websocket_subscribe_request(
-        self, access_token: str, subscriber_id: str, client_id: str, user_id: str
-    ) -> dict[str, Any]:
+    def _build_websocket_subscribe_request(self, access_token: str) -> dict[str, Any]:
         return {
             **self._build_base_request(access_token, "post"),
             "url": self.get_brand_url(API_WEBSOCKET_SUBSCRIBERS),
-            "params": {
-                "subscriberID": subscriber_id,
+            "json": {
                 "scopes": ["lock"],
-                "clientID": client_id,
-                "userID": user_id,
             },
+        }
+
+    def _build_websocket_get_request(
+        self, access_token: str, subscriber_id: str
+    ) -> dict[str, Any]:
+        return {
+            **self._build_base_request(access_token, "get"),
+            "url": self.get_brand_url(
+                API_WEBSOCKET_SUBSCRIBERS_WITH_SUBSCRIBER_ID.format(
+                    subscriber_id=subscriber_id
+                )
+            ),
+        }
+
+    def _build_websocket_delete_request(
+        self, access_token: str, subscriber_id: str
+    ) -> dict[str, Any]:
+        return {
+            **self._build_base_request(access_token, "delete"),
+            "url": self.get_brand_url(
+                API_WEBSOCKET_SUBSCRIBERS_WITH_SUBSCRIBER_ID.format(
+                    subscriber_id=subscriber_id
+                )
+            ),
         }
 
     def _build_call_lock_operation_request(
