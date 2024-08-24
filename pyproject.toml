@@ -37,6 +37,7 @@ aiohttp = ">=3.9.5"
 aiofiles = ">=23"
 freenub = ">=0.1.0"
 typing-extensions = ">=4.5.0"
+socketio = ">=0.2.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8"
