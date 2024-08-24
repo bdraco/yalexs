@@ -60,6 +60,7 @@ API_STATUS_ASYNC_URL = (
 )
 HYPER_BRIDGE_PARAM = "&connection=persistent"
 API_GET_USER_URL = "/users/me"
+API_WEBSOCKET_SUBSCRIBERS = "/websocket/subscribers"
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -179,7 +180,7 @@ class ApiCommon:
 
     def get_brand_url(self, url_str: str) -> str:
         """Get url."""
-        return self._base_url + url_str
+        return f"{self._base_url}{url_str}"
 
     def _build_get_session_request(self, install_id, identifier, password):
         return {
@@ -201,118 +202,134 @@ class ApiCommon:
             json = {"value": username}
 
         return {
-            "method": "post",
+            **self._build_base_request(access_token, "post"),
             "url": self.get_brand_url(API_SEND_VERIFICATION_CODE_URLS[login_method]),
-            "access_token": access_token,
             "json": json,
         }
+
+    def _build_base_request(
+        self, access_token: str, method: str = "get"
+    ) -> dict[str, Any]:
+        """Build a base request."""
+        return {"method": method, "access_token": access_token}
 
     def _build_validate_verification_code_request(
         self, access_token, login_method, username, verification_code
     ):
         return {
-            "method": "post",
+            **self._build_base_request(access_token, "post"),
             "url": self.get_brand_url(
                 API_VALIDATE_VERIFICATION_CODE_URLS[login_method]
             ),
-            "access_token": access_token,
             "json": {login_method: username, "code": str(verification_code)},
         }
 
-    def _build_get_doorbells_request(self, access_token):
+    def _build_get_doorbells_request(self, access_token: str) -> dict[str, Any]:
         return {
-            "method": "get",
+            **self._build_base_request(access_token),
             "url": self.get_brand_url(API_GET_DOORBELLS_URL),
-            "access_token": access_token,
         }
 
-    def _build_get_doorbell_detail_request(self, access_token, doorbell_id):
+    def _build_get_doorbell_detail_request(
+        self, access_token: str, doorbell_id: str
+    ) -> dict[str, Any]:
         return {
-            "method": "get",
+            **self._build_base_request(access_token),
             "url": self.get_brand_url(
                 API_GET_DOORBELL_URL.format(doorbell_id=doorbell_id)
             ),
-            "access_token": access_token,
         }
 
-    def _build_wakeup_doorbell_request(self, access_token, doorbell_id):
+    def _build_wakeup_doorbell_request(
+        self, access_token: str, doorbell_id: str
+    ) -> dict[str, Any]:
         return {
-            "method": "put",
+            **self._build_base_request(access_token),
             "url": self.get_brand_url(
                 API_WAKEUP_DOORBELL_URL.format(doorbell_id=doorbell_id)
             ),
-            "access_token": access_token,
         }
 
-    def _build_get_houses_request(self, access_token):
-        return {"method": "get", "access_token": access_token}
+    def _build_get_houses_request(self, access_token: str) -> dict[str, Any]:
+        return self._build_base_request(access_token)
 
     def _build_get_house_request(self, access_token, house_id):
         return {
-            "method": "get",
+            **self._build_base_request(access_token),
             "url": self.get_brand_url(API_GET_HOUSE_URL.format(house_id=house_id)),
-            "access_token": access_token,
         }
 
     def _build_get_house_activities_request(self, access_token, house_id, limit=8):
         return {
-            "method": "get",
+            **self._build_base_request(access_token),
             "url": self.get_brand_url(
                 API_GET_HOUSE_ACTIVITIES_URL.format(house_id=house_id)
             ),
             "version": "4.0.0",
-            "access_token": access_token,
             "params": {"limit": limit},
         }
 
-    def _build_get_locks_request(self, access_token):
+    def _build_get_locks_request(self, access_token: str) -> dict[str, Any]:
         return {
-            "method": "get",
+            **self._build_base_request(access_token),
             "url": self.get_brand_url(API_GET_LOCKS_URL),
-            "access_token": access_token,
         }
 
-    def _build_get_user_request(self, access_token):
+    def _build_get_user_request(self, access_token: str) -> dict[str, Any]:
         return {
-            "method": "get",
+            **self._build_base_request(access_token),
             "url": self.get_brand_url(API_GET_USER_URL),
-            "access_token": access_token,
         }
 
-    def _build_get_lock_detail_request(self, access_token, lock_id):
+    def _build_get_lock_detail_request(
+        self, access_token: str, lock_id: str
+    ) -> dict[str, Any]:
         return {
-            "method": "get",
+            **self._build_base_request(access_token),
             "url": self.get_brand_url(API_GET_LOCK_URL.format(lock_id=lock_id)),
-            "access_token": access_token,
         }
 
-    def _build_get_lock_status_request(self, access_token, lock_id):
+    def _build_get_lock_status_request(
+        self, access_token: str, lock_id: str
+    ) -> dict[str, Any]:
         return {
-            "method": "get",
+            **self._build_base_request(access_token),
             "url": self.get_brand_url(API_GET_LOCK_STATUS_URL.format(lock_id=lock_id)),
-            "access_token": access_token,
         }
 
-    def _build_get_pins_request(self, access_token, lock_id):
+    def _build_get_pins_request(
+        self, access_token: str, lock_id: str
+    ) -> dict[str, Any]:
         return {
-            "method": "get",
+            **self._build_base_request(access_token),
             "url": self.get_brand_url(API_GET_PINS_URL.format(lock_id=lock_id)),
-            "access_token": access_token,
         }
 
-    def _build_refresh_access_token_request(self, access_token):
+    def _build_refresh_access_token_request(self, access_token: str) -> dict[str, Any]:
         return {
-            "method": "get",
+            **self._build_base_request(access_token),
             "url": self.get_brand_url(API_GET_HOUSES_URL),
-            "access_token": access_token,
+        }
+
+    def _build_websocket_subscribe_request(
+        self, access_token: str, subscriber_id: str, client_id: str, user_id: str
+    ) -> dict[str, Any]:
+        return {
+            **self._build_base_request(access_token, "post"),
+            "url": self.get_brand_url(API_WEBSOCKET_SUBSCRIBERS),
+            "params": {
+                "subscriberID": subscriber_id,
+                "scopes": ["lock"],
+                "clientID": client_id,
+                "userID": user_id,
+            },
         }
 
     def _build_call_lock_operation_request(
         self, url_str: str, access_token: str, lock_id: str, timeout
     ) -> dict[str, Any]:
         return {
-            "method": "put",
+            **self._build_base_request(access_token, "put"),
             "url": self.get_brand_url(url_str.format(lock_id=lock_id)),
-            "access_token": access_token,
             "timeout": timeout,
         }
