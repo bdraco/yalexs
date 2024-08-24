@@ -2,6 +2,13 @@
 
 
 
+## v8.4.0 (2024-08-24)
+
+### Feature
+
+* feat: add constant for brands without oauth required (#164) ([`7c472c0`](https://github.com/bdraco/yalexs/commit/7c472c02beba7d4ba998c0ff9ae3e191b8b96b2d))
+
+
 ## v8.3.3 (2024-08-23)
 
 ### Fix
