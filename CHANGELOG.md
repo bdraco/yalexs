@@ -2,6 +2,13 @@
 
 
 
+## v8.4.2 (2024-08-25)
+
+### Fix
+
+* fix: removing polling fallback (#168) ([`f346fa3`](https://github.com/bdraco/yalexs/commit/f346fa30f777426b9b507985f0dc75ad7d0325ff))
+
+
 ## v8.4.1 (2024-08-25)
 
 ### Fix
