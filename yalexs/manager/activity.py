@@ -67,6 +67,7 @@ class ActivityStream(SubscriberMixin):
         """Token refresh check and catch up the activity stream."""
         self._start_time = monotonic()
         await self._async_refresh()
+        await self._async_first_refresh()
         self._did_first_update = True
 
     def async_stop(self) -> None:
@@ -115,8 +116,13 @@ class ActivityStream(SubscriberMixin):
             return
         self._async_cancel_future_updates()
         await self._august_gateway.async_refresh_access_token_if_needed()
+        if not self.push_updates_connected:
+            _LOGGER.debug("Push updates are not connected, data will be stale")
+
+    async def _async_first_refresh(self) -> None:
+        """Update the activity stream from August for the first time."""
         if self.push_updates_connected:
-            _LOGGER.debug("Skipping update because pubnub is connected")
+            _LOGGER.debug("Skipping update because push updates are active")
             return
         _LOGGER.debug("Start retrieving device activities")
         # Await in sequence to avoid hammering the API
