@@ -2,6 +2,13 @@
 
 
 
+## v8.4.1 (2024-08-25)
+
+### Fix
+
+* fix: ensure init sync does not check rate limit (#166) ([`9548850`](https://github.com/bdraco/yalexs/commit/9548850eb09f7c79d7ad2619b0181ff5c079bc93))
+
+
 ## v8.4.0 (2024-08-24)
 
 ### Feature
