@@ -65,6 +65,22 @@ def _obscure_payload(payload: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
+def _obscure_headers(headers: dict[str, Any]) -> dict[str, Any]:
+    """Obscure the headers for logging."""
+    if headers is None:
+        return None
+    for obscure_header in (
+        "x-august-access-token",
+        "x-access-token",
+        "x-august-api-key",
+        "x-api-key",
+    ):
+        if obscure_header in headers:
+            headers = headers.copy()
+            headers[obscure_header] = "****"
+    return headers
+
+
 class ApiAsync(ApiCommon):
     """Async api."""
 
@@ -384,6 +400,22 @@ class ApiAsync(ApiCommon):
         )
         return access_token
 
+    async def async_add_websocket_subscription(
+        self, access_token: str
+    ) -> dict[str, Any]:
+        """Add a websocket subscription."""
+        response = await self._async_dict_to_api(
+            self._build_websocket_subscribe_request(access_token)
+        )
+        return await response.json()
+
+    async def async_get_websocket_subscriptions(self, access_token: str) -> str:
+        """Get websocket subscriptions."""
+        response = await self._async_dict_to_api(
+            self._build_websocket_get_request(access_token)
+        )
+        return await response.text()
+
     async def _async_dict_to_api(self, api_dict: dict[str, Any]) -> ClientResponse:
         url = api_dict.pop("url")
         method = api_dict.pop("method")
@@ -408,7 +440,7 @@ class ApiAsync(ApiCommon):
             _LOGGER.debug(
                 "About to call %s with header=%s and payload=%s",
                 url,
-                api_dict["headers"],
+                _obscure_headers(api_dict["headers"]),
                 _obscure_payload(payload),
             )
 
@@ -437,7 +469,7 @@ class ApiAsync(ApiCommon):
                     "Received API response from url: %s, code: %s, headers: %s, content: %s",
                     url,
                     response.status,
-                    response.headers,
+                    _obscure_headers(response.headers),
                     await response.read(),
                 )
             if response.status == 429:

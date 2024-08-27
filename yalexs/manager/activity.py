@@ -17,6 +17,7 @@ from ..util import get_latest_activity
 from .const import ACTIVITY_UPDATE_INTERVAL
 from .gateway import Gateway
 from .subscriber import SubscriberMixin
+from .socketio import SocketIORunner
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class ActivityStream(SubscriberMixin):
         api: ApiAsync,
         august_gateway: Gateway,
         house_ids: set[str],
-        pubnub: AugustPubNub,
+        push: AugustPubNub | SocketIORunner,
     ) -> None:
         """Init activity stream object."""
         super().__init__(ACTIVITY_UPDATE_INTERVAL)
@@ -57,7 +58,7 @@ class ActivityStream(SubscriberMixin):
             str, dict[ActivityType, Activity | None]
         ] = defaultdict(lambda: defaultdict(lambda: None))
         self._did_first_update = False
-        self.pubnub = pubnub
+        self.push = push
         self._update_tasks: dict[str, asyncio.Task] = {}
         self._start_time: float | None = None
         self._loop = asyncio.get_running_loop()
@@ -107,7 +108,7 @@ class ActivityStream(SubscriberMixin):
     @property
     def push_updates_connected(self) -> bool:
         """Return if the push updates are connected."""
-        return self.pubnub.connected
+        return self.push.connected
 
     async def _async_refresh(self) -> None:
         """Update the activity stream from August."""

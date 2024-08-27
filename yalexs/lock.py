@@ -10,11 +10,11 @@ from .keypad import KeypadDetail
 from .time import parse_datetime
 from .users import cache_user_info
 
-LOCKED_STATUS = ("locked", "kAugLockState_Locked", "kAugLockState_SecureMode")
+LOCKED_STATUS = ("lock", "locked", "kAugLockState_Locked", "kAugLockState_SecureMode")
 LOCKING_STATUS = ("kAugLockState_Locking",)
 UNLATCHED_STATUS = ("unlatched", "kAugLockState_Unlatched")
 UNLATCHING_STATUS = ("kAugLockState_Unlatching",)
-UNLOCKED_STATUS = ("unlocked", "kAugLockState_Unlocked")
+UNLOCKED_STATUS = ("unlock", "unlocked", "kAugLockState_Unlocked")
 UNLOCKING_STATUS = ("kAugLockState_Unlocking",)
 JAMMED_STATUS = (
     "kAugLockState_UnknownStaticPosition",
@@ -261,7 +261,7 @@ class LockDoorStatus(Enum):
     DISABLED = "disabled"
 
 
-def determine_lock_status(status):
+def determine_lock_status(status: str) -> LockStatus:
     if status in LOCKED_STATUS:
         return LockStatus.LOCKED
     if status in UNLATCHED_STATUS:

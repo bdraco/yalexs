@@ -60,7 +60,7 @@ class AugustPubNub(SubscribeCallback):
 
         elif status.category == PNStatusCategory.PNReconnectedCategory:
             self.connected = True
-            now = datetime.datetime.utcnow()
+            now = datetime.datetime.now(datetime.UTC)
             # Callback with an empty message to force a refresh
             for callback in self._subscriptions:
                 for device_id in self._device_channels.values():
@@ -109,29 +109,28 @@ class AugustPubNub(SubscribeCallback):
         """Return a list of registered channels."""
         return self._device_channels.keys()
 
+    async def run(
+        self, user_uuid: str, brand: Brand = Brand.AUGUST
+    ) -> Callable[[], Coroutine[Any, Any, None]]:
+        """Run the pubnub loop."""
+        tokens = PUBNUB_TOKENS[brand]
+        pnconfig = PNConfiguration()
+        pnconfig.subscribe_key = tokens["subscribe"]
+        pnconfig.publish_key = tokens["publish"]
+        pnconfig.uuid = f"pn-{str(user_uuid).upper()}"
+        pnconfig.reconnect_policy = PNReconnectionPolicy.EXPONENTIAL
+        pubnub = PubNubAsyncio(pnconfig)
+        pubnub.add_listener(self)
+        pubnub.subscribe().channels(self.channels).execute()
 
-def async_create_pubnub(
-    user_uuid: str, subscriptions: AugustPubNub, brand: Brand = Brand.AUGUST
-) -> Callable[[], Coroutine[Any, Any, None]]:
-    """Create a pubnub subscription."""
-    tokens = PUBNUB_TOKENS[brand]
-    pnconfig = PNConfiguration()
-    pnconfig.subscribe_key = tokens["subscribe"]
-    pnconfig.publish_key = tokens["publish"]
-    pnconfig.uuid = f"pn-{str(user_uuid).upper()}"
-    pnconfig.reconnect_policy = PNReconnectionPolicy.EXPONENTIAL
-    pubnub = PubNubAsyncio(pnconfig)
-    pubnub.add_listener(subscriptions)
-    pubnub.subscribe().channels(subscriptions.channels).execute()
+        async def _async_unsub():
+            _LOGGER.debug("Removing listeners PubNub")
+            pubnub.remove_listener(self)
+            _LOGGER.debug("Unsubscribing from PubNub")
+            pubnub.unsubscribe_all()
+            await asyncio.sleep(0.1)  # Allow the unsubscribe to complete
+            _LOGGER.debug("Stopping PubNub")
+            await pubnub.stop()
+            _LOGGER.debug("PubNub stopped")
 
-    async def _async_unsub():
-        _LOGGER.debug("Removing listeners PubNub")
-        pubnub.remove_listener(subscriptions)
-        _LOGGER.debug("Unsubscribing from PubNub")
-        pubnub.unsubscribe_all()
-        await asyncio.sleep(0.1)  # Allow the unsubscribe to complete
-        _LOGGER.debug("Stopping PubNub")
-        await pubnub.stop()
-        _LOGGER.debug("PubNub stopped")
-
-    return _async_unsub
+        return _async_unsub

@@ -20,7 +20,7 @@ from ..doorbell import ContentTokenExpired, Doorbell, DoorbellDetail
 from ..exceptions import AugustApiAIOHTTPError
 from ..lock import Lock, LockDetail
 from ..pubnub_activity import activities_from_pubnub_message
-from ..pubnub_async import AugustPubNub, async_create_pubnub
+from ..pubnub_async import AugustPubNub
 from .activity import ActivityStream
 from .const import MIN_TIME_BETWEEN_DETAIL_UPDATES
 from .exceptions import CannotConnect, YaleXSError
@@ -28,6 +28,7 @@ from .gateway import Gateway
 from .subscriber import SubscriberMixin
 from .ratelimit import _RateLimitChecker
 from ..backports.functools import cached_property
+from .socketio import SocketIORunner
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -76,7 +77,7 @@ class YaleXSData(SubscriberMixin):
         self._doorbells_by_id: dict[str, Doorbell] = {}
         self._locks_by_id: dict[str, Lock] = {}
         self._house_ids: set[str] = set()
-        self._pubnub_unsub: Callable[[], Coroutine[Any, Any, None]] | None = None
+        self._push_unsub: Callable[[], Coroutine[Any, Any, None]] | None = None
         self._initial_sync_task: asyncio.Task | None = None
         self._error_exception_class = error_exception_class
         self._shutdown: bool = False
@@ -111,7 +112,7 @@ class YaleXSData(SubscriberMixin):
         self._remove_inoperative_doorbells()
         await self.async_setup_activity_stream()
 
-        if self._locks_by_id:
+        if self._locks_by_id and self.brand is not Brand.YALE_GLOBAL:
             # Do not prevent setup as the sync can timeout
             # but it is not a fatal error as the lock
             # will recover automatically when it comes back online.
@@ -123,17 +124,19 @@ class YaleXSData(SubscriberMixin):
         """Set up the activity stream."""
         token = await self._gateway.async_get_access_token()
         user_data = await self._api.async_get_user(token)
-        pubnub = AugustPubNub()
-        for device in self._device_detail_by_id.values():
-            pubnub.register_device(device)
+        push: AugustPubNub | SocketIORunner
+        if self.brand is Brand.YALE_GLOBAL:
+            push = SocketIORunner(self._gateway)
+        else:
+            push = AugustPubNub()
+            for device in self._device_detail_by_id.values():
+                push.register_device(device)
         self.activity_stream = ActivityStream(
-            self._api, self._gateway, self._house_ids, pubnub
+            self._api, self._gateway, self._house_ids, push
         )
         await self.activity_stream.async_setup()
-        pubnub.subscribe(self.async_pubnub_message)
-        self._pubnub_unsub = async_create_pubnub(
-            user_data["UserID"], pubnub, self.brand
-        )
+        push.subscribe(self.async_push_message)
+        self._push_unsub = await push.run(user_data["UserID"], self.brand)
 
     async def _async_initial_sync(self) -> None:
         """Attempt to request an initial sync."""
@@ -161,10 +164,10 @@ class YaleXSData(SubscriberMixin):
                     exc_info=result,
                 )
 
-    def async_pubnub_message(
+    def async_push_message(
         self, device_id: str, date_time: datetime, message: dict[str, Any]
     ) -> None:
-        """Process a pubnub message."""
+        """Process a push message."""
         device = self.get_device_detail(device_id)
         activities = activities_from_pubnub_message(device, date_time, message)
         activity_stream = self.activity_stream
@@ -183,8 +186,8 @@ class YaleXSData(SubscriberMixin):
             self._initial_sync_task.cancel()
             with suppress(asyncio.CancelledError):
                 await self._initial_sync_task
-        if self._pubnub_unsub:
-            await self._pubnub_unsub()
+        if self._push_unsub:
+            await self._push_unsub()
 
     @property
     def doorbells(self) -> ValuesView[Doorbell]:

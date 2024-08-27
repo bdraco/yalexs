@@ -82,7 +82,7 @@ def activities_from_pubnub_message(
             and not message.get("error")
             and not message.get("result") == "failed"
         ):
-            _LOGGER.debug("Not creating lock activity from status pubnub")
+            _LOGGER.debug("Not creating lock activity from status push")
             return activities
 
         # Only accept a UserID if we have a date/time
@@ -95,7 +95,7 @@ def activities_from_pubnub_message(
         error = message.get("error") or {}
         if error.get("restCode") == 98 or error.get("name") == "ERRNO_BRIDGE_OFFLINE":
             _add_activity(activities, activity_dict, ACTION_BRIDGE_OFFLINE)
-        elif status := message.get(LOCK_STATUS_KEY):
+        elif status := message.get("lockAction", message.get(LOCK_STATUS_KEY)):
             if status in _BRIDGE_ACTIONS:
                 _add_activity(activities, activity_dict, status)
             if action := LOCK_STATUS_TO_ACTION.get(determine_lock_status(status)):
