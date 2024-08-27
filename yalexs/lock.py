@@ -261,7 +261,7 @@ class LockDoorStatus(Enum):
     DISABLED = "disabled"
 
 
-def determine_lock_status(status):
+def determine_lock_status(status: str) -> LockStatus:
     if status in LOCKED_STATUS:
         return LockStatus.LOCKED
     if status in UNLATCHED_STATUS:
