@@ -1201,7 +1201,6 @@ files = [
 ]
 
 [package.dependencies]
-aiohttp = {version = ">=3.4", optional = true, markers = "extra == \"asyncio-client\""}
 bidict = ">=0.21.0"
 python-engineio = ">=4.8.0"
 
@@ -1763,4 +1762,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "5ad522222f65ec9725495ba92e30799017fb977f3ae212a2e35bd74885d42bb0"
+content-hash = "a81c9316fdf6dbd0bea430d2ff45c3d6ccd9a13a8a78e4c70f8c3fe574ec2baa"
