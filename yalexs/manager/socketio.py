@@ -48,7 +48,7 @@ class SocketIORunner:
 
     async def _run(self) -> None:
         """Run the socketio client."""
-        sio = socketio.AsyncClient(logger=True, engineio_logger=True)
+        sio = socketio.AsyncClient()
 
         @sio.event
         def connect() -> None:
