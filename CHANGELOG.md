@@ -2,6 +2,13 @@
 
 
 
+## v8.5.2 (2024-08-27)
+
+### Fix
+
+* fix: disable excessive logging (#171) ([`7e01490`](https://github.com/bdraco/yalexs/commit/7e014908f28f0a0d642bd923029400f402927f85))
+
+
 ## v8.5.1 (2024-08-27)
 
 ### Fix
