@@ -2,6 +2,13 @@
 
 
 
+## v8.5.1 (2024-08-27)
+
+### Fix
+
+* fix: lower socketio to 4 for ha compat (#170) ([`1ae7c88`](https://github.com/bdraco/yalexs/commit/1ae7c88b97d64a9ab88ea74911ea044c1b74c1a0))
+
+
 ## v8.5.0 (2024-08-27)
 
 ### Feature
