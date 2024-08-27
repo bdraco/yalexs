@@ -146,7 +146,7 @@ class YaleXSData(SubscriberMixin):
         for result in await asyncio.gather(
             *[
                 create_eager_task(
-                    self.async_status_async(
+                    self._async_status_async(
                         device_id, bool(detail.bridge and detail.bridge.hyper_bridge)
                     )
                 )
