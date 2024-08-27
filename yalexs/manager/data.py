@@ -425,7 +425,7 @@ class YaleXSData(SubscriberMixin):
         try:
             return await doorbell.async_get_doorbell_image(aiohttp_session, timeout)
         except ContentTokenExpired:
-            if self.brand != Brand.YALE_HOME:
+            if self.brand not in (Brand.YALE_HOME, Brand.YALE_GLOBAL):
                 raise
             _LOGGER.debug(
                 "Error fetching camera image, updating content-token from api to retry"
