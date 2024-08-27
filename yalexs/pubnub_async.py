@@ -109,7 +109,7 @@ class AugustPubNub(SubscribeCallback):
         """Return a list of registered channels."""
         return self._device_channels.keys()
 
-    def run(
+    async def run(
         self, user_uuid: str, brand: Brand = Brand.AUGUST
     ) -> Callable[[], Coroutine[Any, Any, None]]:
         """Run the pubnub loop."""

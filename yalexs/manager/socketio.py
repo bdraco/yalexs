@@ -26,6 +26,7 @@ class SocketIORunner:
         self._listeners: set[UpdateCallbackType] = set()
         self._access_token = None
         self.connected = False
+        self._subscriber_id: str | None = None
 
     def subscribe(self, callback: UpdateCallbackType) -> Callable[[], None]:
         """Add a listener."""
@@ -43,10 +44,6 @@ class SocketIORunner:
     async def _run(self) -> None:
         """Run the socketio client."""
         sio = socketio.AsyncClient(logger=True, engineio_logger=True)
-        self._access_token = await self.gateway.async_get_access_token()
-        api = self.gateway.api
-        sub_info = await api.async_add_websocket_subscription(self._access_token)
-        subscriber_id = sub_info["subscriberID"]
 
         @sio.event
         async def connect():
@@ -73,17 +70,21 @@ class SocketIORunner:
             self.connected = False
 
         await sio.connect(
-            f"https://websocket.aaecosystem.com/?subscriberID={subscriber_id}",
+            f"https://websocket.aaecosystem.com/?subscriberID={self._subscriber_id}",
             retry=True,
             transports=["websocket"],
             headers=self.headers,
         )
         await sio.wait()
 
-    def run(
+    async def run(
         self, user_uuid: str, brand: Brand = Brand.YALE_GLOBAL
     ) -> Callable[[], Coroutine[Any, Any, None]]:
         """Create a socketio session."""
+        self._access_token = await self.gateway.async_get_access_token()
+        api = self.gateway.api
+        sub_info = await api.async_add_websocket_subscription(self._access_token)
+        self._subscriber_id = sub_info["subscriberID"]
         socketio_task = asyncio.create_task(self._run())
 
         async def _async_unsub():

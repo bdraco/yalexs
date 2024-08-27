@@ -136,7 +136,7 @@ class YaleXSData(SubscriberMixin):
         )
         await self.activity_stream.async_setup()
         push.subscribe(self.async_push_message)
-        self._push_unsub = push.run(user_data["UserID"], self.brand)
+        self._push_unsub = await push.run(user_data["UserID"], self.brand)
 
     async def _async_initial_sync(self) -> None:
         """Attempt to request an initial sync."""
