@@ -2,6 +2,20 @@
 
 
 
+## v8.4.2 (2024-08-25)
+
+### Fix
+
+* fix: removing polling fallback (#168) ([`f346fa3`](https://github.com/bdraco/yalexs/commit/f346fa30f777426b9b507985f0dc75ad7d0325ff))
+
+
+## v8.4.1 (2024-08-25)
+
+### Fix
+
+* fix: ensure init sync does not check rate limit (#166) ([`9548850`](https://github.com/bdraco/yalexs/commit/9548850eb09f7c79d7ad2619b0181ff5c079bc93))
+
+
 ## v8.4.0 (2024-08-24)
 
 ### Feature
