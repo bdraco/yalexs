@@ -2,6 +2,13 @@
 
 
 
+## v8.5.4 (2024-08-27)
+
+### Fix
+
+* fix: bump socketio to 5+ (#173) ([`ab5a6c8`](https://github.com/bdraco/yalexs/commit/ab5a6c842b413a134e52558c10570cdcdc8c0079))
+
+
 ## v8.5.3 (2024-08-27)
 
 ### Fix
