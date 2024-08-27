@@ -112,7 +112,7 @@ class YaleXSData(SubscriberMixin):
         self._remove_inoperative_doorbells()
         await self.async_setup_activity_stream()
 
-        if self._locks_by_id:
+        if self._locks_by_id and self.brand is not Brand.YALE_GLOBAL:
             # Do not prevent setup as the sync can timeout
             # but it is not a fatal error as the lock
             # will recover automatically when it comes back online.

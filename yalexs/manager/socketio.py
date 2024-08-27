@@ -6,27 +6,28 @@ import asyncio
 from typing import Any, Callable, TYPE_CHECKING
 from collections.abc import Coroutine
 from contextlib import suppress
-import orjson
 from datetime import datetime, UTC
+from ..backports.tasks import create_eager_task
 
 _LOGGER = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from .gateway import Gateway
 
-UpdateCallbackType = Callable[[str, datetime.datetime, dict[str, Any]], None]
+UpdateCallbackType = Callable[[str, datetime, dict[str, Any]], None]
 
 
 class SocketIORunner:
     """Run the socketio client."""
 
-    def __init__(self, gateway: Gateway) -> None:
+    def __init__(self, gateway: "Gateway") -> None:
         """Initialize the socketio client."""
         self.gateway = gateway
         self._listeners: set[UpdateCallbackType] = set()
         self._access_token = None
         self.connected = False
         self._subscriber_id: str | None = None
+        self._refresh_task: asyncio.Task | None = None
 
     def subscribe(self, callback: UpdateCallbackType) -> Callable[[], None]:
         """Add a listener."""
@@ -41,32 +42,31 @@ class SocketIORunner:
         """Get the headers."""
         return api_auth_headers(self._access_token, brand=Brand.YALE_GLOBAL)
 
+    async def _refresh_access_token(self) -> None:
+        """Refresh the access token."""
+        self._access_token = await self.gateway.async_get_access_token()
+
     async def _run(self) -> None:
         """Run the socketio client."""
         sio = socketio.AsyncClient(logger=True, engineio_logger=True)
 
         @sio.event
-        async def connect():
+        def connect() -> None:
             _LOGGER.debug("websocket connection established")
             self.connected = True
 
         @sio.event
-        async def on_data(data):
-            _LOGGER.error("message received with %s", data)
-            try:
-                decoded: dict[str, Any] = orjson.loads(data)
-            except orjson.JSONDecodeError:
-                _LOGGER.error("Failed to parse data: %s", data)
-                return
+        def data(data: dict[str, Any]) -> None:
+            _LOGGER.debug("message received with %s", data)
             now = datetime.now(UTC)
-            device_id = decoded.get("lockID")
+            device_id = data.get("lockID")
             for listener in self._listeners:
                 listener(device_id, now, data)
 
         @sio.event
-        async def disconnect():
+        def disconnect() -> None:
             _LOGGER.debug("disconnected from server")
-            self._access_token = await self.gateway.async_get_access_token()
+            self._refresh_task = create_eager_task(self._refresh_access_token())
             self.connected = False
 
         await sio.connect(
@@ -85,7 +85,7 @@ class SocketIORunner:
         api = self.gateway.api
         sub_info = await api.async_add_websocket_subscription(self._access_token)
         self._subscriber_id = sub_info["subscriberID"]
-        socketio_task = asyncio.create_task(self._run())
+        socketio_task = create_eager_task(self._run())
 
         async def _async_unsub():
             _LOGGER.debug("Shutting down socketio")
