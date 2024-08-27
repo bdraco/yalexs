@@ -84,7 +84,9 @@ class SocketIORunner:
         self._access_token = await self.gateway.async_get_access_token()
         api = self.gateway.api
         sub_info = await api.async_add_websocket_subscription(self._access_token)
+        _LOGGER.debug("sub_info: %s", sub_info)
         self._subscriber_id = sub_info["subscriberID"]
+        _LOGGER.debug("subscriberID: %s", self._subscriber_id)
         socketio_task = create_eager_task(self._run())
 
         async def _async_unsub():
