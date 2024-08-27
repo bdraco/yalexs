@@ -2,6 +2,13 @@
 
 
 
+## v8.5.0 (2024-08-27)
+
+### Feature
+
+* feat: add socketio support for websockets (#165) ([`f260c82`](https://github.com/bdraco/yalexs/commit/f260c82d9c7c396fcca584ebfa51e5f808a802c3))
+
+
 ## v8.4.2 (2024-08-25)
 
 ### Fix
