@@ -2,6 +2,13 @@
 
 
 
+## v8.5.3 (2024-08-27)
+
+### Fix
+
+* fix: doorbell image retry with yale global brand (#172) ([`4a41de5`](https://github.com/bdraco/yalexs/commit/4a41de5b09fd1381d9c1e76140d5138f859f15b1))
+
+
 ## v8.5.2 (2024-08-27)
 
 ### Fix
