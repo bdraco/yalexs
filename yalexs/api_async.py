@@ -472,9 +472,12 @@ class ApiAsync(ApiCommon):
                     _obscure_headers(response.headers),
                     await response.read(),
                 )
-            if response.status == 429:
+            if response.status in (429, 502):
+                # 429 - rate limited
+                # 502 - bad gateway
                 _LOGGER.debug(
-                    "August sent a 429 (attempt: %d), sleeping and trying again",
+                    "API sent a %s (attempt: %d), sleeping and trying again",
+                    response.status,
                     attempts,
                 )
                 await asyncio.sleep(API_RETRY_TIME)

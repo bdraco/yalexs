@@ -8,7 +8,7 @@ from collections import defaultdict
 from time import monotonic
 
 from aiohttp import ClientError
-
+from ..exceptions import AugustApiAIOHTTPError
 from ..activity import Activity, ActivityType
 from ..api_async import ApiAsync
 from ..backports.tasks import create_eager_task
@@ -197,7 +197,7 @@ class ActivityStream(SubscriberMixin):
                 house_id,
                 limit=limit,
             )
-        except ClientError as ex:
+        except (AugustApiAIOHTTPError, ClientError) as ex:
             _LOGGER.error(
                 "Request error trying to retrieve activity for house id %s: %s",
                 house_id,

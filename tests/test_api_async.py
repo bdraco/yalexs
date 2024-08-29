@@ -55,6 +55,12 @@ def utc_of(year, month, day, hour, minute, second, microsecond):
     return datetime(year, month, day, hour, minute, second, microsecond, tzinfo=tzutc())
 
 
+@pytest.fixture
+def mock_aioresponse():
+    with aioresponses() as m:
+        yield m
+
+
 class TestApiAsync(aiounittest.AsyncTestCase):
     @aioresponses()
     async def test_async_get_doorbells(self, mock):
@@ -1267,3 +1273,39 @@ class MockedResponse(ClientResponse):
     @property
     def status(self):
         return self._mocked_status
+
+
+@pytest.mark.parametrize(
+    "status_code",
+    [502, 429],
+)
+@pytest.mark.asyncio
+async def test_retry_502_429(status_code: int, mock_aioresponse: aioresponses) -> None:
+    last_args = {}
+    attempt = 0
+
+    def response_callback(url, **kwargs):
+        nonlocal attempt
+        attempt += 1
+        last_args.update(kwargs)
+        if attempt == 1:
+            return CallbackResult(status=status_code, body="{}")
+        return CallbackResult(status=200, body="{}")
+
+    for _ in range(2):
+        mock_aioresponse.post(
+            ApiCommon(DEFAULT_BRAND).get_brand_url(
+                API_VALIDATE_VERIFICATION_CODE_URLS["email"]
+            ),
+            callback=response_callback,
+        )
+
+    api = ApiAsync(ClientSession())
+    with patch("yalexs.api_async.API_EXCEPTION_RETRY_TIME", 0), patch(
+        "yalexs.api_async.API_RETRY_ATTEMPTS", 2
+    ), patch("yalexs.api_async.asyncio.sleep"):
+        await api.async_validate_verification_code(
+            ACCESS_TOKEN, "email", "emailaddress", 123456
+        )
+    assert last_args["json"] == {"code": "123456", "email": "emailaddress"}
+    assert attempt == 2
