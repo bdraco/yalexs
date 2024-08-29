@@ -197,15 +197,7 @@ class ActivityStream(SubscriberMixin):
                 house_id,
                 limit=limit,
             )
-        except AugustApiAIOHTTPError as ex:
-            _LOGGER.debug(
-                "Request error trying to retrieve activity for house id %s: %s",
-                house_id,
-                ex,
-            )
-            # Make sure we process the next house if one of them fails
-            return
-        except ClientError as ex:
+        except (AugustApiAIOHTTPError, ClientError) as ex:
             _LOGGER.error(
                 "Request error trying to retrieve activity for house id %s: %s",
                 house_id,
