@@ -1292,18 +1292,14 @@ async def test_retry_502_429(status_code: int, mock_aioresponse: aioresponses) -
             return CallbackResult(status=status_code, body="{}")
         return CallbackResult(status=200, body="{}")
 
-    mock_aioresponse.post(
-        ApiCommon(DEFAULT_BRAND).get_brand_url(
-            API_VALIDATE_VERIFICATION_CODE_URLS["email"]
-        ),
-        callback=response_callback,
-    )
-    mock_aioresponse.post(
-        ApiCommon(DEFAULT_BRAND).get_brand_url(
-            API_VALIDATE_VERIFICATION_CODE_URLS["email"]
-        ),
-        callback=response_callback,
-    )
+    for _ in range(2):
+        mock_aioresponse.post(
+            ApiCommon(DEFAULT_BRAND).get_brand_url(
+                API_VALIDATE_VERIFICATION_CODE_URLS["email"]
+            ),
+            callback=response_callback,
+        )
+
     api = ApiAsync(ClientSession())
     with patch("yalexs.api_async.API_EXCEPTION_RETRY_TIME", 0), patch(
         "yalexs.api_async.API_RETRY_ATTEMPTS", 2
