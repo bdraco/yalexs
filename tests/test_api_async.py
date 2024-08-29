@@ -1308,3 +1308,4 @@ async def test_retry_502_429(status_code: int, mock_aioresponse: aioresponses) -
             ACCESS_TOKEN, "email", "emailaddress", 123456
         )
     assert last_args["json"] == {"code": "123456", "email": "emailaddress"}
+    assert attempt == 2
