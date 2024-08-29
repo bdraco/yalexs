@@ -2,6 +2,13 @@
 
 
 
+## v8.5.5 (2024-08-29)
+
+### Fix
+
+* fix: improve handling of 502 errors (#174) ([`e19264b`](https://github.com/bdraco/yalexs/commit/e19264bd5aa7e8e51fdde1337c38c917918f7f96))
+
+
 ## v8.5.4 (2024-08-27)
 
 ### Fix
