@@ -1288,7 +1288,7 @@ async def test_retry_502_429(status_code: int, mock_aioresponse: aioresponses) -
         nonlocal attempt
         attempt += 1
         last_args.update(kwargs)
-        if attempt == 2:
+        if attempt == 1:
             return CallbackResult(status=status_code, body="{}")
         return CallbackResult(status=200, body="{}")
 
