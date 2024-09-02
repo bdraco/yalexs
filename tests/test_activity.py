@@ -515,34 +515,34 @@ class TestActivityApiAsync(aiounittest.AsyncTestCase):
         manual_lock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("linked_unlock_activity.json"))
         )
-        assert manual_lock_activity.operated_by == "Manual Lock"
+        assert manual_lock_activity.operated_by == "Linked Unlock"
         assert manual_lock_activity.operated_remote is False
         assert manual_lock_activity.operated_keypad is False
-        assert manual_lock_activity.operated_manual is True
+        assert manual_lock_activity.operated_manual is False
         assert manual_lock_activity.operated_tag is False
         assert (
             manual_lock_activity.operator_image_url
-            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png"
+            == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/linked_unlock@3x.png"
         )
         assert (
             manual_lock_activity.operator_thumbnail_url
-            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png"
+            == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/linked_unlock@3x.png"
         )
 
     def test_linked_lock_activity_v4(self):
         manual_lock_activity = LockOperationActivity(
             SOURCE_LOG, json.loads(load_fixture("linked_lock_activity.json"))
         )
-        assert manual_lock_activity.operated_by == "Manual Lock"
+        assert manual_lock_activity.operated_by == "Linked Lock"
         assert manual_lock_activity.operated_remote is False
         assert manual_lock_activity.operated_keypad is False
-        assert manual_lock_activity.operated_manual is True
+        assert manual_lock_activity.operated_manual is False
         assert manual_lock_activity.operated_tag is False
         assert (
             manual_lock_activity.operator_image_url
-            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png"
+            == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/linked_lock@3x.png"
         )
         assert (
             manual_lock_activity.operator_thumbnail_url
-            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png"
+            == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/linked_lock@3x.png"
         )
