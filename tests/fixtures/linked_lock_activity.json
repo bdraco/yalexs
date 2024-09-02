@@ -1,0 +1,9 @@
+{
+  "id": "0af6bd11-621b-4e32-b0ea-1d13804d31e7",
+  "timestamp": 1725061953081,
+  "icon": "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/linked_lock@3x.png",
+  "action": "linked_lock",
+  "deviceID": "X",
+  "deviceType": "lock",
+  "title": "<b>Front Door</b> locked by linked operation."
+}
