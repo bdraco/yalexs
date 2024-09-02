@@ -8,6 +8,8 @@ from aioresponses import aioresponses
 
 from yalexs.activity import (
     ACTION_BRIDGE_OFFLINE,
+    ACTION_LINKED_LOCK,
+    ACTION_LINKED_UNLOCK,
     ACTION_BRIDGE_ONLINE,
     ACTION_DOOR_CLOSE_2,
     ACTION_DOOR_CLOSED,
@@ -140,6 +142,8 @@ class TestActivity(unittest.TestCase):
                 ACTION_LOCK_MANUAL_LOCK,
                 ACTION_LOCK_MANUAL_UNLATCH,
                 ACTION_LOCK_MANUAL_UNLOCK,
+                ACTION_LINKED_LOCK,
+                ACTION_LINKED_UNLOCK,
             ],
         )
         self.assertCountEqual(
@@ -506,3 +510,39 @@ class TestActivityApiAsync(aiounittest.AsyncTestCase):
         )
         assert manual_unlock_activity.source == SOURCE_WEBSOCKET
         assert manual_unlock_activity.was_pushed is True
+
+    def test_linked_unlock_activity_v4(self):
+        manual_lock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("linked_unlock_activity.json"))
+        )
+        assert manual_lock_activity.operated_by == "Manual Lock"
+        assert manual_lock_activity.operated_remote is False
+        assert manual_lock_activity.operated_keypad is False
+        assert manual_lock_activity.operated_manual is True
+        assert manual_lock_activity.operated_tag is False
+        assert (
+            manual_lock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png"
+        )
+        assert (
+            manual_lock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png"
+        )
+
+    def test_linked_lock_activity_v4(self):
+        manual_lock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("linked_lock_activity.json"))
+        )
+        assert manual_lock_activity.operated_by == "Manual Lock"
+        assert manual_lock_activity.operated_remote is False
+        assert manual_lock_activity.operated_keypad is False
+        assert manual_lock_activity.operated_manual is True
+        assert manual_lock_activity.operated_tag is False
+        assert (
+            manual_lock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png"
+        )
+        assert (
+            manual_lock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/manual_lock@3x.png"
+        )

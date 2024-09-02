@@ -1,0 +1,9 @@
+{
+  "id": "74b5a4b6-8c89-4aac-8eb5-38b0350f4164",
+  "timestamp": 1725062446640,
+  "icon": "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/linked_unlock@3x.png",
+  "action": "linked_unlock",
+  "deviceID": "x",
+  "deviceType": "lock",
+  "title": "<b>Front Door</b> unlocked by linked operation."
+}
