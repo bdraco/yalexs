@@ -2,6 +2,13 @@
 
 
 
+## v8.6.0 (2024-09-02)
+
+### Feature
+
+* feat: add support for linked lock activities (#177) ([`5eed87b`](https://github.com/bdraco/yalexs/commit/5eed87bda1f6fa0f1f422105a265f8d8af884b83))
+
+
 ## v8.5.5 (2024-08-29)
 
 ### Fix
