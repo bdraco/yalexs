@@ -2,6 +2,13 @@
 
 
 
+## v8.6.2 (2024-09-03)
+
+### Fix
+
+* fix: remove yale global pubnub tokens (#180) ([`f715ae1`](https://github.com/bdraco/yalexs/commit/f715ae1d8abb878f5707017b6da66f4f91423f89))
+
+
 ## v8.6.1 (2024-09-03)
 
 ### Fix
