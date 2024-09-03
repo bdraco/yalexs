@@ -203,7 +203,8 @@ class YaleXSData(SubscriberMixin):
         """Return the py-august LockDetail or DoorbellDetail object for a device."""
         return self._device_detail_by_id[device_id]
 
-    async def _async_refresh(self, time: datetime) -> None:
+    async def _async_refresh(self) -> None:
+        """Refresh data."""
         if self._shutdown:
             return
         await self._async_refresh_device_detail_by_ids(self._subscriptions.keys())
