@@ -1,5 +1,6 @@
 """Constants."""
 
+from __future__ import annotations
 from .backports.enum import StrEnum
 from dataclasses import dataclass
 
