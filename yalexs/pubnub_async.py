@@ -14,7 +14,7 @@ from pubnub.models.consumer.pubsub import PNMessageResult
 from pubnub.pnconfiguration import PNConfiguration
 from pubnub.pubnub_asyncio import AsyncioSubscriptionManager, PubNubAsyncio
 
-from .const import PUBNUB_TOKENS, Brand
+from .const import BRAND_CONFIG, Brand
 from .device import DeviceDetail
 
 _LOGGER = logging.getLogger(__name__)
@@ -113,10 +113,10 @@ class AugustPubNub(SubscribeCallback):
         self, user_uuid: str, brand: Brand = Brand.AUGUST
     ) -> Callable[[], Coroutine[Any, Any, None]]:
         """Run the pubnub loop."""
-        tokens = PUBNUB_TOKENS[brand]
+        brand_config = BRAND_CONFIG[brand]
         pnconfig = PNConfiguration()
-        pnconfig.subscribe_key = tokens["subscribe"]
-        pnconfig.publish_key = tokens["publish"]
+        pnconfig.subscribe_key = brand_config.pubnub_subscribe_token
+        pnconfig.publish_key = brand_config.pubnub_publish_token
         pnconfig.uuid = f"pn-{str(user_uuid).upper()}"
         pnconfig.reconnect_policy = PNReconnectionPolicy.EXPONENTIAL
         pubnub = PubNubAsyncio(pnconfig)
