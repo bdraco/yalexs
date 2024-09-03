@@ -88,7 +88,7 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         # having the API key in the code because it must
         # run on the user's device
         api_key="d16a1029-d823-4b55-a4ce-a769a9b56f0e",
-        supports_doorbells=False,
+        supports_doorbells=True,
         require_oauth=True,
         base_url="https://api.aaecosystem.com",
         configuration_url="https://account.aaecosystem.com",
