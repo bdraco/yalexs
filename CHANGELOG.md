@@ -2,6 +2,13 @@
 
 
 
+## v8.6.3 (2024-09-03)
+
+### Fix
+
+* fix: battery state not refreshing (#181) ([`78cf869`](https://github.com/bdraco/yalexs/commit/78cf869c5d0a184e0f58aa5ba7ba76adda99116b))
+
+
 ## v8.6.2 (2024-09-03)
 
 ### Fix
