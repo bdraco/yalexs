@@ -2,6 +2,13 @@
 
 
 
+## v8.6.1 (2024-09-03)
+
+### Fix
+
+* fix: restore doorbell support for yale global brand (#179) ([`219d176`](https://github.com/bdraco/yalexs/commit/219d176b5f8e9c0f414f19e49a08f1f679c7b2a7))
+
+
 ## v8.6.0 (2024-09-02)
 
 ### Feature
