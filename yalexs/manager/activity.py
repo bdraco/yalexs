@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections import defaultdict
-from time import monotonic
 
 from aiohttp import ClientError
 from ..exceptions import AugustApiAIOHTTPError
@@ -28,14 +27,13 @@ INITIAL_LOCK_RESYNC_TIME = 60
 
 # If there is a storm of activity (ie lock, unlock, door open, door close, etc)
 # we want to debounce the updates so we don't hammer the activity api too much.
-ACTIVITY_DEBOUNCE_COOLDOWN = 4
+ACTIVITY_DEBOUNCE_COOLDOWN = 4.0
 
+# How long we expect it to take between when we get a WebSocket/PubNub
+# message and the activity API to be updated.
+UPDATE_SOON = 3.0
 
-def _async_cancel_future_scheduled_updates(cancels: list[asyncio.TimerHandle]) -> None:
-    """Cancel future scheduled updates."""
-    for cancel in cancels:
-        cancel.cancel()
-    cancels.clear()
+NEVER_TIME = -86400.0
 
 
 class ActivityStream(SubscriberMixin):
@@ -50,7 +48,7 @@ class ActivityStream(SubscriberMixin):
     ) -> None:
         """Init activity stream object."""
         super().__init__(ACTIVITY_UPDATE_INTERVAL)
-        self._schedule_updates: dict[str, list[asyncio.TimerHandle]] = defaultdict(list)
+        self._schedule_updates: dict[str, asyncio.TimerHandle] = {}
         self._august_gateway = august_gateway
         self._api = api
         self._house_ids = house_ids
@@ -60,13 +58,17 @@ class ActivityStream(SubscriberMixin):
         self._did_first_update = False
         self.push = push
         self._update_tasks: dict[str, asyncio.Task] = {}
+        self._last_update_time: dict[str, float] = {
+            house_id: NEVER_TIME for house_id in house_ids
+        }
         self._start_time: float | None = None
+        self._pending_updates: dict[str, int] = {house_id: 1 for house_id in house_ids}
         self._loop = asyncio.get_running_loop()
         self._shutdown: bool = False
 
     async def async_setup(self) -> None:
         """Token refresh check and catch up the activity stream."""
-        self._start_time = monotonic()
+        self._start_time = self._loop.time()
         await self._async_refresh()
         await self._async_first_refresh()
         self._did_first_update = True
@@ -77,12 +79,18 @@ class ActivityStream(SubscriberMixin):
         for task in self._update_tasks.values():
             task.cancel()
         self._update_tasks.clear()
-        self._async_cancel_future_updates()
+        self._async_cancel_all_future_updates()
 
-    def _async_cancel_future_updates(self) -> None:
+    def _async_cancel_future_updates(self, house_id: str) -> None:
         """Cancel future updates."""
-        for cancels in self._schedule_updates.values():
-            _async_cancel_future_scheduled_updates(cancels)
+        if handle := self._schedule_updates.pop(house_id, None):
+            handle.cancel()
+        self._pending_updates[house_id] = 0
+
+    def _async_cancel_all_future_updates(self) -> None:
+        """Cancel all future updates."""
+        for house_id in self._house_ids:
+            self._async_cancel_future_updates(house_id)
 
     def get_latest_device_activity(
         self, device_id: str, activity_types: set[ActivityType]
@@ -115,7 +123,6 @@ class ActivityStream(SubscriberMixin):
         # This is the only place we refresh the api token
         if self._shutdown:
             return
-        self._async_cancel_future_updates()
         await self._august_gateway.async_refresh_access_token_if_needed()
         if not self.push_updates_connected:
             _LOGGER.debug("Push updates are not connected, data will be stale")
@@ -128,32 +135,85 @@ class ActivityStream(SubscriberMixin):
         _LOGGER.debug("Start retrieving device activities")
         # Await in sequence to avoid hammering the API
         for house_id in self._house_ids:
-            if (
-                current_task := self._update_tasks.get(house_id)
-            ) and not current_task.done():
-                continue
-            await self._async_update_house_id(house_id)
+            if not self._update_running(house_id):
+                await self._create_update_task(house_id)
 
-    def _async_future_update(self, house_id: str) -> None:
-        """Update the activity stream from August in the future."""
-        if self._shutdown:
-            return
-        if (
-            current_task := self._update_tasks.get(house_id)
-        ) and not current_task.done():
-            self._loop.call_later(
-                ACTIVITY_DEBOUNCE_COOLDOWN, self._async_future_update, house_id
-            )
-            return
+    def _create_update_task(self, house_id: str) -> asyncio.Task:
+        """Create an update task."""
+        if self._update_running(house_id):
+            raise RuntimeError("Update already running")
         self._update_tasks[house_id] = create_eager_task(
-            self._async_update_house_id(house_id), loop=self._loop
+            self._async_execute_schedule_update(house_id), loop=self._loop
+        )
+        return self._update_tasks[house_id]
+
+    def _update_running(self, house_id: str) -> bool:
+        """Return if an update is running for the house id."""
+        return bool(
+            (current_task := self._update_tasks.get(house_id))
+            and not current_task.done()
         )
 
-    def async_schedule_house_id_refresh(self, house_id: str) -> None:
-        """Update for a house activities now and once in the future."""
-        self._async_cancel_future_updates()
-        self._async_future_update(house_id)
-        # Schedule two updates past the debounce time
+    def _updated_recently(self, house_id: str, now: float) -> bool:
+        """Return if the house id was updated recently."""
+        return self._last_update_time[house_id] + ACTIVITY_DEBOUNCE_COOLDOWN > now
+
+    def _async_schedule_update_callback(self, house_id: str) -> None:
+        """Schedule an update callback."""
+        self._schedule_updates.pop(house_id, None)
+        now = self._loop.time()
+        if delay := self._determine_update_delay(house_id, now, from_callback=True):
+            self._async_schedule_update(house_id, now, delay)
+            return
+        self._create_update_task(house_id)
+
+    def _determine_update_delay(
+        self, house_id: str, now: float, from_callback: bool = False
+    ) -> float:
+        """Return if we should delay the update."""
+        if self._updated_recently(house_id, now) or self._update_running(house_id):
+            return ACTIVITY_DEBOUNCE_COOLDOWN
+        if not self._initial_resync_complete(now):
+            return INITIAL_LOCK_RESYNC_TIME
+        return 0 if from_callback else UPDATE_SOON
+
+    def _async_schedule_update(self, house_id: str, now: float, delay: float) -> None:
+        """Update the activity stream now or in the future if its too soon."""
+        if self._shutdown or self._pending_updates[house_id] <= 0:
+            return
+        _LOGGER.debug(
+            "Scheduling update for house id %s in %s seconds", house_id, delay
+        )
+        # Do not update right away because the activities API is
+        # likely not updated yet and we will just get the same
+        # activities again. Instead, schedule the update for
+        # the future.
+        if scheduled := self._schedule_updates.pop(house_id, None):
+            scheduled.cancel()
+        self._schedule_updates[house_id] = self._loop.call_at(
+            now + delay, self._async_schedule_update_callback, house_id
+        )
+
+    async def _async_execute_schedule_update(self, house_id: str) -> None:
+        """Execute a scheduled update."""
+        self._pending_updates[house_id] -= 1
+        self._last_update_time[house_id] = self._loop.time()
+        await self._async_update_house_id(house_id)
+        if (pending_count := self._pending_updates[house_id]) > 0:
+            _LOGGER.debug(
+                "There are %s pending updates for house id %s", pending_count, house_id
+            )
+            now = self._loop.time()
+            delay = self._determine_update_delay(house_id, now)
+            self._async_schedule_update(house_id, now, delay)
+
+    def _initial_resync_complete(self, now: float) -> bool:
+        """Return if the initial resync is complete."""
+        return self._start_time and now - self._start_time > INITIAL_LOCK_RESYNC_TIME
+
+    def _set_update_count(self, house_id: str, now: float) -> None:
+        """Set the update count."""
+        # Schedule one update soon and two updates past the debounce time
         # to ensure we catch the case where the activity
         # api does not update right away and we need to poll
         # it again. Sometimes the lock operator or a doorbell
@@ -161,41 +221,48 @@ class ActivityStream(SubscriberMixin):
         # Only do additional polls if we are past
         # the initial lock resync time to avoid a storm
         # of activity at setup.
-        if (
-            not self._start_time
-            or monotonic() - self._start_time < INITIAL_LOCK_RESYNC_TIME
-        ):
-            _LOGGER.debug(
-                "Skipping additional updates due to ongoing initial lock resync time"
-            )
-            return
+        if not self._initial_resync_complete(now):
+            # No resync yet, above spamming the API
+            update_count = 1
+        elif self._updated_recently(house_id, now) or self._update_running(house_id):
+            # Update running or already updated recently
+            # no point in doing 3 updates as we will
+            # delay anyways
+            update_count = 2
+        else:
+            # Not updated recently, be sure we do 3 updates
+            # so we do not miss any activity
+            update_count = 3
+        self._pending_updates[house_id] = update_count
 
-        _LOGGER.debug("Scheduling additional updates for house id %s", house_id)
-        self._schedule_updates[house_id].extend(
-            self._loop.call_later(
-                (step * ACTIVITY_DEBOUNCE_COOLDOWN) + 0.1,
-                self._async_future_update,
-                house_id,
-            )
-            for step in (1, 2)
-        )
+    def async_schedule_house_id_refresh(self, house_id: str) -> None:
+        """Update for a house activities now and once in the future."""
+        self._async_cancel_future_updates(house_id)
+        now = self._loop.time()
+        self._set_update_count(house_id, now)
+        delay = self._determine_update_delay(house_id, now)
+        self._async_schedule_update(house_id, now, delay)
+
+    def _activity_limit(self) -> bool:
+        """Return if the activity limit has been reached."""
+        if self._did_first_update:
+            return ACTIVITY_STREAM_FETCH_LIMIT
+        return ACTIVITY_CATCH_UP_FETCH_LIMIT
 
     async def _async_update_house_id(self, house_id: str) -> None:
-        """Update device activities for a house."""
+        """Update device activities for a house.
+
+        Must only be called from _async_execute_schedule_update
+        """
         if self._shutdown:
             return
-
-        if self._did_first_update:
-            limit = ACTIVITY_STREAM_FETCH_LIMIT
-        else:
-            limit = ACTIVITY_CATCH_UP_FETCH_LIMIT
 
         _LOGGER.debug("Updating device activity for house id %s", house_id)
         try:
             activities = await self._api.async_get_house_activities(
                 await self._august_gateway.async_get_access_token(),
                 house_id,
-                limit=limit,
+                limit=self._activity_limit(),
             )
         except (AugustApiAIOHTTPError, ClientError) as ex:
             _LOGGER.error(

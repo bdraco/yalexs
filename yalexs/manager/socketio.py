@@ -6,8 +6,14 @@ import asyncio
 from typing import Any, Callable, TYPE_CHECKING
 from collections.abc import Coroutine
 from contextlib import suppress
-from datetime import datetime, UTC
 from ..backports.tasks import create_eager_task
+import sys
+from datetime import timezone, datetime
+
+if sys.version_info < (3, 11):
+    UTC = timezone.utc
+else:
+    from datetime import UTC
 
 _LOGGER = logging.getLogger(__name__)
 
