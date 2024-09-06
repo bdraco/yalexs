@@ -208,26 +208,18 @@ class ActivityStream(SubscriberMixin):
         initial_resync_complete = self._initial_resync_complete(now)
         updated_recently = self._updated_recently(house_id, now)
         update_running = self._update_running(house_id)
-        import pprint
-
         if not initial_resync_complete:
+            # No resync yet, above spamming the API
             update_count = 1
         elif updated_recently or update_running:
+            # Update running or already updated recently
+            # no point in doing 3 updates as we will
+            # delay anyways
             update_count = 2
         else:
+            # Not updated recently, be sure we do 3 updates
+            # so we do not miss any activity
             update_count = 3
-        pprint.pprint(
-            [
-                "async_schedule_house_id_refresh",
-                house_id,
-                initial_resync_complete,
-                updated_recently,
-                update_running,
-                "update_count",
-                update_count,
-            ]
-        )
-
         self._pending_updates[house_id] = update_count
         # Schedule one update now and two updates past the debounce time
         # to ensure we catch the case where the activity
