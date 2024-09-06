@@ -8,13 +8,12 @@ from collections.abc import Coroutine
 from contextlib import suppress
 from ..backports.tasks import create_eager_task
 import sys
+from datetime import timezone, datetime
 
 if sys.version_info < (3, 11):
-    from datetime.timezone import utc as UTC
+    UTC = timezone.utc
 else:
     from datetime import UTC
-
-from datetime import datetime
 
 _LOGGER = logging.getLogger(__name__)
 
