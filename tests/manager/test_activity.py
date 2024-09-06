@@ -1,3 +1,4 @@
+from __future__ import annotations
 from yalexs.manager.activity import (
     ActivityStream,
     ACTIVITY_DEBOUNCE_COOLDOWN,
