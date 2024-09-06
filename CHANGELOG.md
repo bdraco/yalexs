@@ -2,6 +2,13 @@
 
 
 
+## v8.6.4 (2024-09-06)
+
+### Fix
+
+* fix: debounce activity updates to handle rapid websocket updates (#182) ([`bf3b0a1`](https://github.com/bdraco/yalexs/commit/bf3b0a141f130dc5c32d590b1fbdcf28250cc887))
+
+
 ## v8.6.3 (2024-09-03)
 
 ### Fix
