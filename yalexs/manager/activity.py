@@ -119,7 +119,6 @@ class ActivityStream(SubscriberMixin):
         # This is the only place we refresh the api token
         if self._shutdown:
             return
-        self._async_cancel_all_future_updates()
         await self._august_gateway.async_refresh_access_token_if_needed()
         if not self.push_updates_connected:
             _LOGGER.debug("Push updates are not connected, data will be stale")
@@ -207,6 +206,8 @@ class ActivityStream(SubscriberMixin):
 
     async def _async_execute_schedule_update(self, house_id: str) -> None:
         """Execute a scheduled update."""
+        self._pending_updates[house_id] -= 1
+        self._last_update_time[house_id] = self._loop.time()
         await self._async_update_house_id(house_id)
         if (pending_count := self._pending_updates[house_id]) > 0:
             _LOGGER.debug(
@@ -256,10 +257,10 @@ class ActivityStream(SubscriberMixin):
         return ACTIVITY_CATCH_UP_FETCH_LIMIT
 
     async def _async_update_house_id(self, house_id: str) -> None:
-        """Update device activities for a house."""
-        self._pending_updates[house_id] -= 1
-        self._last_update_time[house_id] = self._loop.time()
+        """Update device activities for a house.
 
+        Must only be called from _async_execute_schedule_update
+        """
         if self._shutdown:
             return
 
