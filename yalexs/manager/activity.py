@@ -29,6 +29,8 @@ INITIAL_LOCK_RESYNC_TIME = 60
 # we want to debounce the updates so we don't hammer the activity api too much.
 ACTIVITY_DEBOUNCE_COOLDOWN = 4
 
+UPDATE_SOON = 1.5
+
 NEVER_TIME = -86400.0
 
 
@@ -158,19 +160,20 @@ class ActivityStream(SubscriberMixin):
         """Schedule an update callback."""
         self._schedule_updates.pop(house_id, None)
         now = self._loop.time()
-        delay = self._determine_update_delay(house_id, now)
-        if delay > 1:
+        if delay := self._determine_update_delay(house_id, now, from_callback=True):
             self._async_schedule_update(house_id, now, delay)
             return
         self._create_update_task(house_id)
 
-    def _determine_update_delay(self, house_id: str, now: float) -> float:
+    def _determine_update_delay(
+        self, house_id: str, now: float, from_callback: bool = False
+    ) -> float:
         """Return if we should delay the update."""
         if self._updated_recently(house_id, now) or self._update_running(house_id):
             return ACTIVITY_DEBOUNCE_COOLDOWN
         if not self._initial_resync_complete(now):
             return INITIAL_LOCK_RESYNC_TIME
-        return 1
+        return 0 if from_callback else UPDATE_SOON
 
     def _async_schedule_update(self, house_id: str, now: float, delay: float) -> None:
         """Update the activity stream now or in the future if its too soon."""
@@ -208,7 +211,7 @@ class ActivityStream(SubscriberMixin):
 
     def _set_update_count(self, house_id: str, now: float) -> None:
         """Set the update count."""
-        # Schedule one update now and two updates past the debounce time
+        # Schedule one update soon and two updates past the debounce time
         # to ensure we catch the case where the activity
         # api does not update right away and we need to poll
         # it again. Sometimes the lock operator or a doorbell

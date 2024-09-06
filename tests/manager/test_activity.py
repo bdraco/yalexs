@@ -3,6 +3,7 @@ from yalexs.manager.activity import (
     ActivityStream,
     ACTIVITY_DEBOUNCE_COOLDOWN,
     INITIAL_LOCK_RESYNC_TIME,
+    UPDATE_SOON,
 )
 from yalexs.api_async import ApiAsync
 from yalexs.manager.gateway import Gateway
@@ -42,7 +43,7 @@ async def test_activity_stream_debounce(freezer: FrozenDateTimeFactory) -> None:
     activity.async_schedule_house_id_refresh("myhouseid")
     await asyncio.sleep(0)
     assert async_get_house_activities.call_count == 0
-    freezer.tick(1 + 0.1)
+    freezer.tick(UPDATE_SOON)
     fire_time_changed()
     await asyncio.sleep(0)
     assert async_get_house_activities.call_count == 1
@@ -109,7 +110,7 @@ async def test_activity_stream_debounce(freezer: FrozenDateTimeFactory) -> None:
     await asyncio.sleep(0)
     assert async_get_house_activities.call_count == 6
     assert activity._pending_updates["myhouseid"] == 3
-    freezer.tick(1)
+    freezer.tick(UPDATE_SOON)
     fire_time_changed()
     await asyncio.sleep(0)
     assert async_get_house_activities.call_count == 7
@@ -162,12 +163,14 @@ async def test_activity_stream_debounce_during_init(
     assert async_get_house_activities.call_count == 1
 
     activity.async_schedule_house_id_refresh("myhouseid")
+    assert activity._pending_updates["myhouseid"] == 1
     freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
     fire_time_changed()
     await asyncio.sleep(0)
     assert async_get_house_activities.call_count == 1
 
     activity.async_schedule_house_id_refresh("myhouseid")
+    assert activity._pending_updates["myhouseid"] == 1
     freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
     fire_time_changed()
     await asyncio.sleep(0)
