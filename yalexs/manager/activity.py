@@ -151,7 +151,7 @@ class ActivityStream(SubscriberMixin):
         ) and not current_task.done()
         if updated_recently or update_running:
             next_time = now + ACTIVITY_DEBOUNCE_COOLDOWN
-            self._schedule_updates[house_id].extend(
+            self._schedule_updates[house_id].append(
                 self._loop.call_at(next_time, self._async_future_update, house_id)
             )
             return False
