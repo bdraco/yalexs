@@ -27,9 +27,11 @@ INITIAL_LOCK_RESYNC_TIME = 60
 
 # If there is a storm of activity (ie lock, unlock, door open, door close, etc)
 # we want to debounce the updates so we don't hammer the activity api too much.
-ACTIVITY_DEBOUNCE_COOLDOWN = 4
+ACTIVITY_DEBOUNCE_COOLDOWN = 4.0
 
-UPDATE_SOON = 1.5
+# How long we expect it to take between when we get a WebSocket/PubNub
+# message and the activity API to be updated.
+UPDATE_SOON = 2.0
 
 NEVER_TIME = -86400.0
 
