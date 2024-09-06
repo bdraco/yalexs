@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections import defaultdict
-from time import monotonic
 
 from aiohttp import ClientError
 from ..exceptions import AugustApiAIOHTTPError
@@ -29,6 +28,8 @@ INITIAL_LOCK_RESYNC_TIME = 60
 # If there is a storm of activity (ie lock, unlock, door open, door close, etc)
 # we want to debounce the updates so we don't hammer the activity api too much.
 ACTIVITY_DEBOUNCE_COOLDOWN = 4
+
+NEVER_TIME = -86400.0
 
 
 def _async_cancel_future_scheduled_updates(cancels: list[asyncio.TimerHandle]) -> None:
@@ -60,13 +61,16 @@ class ActivityStream(SubscriberMixin):
         self._did_first_update = False
         self.push = push
         self._update_tasks: dict[str, asyncio.Task] = {}
+        self._last_update_time: dict[str, float] = {
+            house_id: NEVER_TIME for house_id in house_ids
+        }
         self._start_time: float | None = None
         self._loop = asyncio.get_running_loop()
         self._shutdown: bool = False
 
     async def async_setup(self) -> None:
         """Token refresh check and catch up the activity stream."""
-        self._start_time = monotonic()
+        self._start_time = self._loop.time()
         await self._async_refresh()
         await self._async_first_refresh()
         self._did_first_update = True
@@ -134,25 +138,32 @@ class ActivityStream(SubscriberMixin):
                 continue
             await self._async_update_house_id(house_id)
 
-    def _async_future_update(self, house_id: str) -> None:
+    def _async_future_update(self, house_id: str) -> bool:
         """Update the activity stream from August in the future."""
         if self._shutdown:
-            return
-        if (
+            return False
+        now = self._loop.time()
+        updated_recently = (
+            self._last_update_time[house_id] + ACTIVITY_DEBOUNCE_COOLDOWN > now
+        )
+        update_running = (
             current_task := self._update_tasks.get(house_id)
-        ) and not current_task.done():
-            self._loop.call_later(
-                ACTIVITY_DEBOUNCE_COOLDOWN, self._async_future_update, house_id
+        ) and not current_task.done()
+        if updated_recently or update_running:
+            next_time = now + ACTIVITY_DEBOUNCE_COOLDOWN
+            self._schedule_updates[house_id].extend(
+                self._loop.call_at(next_time, self._async_future_update, house_id)
             )
-            return
+            return False
         self._update_tasks[house_id] = create_eager_task(
             self._async_update_house_id(house_id), loop=self._loop
         )
+        return True
 
     def async_schedule_house_id_refresh(self, house_id: str) -> None:
         """Update for a house activities now and once in the future."""
         self._async_cancel_future_updates()
-        self._async_future_update(house_id)
+        update_in_progress = self._async_future_update(house_id)
         # Schedule two updates past the debounce time
         # to ensure we catch the case where the activity
         # api does not update right away and we need to poll
@@ -163,17 +174,20 @@ class ActivityStream(SubscriberMixin):
         # of activity at setup.
         if (
             not self._start_time
-            or monotonic() - self._start_time < INITIAL_LOCK_RESYNC_TIME
+            or self._loop.time() - self._start_time < INITIAL_LOCK_RESYNC_TIME
         ):
             _LOGGER.debug(
                 "Skipping additional updates due to ongoing initial lock resync time"
             )
             return
 
+        if not update_in_progress:
+            return
         _LOGGER.debug("Scheduling additional updates for house id %s", house_id)
+        now = self._loop.time()
         self._schedule_updates[house_id].extend(
-            self._loop.call_later(
-                (step * ACTIVITY_DEBOUNCE_COOLDOWN) + 0.1,
+            self._loop.call_at(
+                now + (step * ACTIVITY_DEBOUNCE_COOLDOWN) + 0.1,
                 self._async_future_update,
                 house_id,
             )
@@ -209,6 +223,7 @@ class ActivityStream(SubscriberMixin):
         _LOGGER.debug(
             "Completed retrieving device activities for house id %s", house_id
         )
+        self._last_update_time[house_id] = self._loop.time()
         for device_id in self.async_process_newer_device_activities(activities):
             _LOGGER.debug(
                 "async_signal_device_id_update (from activity stream): %s",
