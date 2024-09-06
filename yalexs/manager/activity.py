@@ -206,17 +206,20 @@ class ActivityStream(SubscriberMixin):
         """Return if the initial resync is complete."""
         return self._start_time and now - self._start_time > INITIAL_LOCK_RESYNC_TIME
 
-    def async_schedule_house_id_refresh(self, house_id: str) -> None:
-        """Update for a house activities now and once in the future."""
-        self._async_cancel_future_updates(house_id)
-        now = self._loop.time()
-        initial_resync_complete = self._initial_resync_complete(now)
-        updated_recently = self._updated_recently(house_id, now)
-        update_running = self._update_running(house_id)
-        if not initial_resync_complete:
+    def _set_update_count(self, house_id: str, now: float) -> None:
+        """Set the update count."""
+        # Schedule one update now and two updates past the debounce time
+        # to ensure we catch the case where the activity
+        # api does not update right away and we need to poll
+        # it again. Sometimes the lock operator or a doorbell
+        # will not show up in the activity stream right away.
+        # Only do additional polls if we are past
+        # the initial lock resync time to avoid a storm
+        # of activity at setup.
+        if not self._initial_resync_complete(now):
             # No resync yet, above spamming the API
             update_count = 1
-        elif updated_recently or update_running:
+        elif self._updated_recently(house_id, now) or self._update_running(house_id):
             # Update running or already updated recently
             # no point in doing 3 updates as we will
             # delay anyways
@@ -226,14 +229,12 @@ class ActivityStream(SubscriberMixin):
             # so we do not miss any activity
             update_count = 3
         self._pending_updates[house_id] = update_count
-        # Schedule one update now and two updates past the debounce time
-        # to ensure we catch the case where the activity
-        # api does not update right away and we need to poll
-        # it again. Sometimes the lock operator or a doorbell
-        # will not show up in the activity stream right away.
-        # Only do additional polls if we are past
-        # the initial lock resync time to avoid a storm
-        # of activity at setup.
+
+    def async_schedule_house_id_refresh(self, house_id: str) -> None:
+        """Update for a house activities now and once in the future."""
+        self._async_cancel_future_updates(house_id)
+        now = self._loop.time()
+        self._set_update_count(house_id, now)
         delay = self._determine_update_delay(house_id, now)
         self._async_schedule_update(house_id, now, delay)
 
