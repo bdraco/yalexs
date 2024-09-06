@@ -40,6 +40,10 @@ async def test_activity_stream_debounce(freezer: FrozenDateTimeFactory) -> None:
 
     activity.async_schedule_house_id_refresh("myhouseid")
     await asyncio.sleep(0)
+    assert async_get_house_activities.call_count == 0
+    freezer.tick(1 + 0.1)
+    fire_time_changed()
+    await asyncio.sleep(0)
     assert async_get_house_activities.call_count == 1
     freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
     fire_time_changed()
@@ -62,13 +66,13 @@ async def test_activity_stream_debounce(freezer: FrozenDateTimeFactory) -> None:
 
     activity.async_schedule_house_id_refresh("myhouseid")
     await asyncio.sleep(0)
-    assert activity._pending_updates["myhouseid"] == 2
-    assert async_get_house_activities.call_count == 4
+    assert activity._pending_updates["myhouseid"] == 3
+    assert async_get_house_activities.call_count == 3
     freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
     fire_time_changed()
     await asyncio.sleep(0)
-    assert async_get_house_activities.call_count == 5
-    assert activity._pending_updates["myhouseid"] == 1
+    assert async_get_house_activities.call_count == 4
+    assert activity._pending_updates["myhouseid"] == 2
 
     # If we get another update request, be sure we reset
     # but we do not poll right away and only do 2 polls
@@ -79,53 +83,53 @@ async def test_activity_stream_debounce(freezer: FrozenDateTimeFactory) -> None:
     fire_time_changed()
     await asyncio.sleep(0)
     assert activity._pending_updates["myhouseid"] == 1
+    assert async_get_house_activities.call_count == 5
+    freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
+    fire_time_changed()
+    await asyncio.sleep(0)
+    assert activity._pending_updates["myhouseid"] == 0
     assert async_get_house_activities.call_count == 6
     freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
     fire_time_changed()
     await asyncio.sleep(0)
     assert activity._pending_updates["myhouseid"] == 0
-    assert async_get_house_activities.call_count == 7
+    assert async_get_house_activities.call_count == 6
     freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
     fire_time_changed()
     await asyncio.sleep(0)
-    assert activity._pending_updates["myhouseid"] == 0
-    assert async_get_house_activities.call_count == 7
-    freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
-    fire_time_changed()
-    await asyncio.sleep(0)
-    assert async_get_house_activities.call_count == 7
+    assert async_get_house_activities.call_count == 6
     freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
     fire_time_changed()
     await asyncio.sleep(0)
 
     # If we get another update request later, be sure we reset
-    # and poll right away with 3 polls
+    # and poll after 1s with 3 polls
     activity.async_schedule_house_id_refresh("myhouseid")
     await asyncio.sleep(0)
-    assert async_get_house_activities.call_count == 8
+    assert async_get_house_activities.call_count == 6
+    assert activity._pending_updates["myhouseid"] == 3
+    freezer.tick(1)
+    fire_time_changed()
+    await asyncio.sleep(0)
+    assert async_get_house_activities.call_count == 7
     assert activity._pending_updates["myhouseid"] == 2
     freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
     fire_time_changed()
     await asyncio.sleep(0)
-    assert async_get_house_activities.call_count == 9
+    assert async_get_house_activities.call_count == 8
     assert activity._pending_updates["myhouseid"] == 1
     freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
     fire_time_changed()
     await asyncio.sleep(0)
-    assert async_get_house_activities.call_count == 10
+    assert async_get_house_activities.call_count == 9
     assert activity._pending_updates["myhouseid"] == 0
     freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
     fire_time_changed()
     await asyncio.sleep(0)
-    assert async_get_house_activities.call_count == 10
+    assert async_get_house_activities.call_count == 9
     assert activity._pending_updates["myhouseid"] == 0
     freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
     fire_time_changed()
     await asyncio.sleep(0)
-    assert async_get_house_activities.call_count == 10
-    assert activity._pending_updates["myhouseid"] == 0
-    freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
-    fire_time_changed()
-    await asyncio.sleep(0)
-    assert async_get_house_activities.call_count == 10
+    assert async_get_house_activities.call_count == 9
     assert activity._pending_updates["myhouseid"] == 0

@@ -158,34 +158,51 @@ class ActivityStream(SubscriberMixin):
     def _async_schedule_update_callback(self, house_id: str) -> None:
         """Schedule an update callback."""
         self._schedule_updates.pop(house_id, None)
-        self._async_schedule_update(house_id)
-
-    def _async_schedule_update(self, house_id: str) -> None:
-        """Update the activity stream now or in the future if its too soon."""
-        if self._shutdown or self._pending_updates[house_id] <= 0:
-            return
         now = self._loop.time()
+        if self._should_delay_update(house_id, now):
+            self._async_schedule_update(house_id, now, delay=True)
+            return
+        self._create_update_task(house_id)
+
+    def _should_delay_update(self, house_id: str, now: float) -> bool:
+        """Return if we should delay the update."""
         updated_recently = self._updated_recently(house_id, now)
         update_running = self._update_running(house_id)
         _LOGGER.debug(
-            "Future update for house id %s: recent=%s running=%s",
+            "Future update for house id %s: recent=%s running=%s pending=%s",
             house_id,
             updated_recently,
             update_running,
+            self._pending_updates[house_id],
         )
-        if updated_recently or update_running:
-            self._async_schedule_debounced_update(house_id, now)
+        return bool(updated_recently or update_running)
+
+    def _async_schedule_update(self, house_id: str, now: float, delay: bool) -> None:
+        """Update the activity stream now or in the future if its too soon."""
+        if self._shutdown or self._pending_updates[house_id] <= 0:
             return
+        if delay:
+            when = now + ACTIVITY_DEBOUNCE_COOLDOWN
+            _LOGGER.debug(
+                "Re-scheduling update for house id %s in %s seconds",
+                house_id,
+                ACTIVITY_DEBOUNCE_COOLDOWN,
+            )
+        else:
+            when = now + 1
+            _LOGGER.debug("Scheduling update for house id %s in %s second", house_id, 1)
+        # Do not update right away because the activities API is
+        # likely not updated yet and we will just get the same
+        # activities again. Instead, schedule the update for
+        # the future.
+        self._async_schedule_debounced_update(house_id, when)
 
-        self._create_update_task(house_id)
-
-    def _async_schedule_debounced_update(self, house_id: str, now: float) -> None:
+    def _async_schedule_debounced_update(self, house_id: str, when: float) -> None:
         """Schedule a future update."""
-        next_time = now + ACTIVITY_DEBOUNCE_COOLDOWN
         if scheduled := self._schedule_updates.pop(house_id, None):
             scheduled.cancel()
         self._schedule_updates[house_id] = self._loop.call_at(
-            next_time, self._async_schedule_update_callback, house_id
+            when, self._async_schedule_update_callback, house_id
         )
 
     async def _async_execute_schedule_update(self, house_id: str) -> None:
@@ -229,7 +246,8 @@ class ActivityStream(SubscriberMixin):
         # Only do additional polls if we are past
         # the initial lock resync time to avoid a storm
         # of activity at setup.
-        self._async_schedule_update(house_id)
+        delay = self._should_delay_update(house_id, now)
+        self._async_schedule_update(house_id, now, delay)
 
     def _activity_limit(self) -> bool:
         """Return if the activity limit has been reached."""
