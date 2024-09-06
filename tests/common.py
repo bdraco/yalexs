@@ -1,3 +1,4 @@
+from __future__ import annotations
 from asyncio import AbstractEventLoop, TimerHandle
 import time
 import asyncio
