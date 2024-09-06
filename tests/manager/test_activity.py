@@ -134,3 +134,53 @@ async def test_activity_stream_debounce(freezer: FrozenDateTimeFactory) -> None:
     await asyncio.sleep(0)
     assert async_get_house_activities.call_count == 9
     assert activity._pending_updates["myhouseid"] == 0
+
+
+@pytest.mark.asyncio
+async def test_activity_stream_debounce_during_init(
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Make sure requests during the initial sync get deferred."""
+
+    api = MagicMock(auto_spec=ApiAsync)
+    async_get_house_activities = AsyncMock()
+    api.async_get_house_activities = async_get_house_activities
+    august_gateway = MagicMock(auto_spec=Gateway)
+    august_gateway.async_refresh_access_token_if_needed = AsyncMock()
+    august_gateway.async_get_access_token = AsyncMock()
+    push = MagicMock(connected=False)
+    august_gateway.push = push
+
+    activity = ActivityStream(api, august_gateway, {"myhouseid"}, push)
+    await activity.async_setup()
+    await asyncio.sleep(0)
+    assert async_get_house_activities.call_count == 1
+    freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
+    fire_time_changed()
+    await asyncio.sleep(0)
+
+    assert async_get_house_activities.call_count == 1
+
+    activity.async_schedule_house_id_refresh("myhouseid")
+    freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
+    fire_time_changed()
+    await asyncio.sleep(0)
+    assert async_get_house_activities.call_count == 1
+
+    activity.async_schedule_house_id_refresh("myhouseid")
+    freezer.tick(ACTIVITY_DEBOUNCE_COOLDOWN + 1)
+    fire_time_changed()
+    await asyncio.sleep(0)
+    assert async_get_house_activities.call_count == 1
+
+    freezer.tick(INITIAL_LOCK_RESYNC_TIME)
+    fire_time_changed()
+    await asyncio.sleep(0)
+    assert async_get_house_activities.call_count == 2
+    assert "myhouseid" not in activity._schedule_updates
+
+    freezer.tick(INITIAL_LOCK_RESYNC_TIME)
+    fire_time_changed()
+    await asyncio.sleep(0)
+    assert async_get_house_activities.call_count == 2
+    assert "myhouseid" not in activity._schedule_updates
