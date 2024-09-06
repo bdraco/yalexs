@@ -31,7 +31,7 @@ ACTIVITY_DEBOUNCE_COOLDOWN = 4.0
 
 # How long we expect it to take between when we get a WebSocket/PubNub
 # message and the activity API to be updated.
-UPDATE_SOON = 2.0
+UPDATE_SOON = 3.0
 
 NEVER_TIME = -86400.0
 
