@@ -2,6 +2,15 @@
 
 
 
+## v8.7.0 (2024-09-23)
+
+### Feature
+
+* feat: add support for finger unlock activities (#186)
+
+Co-authored-by: Thomas Nelson &lt;me@example.com&gt; ([`fb5ef13`](https://github.com/bdraco/yalexs/commit/fb5ef137404121fe7761ae74950c32b584728e3d))
+
+
 ## v8.6.4 (2024-09-06)
 
 ### Fix
