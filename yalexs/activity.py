@@ -128,6 +128,8 @@ ACTIVITY_TO_FIRST_LAST_NAME = {
     ACTION_LOCK_MANUAL_UNLOCK: ("Manual", "Unlock"),
     ACTION_LOCK_FINGER_LOCK: ("Fingerprint", "Lock"),
     ACTION_LOCK_FINGER_UNLOCK: ("Fingerprint", "Unlock"),
+    ACTION_LOCK_PIN_UNLATCH: ("Pin", "Unlatch"),
+    ACTION_LOCK_PIN_UNLOCK: ("Pin", "Unlock"),
 }
 
 
