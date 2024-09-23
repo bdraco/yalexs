@@ -29,6 +29,7 @@ from yalexs.activity import (
     ACTION_LOCK_BLE_UNLATCH,
     ACTION_LOCK_BLE_UNLOCK,
     ACTION_LOCK_DOORBELL_BUTTON_PUSHED,
+    ACTION_LOCK_FINGER_LOCK,
     ACTION_LOCK_FINGER_UNLOCK,
     ACTION_LOCK_JAMMED,
     ACTION_LOCK_LOCK,
@@ -145,6 +146,7 @@ class TestActivity(unittest.TestCase):
                 ACTION_LOCK_MANUAL_UNLOCK,
                 ACTION_LINKED_LOCK,
                 ACTION_LINKED_UNLOCK,
+                ACTION_LOCK_FINGER_LOCK,
                 ACTION_LOCK_FINGER_UNLOCK,
             ],
         )
@@ -547,6 +549,24 @@ class TestActivityApiAsync(aiounittest.AsyncTestCase):
         assert (
             manual_lock_activity.operator_thumbnail_url
             == "https://d3osa7xy9vsc0q.cloudfront.net/app/ActivityFeedIcons/linked_lock@3x.png"
+        )
+
+    def test_finger_lock_activity(self):
+        keypad_lock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("finger_lock_activity.json"))
+        )
+        assert keypad_lock_activity.operated_by == "Sample Person"
+        assert keypad_lock_activity.operated_remote is False
+        assert keypad_lock_activity.operated_keypad is True
+        assert keypad_lock_activity.operated_manual is False
+        assert keypad_lock_activity.operated_tag is False
+        assert (
+            keypad_lock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/finger_lock@3x.png"
+        )
+        assert (
+            keypad_lock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/finger_lock@3x.png"
         )
 
     def test_finger_unlock_activity(self):
