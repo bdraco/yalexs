@@ -2,6 +2,15 @@
 
 
 
+## v8.7.1 (2024-09-24)
+
+### Fix
+
+* fix: add default first &amp; last names for pin_* actions (#188)
+
+Co-authored-by: Thomas Nelson &lt;me@example.com&gt; ([`f2cae5b`](https://github.com/bdraco/yalexs/commit/f2cae5bc2041ee7653cc65c84823991a378365ad))
+
+
 ## v8.7.0 (2024-09-23)
 
 ### Feature
