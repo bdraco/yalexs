@@ -39,6 +39,7 @@ from yalexs.activity import (
     ACTION_LOCK_MANUAL_UNLOCK,
     ACTION_LOCK_ONETOUCHLOCK,
     ACTION_LOCK_ONETOUCHLOCK_2,
+    ACTION_LOCK_PIN_LOCK,
     ACTION_LOCK_PIN_UNLATCH,
     ACTION_LOCK_PIN_UNLOCK,
     ACTION_LOCK_REMOTE_LOCK,
@@ -139,6 +140,7 @@ class TestActivity(unittest.TestCase):
                 ACTION_LOCK_REMOTE_LOCK,
                 ACTION_LOCK_REMOTE_UNLATCH,
                 ACTION_LOCK_REMOTE_UNLOCK,
+                ACTION_LOCK_PIN_LOCK,
                 ACTION_LOCK_PIN_UNLATCH,
                 ACTION_LOCK_PIN_UNLOCK,
                 ACTION_LOCK_MANUAL_LOCK,
@@ -585,4 +587,22 @@ class TestActivityApiAsync(aiounittest.AsyncTestCase):
         assert (
             keypad_lock_activity.operator_thumbnail_url
             == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/finger_unlock@3x.png"
+        )
+
+    def test_pin_lock_activity(self):
+        keypad_lock_activity = LockOperationActivity(
+            SOURCE_LOG, json.loads(load_fixture("pin_lock_activity.json"))
+        )
+        assert keypad_lock_activity.operated_by == "Sample Person"
+        assert keypad_lock_activity.operated_remote is False
+        assert keypad_lock_activity.operated_keypad is True
+        assert keypad_lock_activity.operated_manual is False
+        assert keypad_lock_activity.operated_tag is False
+        assert (
+            keypad_lock_activity.operator_image_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/pin_lock@3x.png"
+        )
+        assert (
+            keypad_lock_activity.operator_thumbnail_url
+            == "https://d33mytkkohwnk6.cloudfront.net/app/ActivityFeedIcons/pin_lock@3x.png"
         )
