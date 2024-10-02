@@ -38,6 +38,7 @@ aiofiles = ">=23"
 freenub = ">=0.1.0"
 typing-extensions = ">=4.5.0"
 python-socketio = {version = ">=5.11.3", extras = ["asyncio-client"]}
+propcache = ">=0.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8"

@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Any, Union
 
 from .backports.enum import StrEnum
-from .backports.functools import cached_property
+from propcache import cached_property
 from .lock import LockDoorStatus, LockStatus
 from .time import epoch_to_datetime, parse_datetime
 from .users import YaleUser, get_user_info

@@ -1,5 +1,5 @@
 from .device import DeviceDetail
-from .backports.functools import cached_property
+from propcache import cached_property
 
 BATTERY_LEVEL_FULL = "Full"
 BATTERY_LEVEL_MEDIUM = "Medium"
