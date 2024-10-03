@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any
 
-from .backports.functools import cached_property
+from propcache import cached_property
 from .device import DeviceDetail
 
 

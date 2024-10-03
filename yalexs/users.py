@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .backports.functools import cached_property
+from propcache import cached_property
 
 USER_CACHE = {}
 
