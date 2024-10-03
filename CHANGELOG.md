@@ -2,6 +2,13 @@
 
 
 
+## v8.8.0 (2024-10-03)
+
+### Feature
+
+* feat: switch to using propcache cached_property to improve performance (#191) ([`b27dc91`](https://github.com/bdraco/yalexs/commit/b27dc9179a1ef46b33bfdc02b3d40b954a48e7aa))
+
+
 ## v8.7.1 (2024-09-24)
 
 ### Fix
