@@ -2,6 +2,15 @@
 
 
 
+## v8.9.0 (2024-10-03)
+
+### Feature
+
+* feat: add support for pin lock activities (#189)
+
+Co-authored-by: Thomas Nelson &lt;me@example.com&gt; ([`e13e977`](https://github.com/bdraco/yalexs/commit/e13e97720795e5730b309dc1e9a90c3d15204c58))
+
+
 ## v8.8.0 (2024-10-03)
 
 ### Feature
