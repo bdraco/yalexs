@@ -2,6 +2,13 @@
 
 
 
+## v8.10.0 (2024-10-06)
+
+### Feature
+
+* feat: add support for propcache v1.0.0+ (#192) ([`feceab8`](https://github.com/bdraco/yalexs/commit/feceab840a67a346eaecbb5eff6d3df9f8097597))
+
+
 ## v8.9.0 (2024-10-03)
 
 ### Feature
