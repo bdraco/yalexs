@@ -11,7 +11,7 @@ from .const import BASE_URLS, BRANDING, Brand, BRAND_CONFIG, DEFAULT_BRAND, Bran
 from .doorbell import Doorbell
 from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
 from .time import parse_datetime
-from propcache import cached_property
+from ._compat import cached_property
 
 API_EXCEPTION_RETRY_TIME = 0.1
 API_RETRY_TIME = 2.5

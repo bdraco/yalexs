@@ -9,7 +9,7 @@ from aiohttp import ClientSession
 
 from yalexs.exceptions import ContentTokenExpired
 
-from propcache import cached_property
+from ._compat import cached_property
 from .device import Device, DeviceDetail
 from .time import parse_datetime
 

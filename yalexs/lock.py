@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 from enum import Enum
 
-from propcache import cached_property
+from ._compat import cached_property
 from .bridge import BridgeDetail, BridgeStatus
 from .device import Device, DeviceDetail
 from .keypad import KeypadDetail
