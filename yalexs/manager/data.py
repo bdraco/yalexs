@@ -27,7 +27,7 @@ from .exceptions import CannotConnect, YaleXSError
 from .gateway import Gateway
 from .subscriber import SubscriberMixin
 from .ratelimit import _RateLimitChecker
-from propcache import cached_property
+from .._compat import cached_property
 from .socketio import SocketIORunner
 
 _LOGGER = logging.getLogger(__name__)
