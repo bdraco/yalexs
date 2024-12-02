@@ -1155,8 +1155,9 @@ class TestApiAsync(aiounittest.AsyncTestCase):
         )
 
         api = ApiAsync(ClientSession())
-        with patch.object(api_async, "API_EXCEPTION_RETRY_TIME", 0), pytest.raises(
-            AugustApiAIOHTTPError
+        with (
+            patch.object(api_async, "API_EXCEPTION_RETRY_TIME", 0),
+            pytest.raises(AugustApiAIOHTTPError),
         ):
             await api.async_get_house_activities(ACCESS_TOKEN, house_id)
 
@@ -1301,9 +1302,11 @@ async def test_retry_502_429(status_code: int, mock_aioresponse: aioresponses) -
         )
 
     api = ApiAsync(ClientSession())
-    with patch("yalexs.api_async.API_EXCEPTION_RETRY_TIME", 0), patch(
-        "yalexs.api_async.API_RETRY_ATTEMPTS", 2
-    ), patch("yalexs.api_async.asyncio.sleep"):
+    with (
+        patch("yalexs.api_async.API_EXCEPTION_RETRY_TIME", 0),
+        patch("yalexs.api_async.API_RETRY_ATTEMPTS", 2),
+        patch("yalexs.api_async.asyncio.sleep"),
+    ):
         await api.async_validate_verification_code(
             ACCESS_TOKEN, "email", "emailaddress", 123456
         )
