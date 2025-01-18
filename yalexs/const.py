@@ -33,8 +33,8 @@ class BrandConfig:
     pubnub_publish_token: str | None
 
 
-HEADER_VALUE_API_KEY_OLD = "7cab4bbd-2693-4fc1-b99b-dec0fb20f9d4"
-HEADER_VALUE_API_KEY = "d9984f29-07a6-816e-e1c9-44ec9d1be431"
+HEADER_VALUE_API_KEY = "6e2a2093-6118-42c5-8a41-e1fd25dce7a1" # 🤞
+HEADER_VALUE_API_KEY_OLD = "6e2a2093-6118-42c5-8a41-e1fd25dce7a1"
 
 HEADER_AUGUST_ACCESS_TOKEN = "x-august-access-token"  # nosec
 HEADER_AUGUST_API_KEY = "x-august-api-key"  # nosec
