@@ -1,14 +1,16 @@
-import socketio
-from ..api_common import api_auth_headers
-from ..const import Brand
-import logging
 import asyncio
-from typing import Any, Callable, TYPE_CHECKING
+import logging
+import sys
 from collections.abc import Coroutine
 from contextlib import suppress
+from datetime import datetime, timezone
+from typing import TYPE_CHECKING, Any, Callable
+
+import socketio
+
+from ..api_common import api_auth_headers
 from ..backports.tasks import create_eager_task
-import sys
-from datetime import timezone, datetime
+from ..const import Brand
 
 if sys.version_info < (3, 11):
     UTC = timezone.utc

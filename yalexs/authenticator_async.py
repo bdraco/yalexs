@@ -59,7 +59,7 @@ class AuthenticatorAsync(AuthenticatorCommon):
     async def async_setup_authentication(self) -> None:
         if access_token_cache_file := self._access_token_cache_file:
             try:
-                async with aiofiles.open(access_token_cache_file, "r") as file:
+                async with aiofiles.open(access_token_cache_file) as file:
                     await self._read_access_token_file(access_token_cache_file, file)
                     return
             except FileNotFoundError:

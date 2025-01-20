@@ -60,9 +60,7 @@ class Doorbell(Device):
         return self._content_token
 
     def __repr__(self):
-        return "Doorbell(id={}, name={}, house_id={})".format(
-            self.device_id, self.device_name, self.house_id
-        )
+        return f"Doorbell(id={self.device_id}, name={self.device_name}, house_id={self.house_id})"
 
 
 class DoorbellDetail(DeviceDetail):

@@ -8,7 +8,7 @@ import dateutil.parser
 
 
 @lru_cache(maxsize=512)
-def epoch_to_datetime(epoch: str | int | float) -> datetime.datetime:
+def epoch_to_datetime(epoch: str | float) -> datetime.datetime:
     """Convert epoch to datetime."""
     return datetime.datetime.fromtimestamp(float(epoch) / 1000.0)
 

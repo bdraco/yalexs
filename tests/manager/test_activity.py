@@ -1,16 +1,20 @@
 from __future__ import annotations
+
+import asyncio
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
+from freezegun.api import FrozenDateTimeFactory
+
+from yalexs.api_async import ApiAsync
 from yalexs.manager.activity import (
-    ActivityStream,
     ACTIVITY_DEBOUNCE_COOLDOWN,
     INITIAL_LOCK_RESYNC_TIME,
     UPDATE_SOON,
+    ActivityStream,
 )
-from yalexs.api_async import ApiAsync
 from yalexs.manager.gateway import Gateway
-from unittest.mock import MagicMock, AsyncMock
-from freezegun.api import FrozenDateTimeFactory
-import pytest
-import asyncio
+
 from ..common import fire_time_changed
 
 

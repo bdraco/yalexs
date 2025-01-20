@@ -1,8 +1,10 @@
 """Constants."""
 
 from __future__ import annotations
-from .backports.enum import StrEnum
+
 from dataclasses import dataclass
+
+from .backports.enum import StrEnum
 
 
 class Brand(StrEnum):

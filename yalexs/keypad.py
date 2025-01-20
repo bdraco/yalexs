@@ -1,5 +1,5 @@
-from .device import DeviceDetail
 from ._compat import cached_property
+from .device import DeviceDetail
 
 BATTERY_LEVEL_FULL = "Full"
 BATTERY_LEVEL_MEDIUM = "Medium"

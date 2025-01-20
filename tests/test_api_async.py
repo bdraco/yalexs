@@ -1214,7 +1214,7 @@ class TestApiAsync(aiounittest.AsyncTestCase):
 
         try:
             _raise_response_exceptions(four_two_eight)
-        except Exception as err:
+        except Exception as err:  # noqa: BLE001
             self.assertIsInstance(err, AugustApiAIOHTTPError)
 
         ERROR_MAP = {

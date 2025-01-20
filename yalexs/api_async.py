@@ -17,7 +17,6 @@ from aiohttp import (
     ServerDisconnectedError,
 )
 
-from .const import HEADER_ACCESS_TOKEN, HEADER_AUGUST_ACCESS_TOKEN
 from .activity import ActivityTypes
 from .api_common import (
     API_EXCEPTION_RETRY_TIME,
@@ -39,9 +38,9 @@ from .api_common import (
     _process_doorbells_json,
     _process_locks_json,
 )
-from .const import DEFAULT_BRAND
+from .const import DEFAULT_BRAND, HEADER_ACCESS_TOKEN, HEADER_AUGUST_ACCESS_TOKEN
 from .doorbell import Doorbell, DoorbellDetail
-from .exceptions import YaleApiError, InvalidAuth
+from .exceptions import InvalidAuth, YaleApiError
 from .lock import (
     Lock,
     LockDetail,
@@ -394,11 +393,10 @@ class ApiAsync(ApiCommon):
             self._build_refresh_access_token_request(access_token)
         )
         response_headers = response.headers
-        access_token = (
+        return (
             response_headers.get(HEADER_ACCESS_TOKEN)
             or response_headers[HEADER_AUGUST_ACCESS_TOKEN]
         )
-        return access_token
 
     async def async_add_websocket_subscription(
         self, access_token: str

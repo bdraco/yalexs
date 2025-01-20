@@ -49,9 +49,7 @@ class Lock(Device):
         return self._user_type == "superuser"
 
     def __repr__(self):
-        return "Lock(id={}, name={}, house_id={})".format(
-            self.device_id, self.device_name, self.house_id
-        )
+        return f"Lock(id={self.device_id}, name={self.device_name}, house_id={self.house_id})"
 
 
 class LockDetail(DeviceDetail):
