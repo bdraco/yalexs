@@ -106,7 +106,7 @@ class Gateway:
 
         await self.authenticator.async_setup_authentication()
 
-    async def async_authenticate(self) -> Authentication:
+    async def async_authenticate(self) -> Authentication:  # noqa: C901
         """Authenticate with the details provided to setup."""
         try:
             self.authentication = await self.authenticator.async_authenticate()

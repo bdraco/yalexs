@@ -1,15 +1,16 @@
-from yalexs.exceptions import (
-    InvalidAuth,
-    YaleApiError,
-    CannotConnect,
-    RequireValidation,
-    YaleXSError,
-    AugustApiAIOHTTPError,
-)
-import pytest
-
 from unittest import mock
+
+import pytest
 from aiohttp import ClientResponseError
+
+from yalexs.exceptions import (
+    AugustApiAIOHTTPError,
+    CannotConnect,
+    InvalidAuth,
+    RequireValidation,
+    YaleApiError,
+    YaleXSError,
+)
 
 
 def test_exceptions_can_be_empty_for_back_compat():

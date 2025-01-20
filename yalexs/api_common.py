@@ -4,15 +4,16 @@ from __future__ import annotations
 
 import datetime
 import logging
-from typing import Any
 from functools import cache
+from typing import Any
+
+from ._compat import cached_property
 from .activity import ACTION_TO_CLASS, SOURCE_LOCK_OPERATE, SOURCE_LOG, ActivityTypes
-from .const import BASE_URLS, BRANDING, Brand, BRAND_CONFIG, DEFAULT_BRAND, BrandConfig
+from .const import BASE_URLS, BRAND_CONFIG, BRANDING, DEFAULT_BRAND, Brand, BrandConfig
 from .doorbell import Doorbell
 from .alarm import Alarm, AlarmDevice, ArmState
 from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
 from .time import parse_datetime
-from ._compat import cached_property
 
 API_EXCEPTION_RETRY_TIME = 0.1
 API_RETRY_TIME = 2.5
@@ -164,11 +165,11 @@ def _process_activity_json(json_dict: dict[str, Any]) -> list[ActivityTypes]:
     if "events" in json_dict:
         json_dict = json_dict["events"]
     debug = _LOGGER.isEnabledFor(logging.DEBUG)
-    activities: list[ActivityTypes] = []
-    for activity_json in json_dict:
-        if activity := _activity_from_dict(SOURCE_LOG, activity_json, debug):
-            activities.append(activity)
-    return activities
+    return [
+        activity
+        for activity_json in json_dict
+        if (activity := _activity_from_dict(SOURCE_LOG, activity_json, debug))
+    ]
 
 
 def _process_doorbells_json(json_dict: dict[str, Any]) -> list[Doorbell]:

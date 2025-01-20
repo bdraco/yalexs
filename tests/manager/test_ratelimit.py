@@ -1,8 +1,9 @@
-from yalexs.manager.ratelimit import _RateLimitChecker, RATE_LIMIT_WAKEUP_INTERVAL
+import time
 
 import pytest
+
 from yalexs.exceptions import RateLimited
-import time
+from yalexs.manager.ratelimit import RATE_LIMIT_WAKEUP_INTERVAL, _RateLimitChecker
 
 
 @pytest.mark.asyncio

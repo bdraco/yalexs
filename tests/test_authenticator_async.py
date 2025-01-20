@@ -14,13 +14,12 @@ from yalexs.api_common import (
     API_VALIDATE_VERIFICATION_CODE_URLS,
     ApiCommon,
 )
-from yalexs.const import HEADER_AUGUST_ACCESS_TOKEN
 from yalexs.authenticator_async import (
     AuthenticationState,
     AuthenticatorAsync,
     ValidationResult,
 )
-from yalexs.const import DEFAULT_BRAND
+from yalexs.const import DEFAULT_BRAND, HEADER_AUGUST_ACCESS_TOKEN
 
 
 def format_datetime(dt):
@@ -43,7 +42,7 @@ class TestAuthenticatorAsync(aiounittest.AsyncTestCase):
         mock_aioresponses,
         v_password,
         v_install_id,
-        expires_at=format_datetime(datetime.utcnow()),
+        expires_at=format_datetime(datetime.utcnow()),  # noqa: DTZ003
     ):
         mock_aioresponses.post(
             ApiCommon(DEFAULT_BRAND).get_brand_url(API_GET_SESSION_URL),
