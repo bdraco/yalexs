@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import logging
 from typing import Any
-from .backports.enum import StrEnum
-
 
 from ._compat import cached_property
+from .backports.enum import StrEnum
 from .device import Device, DeviceDetail
 
 
@@ -46,9 +45,7 @@ class Alarm(Device):
         return self._areaIDs
 
     def __repr__(self):
-        return "Alarm(id={}, name={}, house_id={})".format(
-            self.device_id, self.device_name, self.house_id
-        )
+        return f"Alarm(id={self.device_id}, name={self.device_name}, house_id={self.house_id})"
 
 
 class AlarmDevice(DeviceDetail):
@@ -103,6 +100,4 @@ class AlarmDevice(DeviceDetail):
         return self._battery_level
 
     def __repr__(self):
-        return "AlarmDevice(id={}, name={}, type={}, alarm_id={})".format(
-            self.device_id, self.device_name, self.model, self.house_id
-        )
+        return f"AlarmDevice(id={self.device_id}, name={self.device_name}, type={self.model}, alarm_id={self.house_id})"

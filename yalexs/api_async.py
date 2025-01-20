@@ -18,6 +18,7 @@ from aiohttp import (
 )
 
 from .activity import ActivityTypes
+from .alarm import Alarm, AlarmDevice, ArmState
 from .api_common import (
     API_EXCEPTION_RETRY_TIME,
     API_LOCK_ASYNC_URL,
@@ -35,15 +36,13 @@ from .api_common import (
     _api_headers,
     _convert_lock_result_to_activities,
     _process_activity_json,
+    _process_alarm_devices_json,
+    _process_alarms_json,
     _process_doorbells_json,
     _process_locks_json,
-    _process_alarms_json,
-    _process_alarm_devices_json,
 )
 from .const import DEFAULT_BRAND, HEADER_ACCESS_TOKEN, HEADER_AUGUST_ACCESS_TOKEN
 from .doorbell import Doorbell, DoorbellDetail
-from .alarm import Alarm, AlarmDevice, ArmState
-from .exceptions import YaleApiError, InvalidAuth
 from .exceptions import InvalidAuth, YaleApiError
 from .lock import (
     Lock,

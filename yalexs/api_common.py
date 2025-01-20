@@ -9,9 +9,9 @@ from typing import Any
 
 from ._compat import cached_property
 from .activity import ACTION_TO_CLASS, SOURCE_LOCK_OPERATE, SOURCE_LOG, ActivityTypes
+from .alarm import Alarm, AlarmDevice, ArmState
 from .const import BASE_URLS, BRAND_CONFIG, BRANDING, DEFAULT_BRAND, Brand, BrandConfig
 from .doorbell import Doorbell
-from .alarm import Alarm, AlarmDevice, ArmState
 from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
 from .time import parse_datetime
 
