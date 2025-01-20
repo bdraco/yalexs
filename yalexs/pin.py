@@ -95,6 +95,4 @@ class Pin:
         return parse_datetime(self._access_times)
 
     def __repr__(self):
-        return "Pin(id={} firstName={}, lastName={})".format(
-            self.pin_id, self.first_name, self.last_name
-        )
+        return f"Pin(id={self.pin_id} firstName={self.first_name}, lastName={self.last_name})"

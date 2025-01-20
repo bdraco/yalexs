@@ -2,14 +2,14 @@ import datetime
 import random
 import ssl
 from functools import cache
-from typing import Optional, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Union
 
 from .activity import (
     ACTION_BRIDGE_OFFLINE,
     ACTION_BRIDGE_ONLINE,
     ACTIVITY_ACTION_STATES,
-    MOVING_STATES,
     ACTIVITY_MOVING_STATES,
+    MOVING_STATES,
     BridgeOperationActivity,
     DoorbellImageCaptureActivity,
     DoorbellMotionActivity,

@@ -13,6 +13,7 @@ from typing import Any, ParamSpec, TypeVar
 
 from aiohttp import ClientError, ClientResponseError, ClientSession
 
+from .._compat import cached_property
 from ..activity import ActivityTypes
 from ..backports.tasks import create_eager_task
 from ..const import Brand
@@ -25,10 +26,9 @@ from .activity import ActivityStream
 from .const import MIN_TIME_BETWEEN_DETAIL_UPDATES
 from .exceptions import CannotConnect, YaleXSError
 from .gateway import Gateway
-from .subscriber import SubscriberMixin
 from .ratelimit import _RateLimitChecker
-from .._compat import cached_property
 from .socketio import SocketIORunner
+from .subscriber import SubscriberMixin
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -223,7 +223,7 @@ class YaleXSData(SubscriberMixin):
         for device_id in device_ids_list:
             try:
                 await self._async_refresh_device_detail_by_id(device_id)
-            except TimeoutError:
+            except TimeoutError:  # noqa: PERF203
                 _LOGGER.warning(
                     "Timed out calling august api during refresh of device: %s",
                     device_id,

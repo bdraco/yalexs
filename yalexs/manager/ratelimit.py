@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from ..exceptions import RateLimited
-from collections import defaultdict
 import time
+from collections import defaultdict
+
+from ..exceptions import RateLimited
 
 RATE_LIMIT_WAKEUP_INTERVAL = 60 * 26
 

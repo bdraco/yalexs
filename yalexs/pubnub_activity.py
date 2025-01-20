@@ -49,7 +49,7 @@ _BRIDGE_ACTIONS = {ACTION_BRIDGE_ONLINE, ACTION_BRIDGE_OFFLINE}
 _LOGGER = logging.getLogger(__name__)
 
 
-def activities_from_pubnub_message(
+def activities_from_pubnub_message(  # noqa: C901
     device: Device, date_time: datetime, message: dict[str, Any]
 ) -> list[ActivityTypes]:
     """Create activities from pubnub."""
@@ -80,7 +80,7 @@ def activities_from_pubnub_message(
         if (
             info.get("action") == "status"
             and not message.get("error")
-            and not message.get("result") == "failed"
+            and message.get("result") != "failed"
         ):
             _LOGGER.debug("Not creating lock activity from status push")
             return activities

@@ -57,9 +57,9 @@ class BridgeStatusDetail:
         if "current" in data and data["current"] == "online":
             self._current = BridgeStatus.ONLINE
 
-        self._updated = data["updated"] if "updated" in data else None
-        self._last_online = data["lastOnline"] if "lastOnline" in data else None
-        self._last_offline = data["lastOffline"] if "lastOffline" in data else None
+        self._updated = data.get("updated")
+        self._last_online = data.get("lastOnline")
+        self._last_offline = data.get("lastOffline")
 
     @property
     def current(self):

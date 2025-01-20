@@ -155,7 +155,7 @@ class AuthenticatorCommon:
             _LOGGER.warning("Did not find expected `exp' claim in JWT")
             return self._authentication
 
-        new_expiration = datetime.utcfromtimestamp(jwt_claims["exp"])
+        new_expiration = datetime.utcfromtimestamp(jwt_claims["exp"])  # noqa: DTZ004
         # The yale access api always returns expiresAt in the format
         # '%Y-%m-%dT%H:%M:%S.%fZ'
         # from the get_session api call

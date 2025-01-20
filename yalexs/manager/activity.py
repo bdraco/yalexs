@@ -7,16 +7,17 @@ import logging
 from collections import defaultdict
 
 from aiohttp import ClientError
-from ..exceptions import AugustApiAIOHTTPError
+
 from ..activity import Activity, ActivityType
 from ..api_async import ApiAsync
 from ..backports.tasks import create_eager_task
+from ..exceptions import AugustApiAIOHTTPError
 from ..pubnub_async import AugustPubNub
 from ..util import get_latest_activity
 from .const import ACTIVITY_UPDATE_INTERVAL
 from .gateway import Gateway
-from .subscriber import SubscriberMixin
 from .socketio import SocketIORunner
+from .subscriber import SubscriberMixin
 
 _LOGGER = logging.getLogger(__name__)
 
