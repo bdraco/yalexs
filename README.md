@@ -72,15 +72,15 @@ async def main():
     # if(authentication.state == AuthenticationState.REQUIRES_VALIDATION) :
     #   await authenticator.async_send_verification_code()
     # await authenticator.async_validate_verification_code("12345")
-    
+
     # DO STUFF HERE LIKE GET THE ALARMS, LOCS, ETC....
     alarms = await api.async_get_alarms(access_token)
     locks = api.get_locks(access_token)
 
     # OR ARM YOUR ALARM
     await api.async_arm_alarm(access_token, alarms[0], ArmState.Away)
-    
 
-   
+
+
 asyncio.run(main())
 ```

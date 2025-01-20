@@ -390,7 +390,7 @@ class ApiAsync(ApiCommon):
         return await self._async_call_async_lock_operation(
             API_STATUS_ASYNC_URL, access_token, lock_id
         )
-    
+
     async def async_get_alarms(self, access_token: str) -> list[Alarm]:
         if not self.brand_supports_alarms:
             return []
@@ -398,22 +398,28 @@ class ApiAsync(ApiCommon):
             self._build_get_alarms_request(access_token)
         )
         return _process_alarms_json(await response.json())
-    
-    async def async_get_alarm_devices(self, access_token: str, alarm: Alarm) -> list[AlarmDevice]:
+
+    async def async_get_alarm_devices(
+        self, access_token: str, alarm: Alarm
+    ) -> list[AlarmDevice]:
         if not self.brand_supports_alarms:
             return []
         response = await self._async_dict_to_api(
-            self._build_get_alarm_devices_request(access_token, alarm_id=alarm.device_id)
+            self._build_get_alarm_devices_request(
+                access_token, alarm_id=alarm.device_id
+            )
         )
         return _process_alarm_devices_json(await response.json())
 
-    async def async_arm_alarm(self, access_token: str, alarm: Alarm, arm_state: ArmState):
+    async def async_arm_alarm(
+        self, access_token: str, alarm: Alarm, arm_state: ArmState
+    ):
         if not self.brand_supports_alarms:
             return {}
         response = await self._async_dict_to_api(
             self._build_call_alarm_state_request(access_token, alarm, arm_state)
         )
-        return await response.json();
+        return await response.json()
 
     async def async_refresh_access_token(self, access_token: str) -> str:
         """Obtain a new api token."""

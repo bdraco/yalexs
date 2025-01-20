@@ -34,7 +34,7 @@ class BrandConfig:
     pubnub_publish_token: str | None
 
 
-HEADER_VALUE_API_KEY = "6e2a2093-6118-42c5-8a41-e1fd25dce7a1" # 🤞
+HEADER_VALUE_API_KEY = "6e2a2093-6118-42c5-8a41-e1fd25dce7a1"  # 🤞
 HEADER_VALUE_API_KEY_OLD = "6e2a2093-6118-42c5-8a41-e1fd25dce7a1"
 
 HEADER_AUGUST_ACCESS_TOKEN = "x-august-access-token"  # nosec
@@ -102,7 +102,7 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         # run on the user's device
         api_key="d16a1029-d823-4b55-a4ce-a769a9b56f0e",
         supports_doorbells=True,
-        supports_alarms=True,  #??
+        supports_alarms=True,  # ??
         require_oauth=True,
         base_url="https://api.aaecosystem.com",
         configuration_url="https://account.aaecosystem.com",

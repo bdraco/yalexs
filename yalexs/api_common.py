@@ -174,11 +174,14 @@ def _process_activity_json(json_dict: dict[str, Any]) -> list[ActivityTypes]:
 def _process_doorbells_json(json_dict: dict[str, Any]) -> list[Doorbell]:
     return [Doorbell(device_id, data) for device_id, data in json_dict.items()]
 
+
 def _process_locks_json(json_dict: dict[str, Any]) -> list[Lock]:
     return [Lock(device_id, data) for device_id, data in json_dict.items()]
 
+
 def _process_alarms_json(json_dict: list[dict[str, Any]]) -> list[Alarm]:
     return [Alarm(data.get("alarmID"), data) for data in json_dict]
+
 
 def _process_alarm_devices_json(json_dict: list[dict[str, Any]]) -> list[AlarmDevice]:
     return [AlarmDevice(data) for data in json_dict]
@@ -197,7 +200,7 @@ class ApiCommon:
     def brand_supports_doorbells(self) -> bool:
         """Return if the brand supports doorbells."""
         return self.brand_config.supports_doorbells
-    
+
     @cached_property
     def brand_supports_alarms(self) -> bool:
         """Return if the brand supports alarms."""
@@ -277,9 +280,9 @@ class ApiCommon:
 
     def _build_get_houses_request(self, access_token: str) -> dict[str, Any]:
         return {
-             **self._build_base_request(access_token),
-              "url": self.get_brand_url(API_GET_HOUSES_URL),
-         }
+            **self._build_base_request(access_token),
+            "url": self.get_brand_url(API_GET_HOUSES_URL),
+        }
 
     def _build_get_house_request(self, access_token, house_id):
         return {
@@ -296,7 +299,7 @@ class ApiCommon:
             "version": "4.0.0",
             "params": {"limit": limit},
         }
-        
+
     def _build_get_locks_request(self, access_token: str) -> dict[str, Any]:
         return {
             **self._build_base_request(access_token),
@@ -383,19 +386,27 @@ class ApiCommon:
 
     def _build_get_alarms_request(self, access_token: str) -> dict[str, Any]:
         return {
-             **self._build_base_request(access_token),
-              "url": self.get_brand_url(API_GET_ALARMS_URL),
-         }
+            **self._build_base_request(access_token),
+            "url": self.get_brand_url(API_GET_ALARMS_URL),
+        }
 
-    def _build_get_alarm_devices_request(self, access_token: str, alarm_id: str)-> dict[str, Any]:
+    def _build_get_alarm_devices_request(
+        self, access_token: str, alarm_id: str
+    ) -> dict[str, Any]:
         return {
             **self._build_base_request(access_token),
-            "url": self.get_brand_url(API_GET_ALARM_DEVICES_URL.format(alarm_id=alarm_id)),
+            "url": self.get_brand_url(
+                API_GET_ALARM_DEVICES_URL.format(alarm_id=alarm_id)
+            ),
         }
-    
-    def _build_call_alarm_state_request(self, access_token: str, alarm: Alarm, arm_state: ArmState)-> dict[str, Any]:
+
+    def _build_call_alarm_state_request(
+        self, access_token: str, alarm: Alarm, arm_state: ArmState
+    ) -> dict[str, Any]:
         return {
             **self._build_base_request(access_token=access_token, method="PUT"),
-            "url": self.get_brand_url(API_PUT_ALARM_URL.format(alarm_id=alarm.device_id, arm_state=arm_state)),
-            "json": { "areaIDs": alarm.areaIDs }
+            "url": self.get_brand_url(
+                API_PUT_ALARM_URL.format(alarm_id=alarm.device_id, arm_state=arm_state)
+            ),
+            "json": {"areaIDs": alarm.areaIDs},
         }

@@ -4,17 +4,19 @@ import logging
 from typing import Any
 from .backports.enum import StrEnum
 
-from yalexs.exceptions import ContentTokenExpired
 
 from ._compat import cached_property
 from .device import Device, DeviceDetail
+
 
 class ArmState(StrEnum):
     Away = "FULL_ARM"
     Home = "PARTIAL_ARM"
     Disarm = "DISARM"
 
+
 _LOGGER = logging.getLogger(__name__)
+
 
 class Alarm(Device):
     """Class to hold details about an alarm."""
@@ -30,7 +32,7 @@ class Alarm(Device):
     @cached_property
     def pubsub_channel(self):
         return self._pubsub_channel
-    
+
     @cached_property
     def serial_number(self):
         return self._serial_number
@@ -71,7 +73,6 @@ class AlarmDevice(DeviceDetail):
         if self._status.get("lowBattery", False):
             self._battery_level = 10
 
-
     @cached_property
     def status(self) -> str:
         return self._status
@@ -87,11 +88,11 @@ class AlarmDevice(DeviceDetail):
     @cached_property
     def contact_open(self) -> bool:
         return self.status.get("contactOpen", False)
-    
+
     @cached_property
     def fault(self) -> bool:
         return self.status.get("fault", False)
-    
+
     @cached_property
     def tamperOpen(self) -> bool:
         return self.status.get("tamperOpen", False)
@@ -100,7 +101,7 @@ class AlarmDevice(DeviceDetail):
     def battery_level(self) -> int | None:
         """Return an approximation of the battery percentage."""
         return self._battery_level
-    
+
     def __repr__(self):
         return "AlarmDevice(id={}, name={}, type={}, alarm_id={})".format(
             self.device_id, self.device_name, self.model, self.house_id
