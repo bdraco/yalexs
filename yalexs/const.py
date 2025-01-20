@@ -28,6 +28,7 @@ class BrandConfig:
     branding_header: str
     api_key: str
     supports_doorbells: bool
+    supports_alarms: bool
     require_oauth: bool
     base_url: str
     configuration_url: str
@@ -55,6 +56,7 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         branding_header=HEADER_AUGUST_BRANDING,
         api_key=HEADER_VALUE_API_KEY,
         supports_doorbells=True,
+        supports_alarms=False,
         require_oauth=False,
         base_url="https://api-production.august.com",
         configuration_url="https://account.august.com",
@@ -69,6 +71,7 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         branding_header=HEADER_AUGUST_BRANDING,
         api_key=HEADER_VALUE_API_KEY,
         supports_doorbells=True,
+        supports_alarms=False,
         require_oauth=False,
         base_url="https://api-production.august.com",
         configuration_url="https://account.august.com",
@@ -81,8 +84,9 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         access_token_header=HEADER_ACCESS_TOKEN,
         api_key_header=HEADER_API_KEY,
         branding_header=HEADER_BRANDING,
-        api_key=HEADER_VALUE_API_KEY,
+        api_key="6e2a2093-6118-42c5-8a41-e1fd25dce7a1",  # 🤞
         supports_doorbells=True,
+        supports_alarms=True,
         require_oauth=False,
         base_url="https://api.aaecosystem.com",
         configuration_url="https://account.aaecosystem.com",
@@ -100,6 +104,7 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         # run on the user's device
         api_key="d16a1029-d823-4b55-a4ce-a769a9b56f0e",
         supports_doorbells=True,
+        supports_alarms=True,  # ??
         require_oauth=True,
         base_url="https://api.aaecosystem.com",
         configuration_url="https://account.aaecosystem.com",

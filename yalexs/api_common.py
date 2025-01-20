@@ -9,6 +9,7 @@ from typing import Any
 
 from ._compat import cached_property
 from .activity import ACTION_TO_CLASS, SOURCE_LOCK_OPERATE, SOURCE_LOG, ActivityTypes
+from .alarm import Alarm, AlarmDevice, ArmState
 from .const import BASE_URLS, BRAND_CONFIG, BRANDING, DEFAULT_BRAND, Brand, BrandConfig
 from .doorbell import Doorbell
 from .lock import Lock, LockDoorStatus, determine_door_state, door_state_to_string
@@ -63,6 +64,10 @@ HYPER_BRIDGE_PARAM = "&connection=persistent"
 API_GET_USER_URL = "/users/me"
 API_WEBSOCKET_SUBSCRIBERS = "/websocket/subscribers"
 API_WEBSOCKET_SUBSCRIBERS_WITH_SUBSCRIBER_ID = "/websocket/subscribers/{subscriber_id}"
+API_GET_ALARMS_URL = "/users/alarms/mine"
+API_GET_ALARM_DEVICES_URL = "/alarms/{alarm_id}/devices"
+API_PUT_ALARM_URL = "/alarms/{alarm_id}/state/{arm_state}"
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -175,6 +180,14 @@ def _process_locks_json(json_dict: dict[str, Any]) -> list[Lock]:
     return [Lock(device_id, data) for device_id, data in json_dict.items()]
 
 
+def _process_alarms_json(json_dict: list[dict[str, Any]]) -> list[Alarm]:
+    return [Alarm(data.get("alarmID"), data) for data in json_dict]
+
+
+def _process_alarm_devices_json(json_dict: list[dict[str, Any]]) -> list[AlarmDevice]:
+    return [AlarmDevice(data) for data in json_dict]
+
+
 class ApiCommon:
     """Api dict shared between async and sync."""
 
@@ -188,6 +201,11 @@ class ApiCommon:
     def brand_supports_doorbells(self) -> bool:
         """Return if the brand supports doorbells."""
         return self.brand_config.supports_doorbells
+
+    @cached_property
+    def brand_supports_alarms(self) -> bool:
+        """Return if the brand supports alarms."""
+        return self.brand_config.supports_alarms
 
     def get_brand_url(self, url_str: str) -> str:
         """Get url."""
@@ -262,7 +280,10 @@ class ApiCommon:
         }
 
     def _build_get_houses_request(self, access_token: str) -> dict[str, Any]:
-        return self._build_base_request(access_token)
+        return {
+            **self._build_base_request(access_token),
+            "url": self.get_brand_url(API_GET_HOUSES_URL),
+        }
 
     def _build_get_house_request(self, access_token, house_id):
         return {
@@ -362,4 +383,31 @@ class ApiCommon:
             **self._build_base_request(access_token, "put"),
             "url": self.get_brand_url(url_str.format(lock_id=lock_id)),
             "timeout": timeout,
+        }
+
+    def _build_get_alarms_request(self, access_token: str) -> dict[str, Any]:
+        return {
+            **self._build_base_request(access_token),
+            "url": self.get_brand_url(API_GET_ALARMS_URL),
+        }
+
+    def _build_get_alarm_devices_request(
+        self, access_token: str, alarm_id: str
+    ) -> dict[str, Any]:
+        return {
+            **self._build_base_request(access_token),
+            "url": self.get_brand_url(
+                API_GET_ALARM_DEVICES_URL.format(alarm_id=alarm_id)
+            ),
+        }
+
+    def _build_call_alarm_state_request(
+        self, access_token: str, alarm: Alarm, arm_state: ArmState
+    ) -> dict[str, Any]:
+        return {
+            **self._build_base_request(access_token=access_token, method="PUT"),
+            "url": self.get_brand_url(
+                API_PUT_ALARM_URL.format(alarm_id=alarm.device_id, arm_state=arm_state)
+            ),
+            "json": {"areaIDs": alarm.areaIDs},
         }

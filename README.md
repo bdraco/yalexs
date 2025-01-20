@@ -52,33 +52,35 @@ pip install yalexs
 ## Usage
 
 ```python
-from yalexs.api import Api
-from yalexs.authenticator import Authenticator, AuthenticationState
+import asyncio
+from aiohttp import ClientSession
 
-api = Api(timeout=20)
-authenticator = Authenticator(api, "phone", "YOUR_USERNAME", "YOUR_PASSWORD",
-                              access_token_cache_file="PATH_TO_ACCESS_TOKEN_CACHE_FILE")
-
-authentication = authenticator.authenticate()
-
-# State can be either REQUIRES_VALIDATION, BAD_PASSWORD or AUTHENTICATED
-# You'll need to call different methods to finish authentication process, see below
-state = authentication.state
-
-# If AuthenticationState is BAD_PASSWORD, that means your login_method, username and password do not match
-
-# If AuthenticationState is AUTHENTICATED, that means you're authenticated already. If you specify "access_token_cache_file", the authentication is cached in a file. Every time you try to authenticate again, it'll read from that file and if you're authenticated already, Authenticator won't call Yale Access again as you have a valid access_token
+from yalexs.api_async import ApiAsync
+from yalexs.authenticator_async import AuthenticatorAsync
+from yalexs.const import Brand
+from yalexs.alarm import ArmState
 
 
-# If AuthenticationState is REQUIRES_VALIDATION, then you'll need to go through verification process
-# send_verification_code() will send a code to either your phone or email depending on login_method
-authenticator.send_verification_code()
-# Wait for your code and pass it in to validate_verification_code()
-validation_result = authenticator.validate_verification_code(123456)
-# If ValidationResult is INVALID_VERIFICATION_CODE, then you'll need to either enter correct one or resend by calling send_verification_code() again
-# If ValidationResult is VALIDATED, then you'll need to call authenticate() again to finish authentication process
-authentication = authenticator.authenticate()
+async def main():
+    api = ApiAsync(ClientSession(), timeout=20, brand=Brand.YALE_HOME)
+    authenticator = AuthenticatorAsync(api, "email", "EMAIL_ADDRESS", "PASSWORD}",
+        access_token_cache_file="auth.txt",install_id="UUID")
+    await authenticator.async_setup_authentication()
+    authentication = await authenticator.async_authenticate()
+    access_token = authentication.access_token
 
-# Once you have authenticated and validated you can use the access token to make API calls
-locks = api.get_locks(authentication.access_token)
+    # if(authentication.state == AuthenticationState.REQUIRES_VALIDATION) :
+    #   await authenticator.async_send_verification_code()
+    # await authenticator.async_validate_verification_code("12345")
+
+    # DO STUFF HERE LIKE GET THE ALARMS, LOCS, ETC....
+    alarms = await api.async_get_alarms(access_token)
+    locks = api.get_locks(access_token)
+
+    # OR ARM YOUR ALARM
+    await api.async_arm_alarm(access_token, alarms[0], ArmState.Away)
+
+
+
+asyncio.run(main())
 ```
