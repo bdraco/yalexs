@@ -2,6 +2,16 @@
 
 
 
+## v8.11.0 (2025-01-20)
+
+### Feature
+
+* feat: adds alarm support to Yale home (#208)
+
+Co-authored-by: pre-commit-ci[bot] &lt;66853113+pre-commit-ci[bot]@users.noreply.github.com&gt;
+Co-authored-by: J. Nick Koston &lt;nick@koston.org&gt; ([`473fd0e`](https://github.com/bdraco/yalexs/commit/473fd0e0dd87a9296ff2ae48a00b2d6ce4b7d2ef))
+
+
 ## v8.10.0 (2024-10-06)
 
 ### Feature
