@@ -59,11 +59,9 @@ class ActivityStream(SubscriberMixin):
         self._did_first_update = False
         self.push = push
         self._update_tasks: dict[str, asyncio.Task] = {}
-        self._last_update_time: dict[str, float] = {
-            house_id: NEVER_TIME for house_id in house_ids
-        }
+        self._last_update_time: dict[str, float] = dict.fromkeys(house_ids, NEVER_TIME)
         self._start_time: float | None = None
-        self._pending_updates: dict[str, int] = {house_id: 1 for house_id in house_ids}
+        self._pending_updates: dict[str, int] = dict.fromkeys(house_ids, 1)
         self._loop = asyncio.get_running_loop()
         self._shutdown: bool = False
 
