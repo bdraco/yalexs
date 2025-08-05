@@ -353,8 +353,8 @@ class Activity:
         user_id = self.calling_user.get("UserID", "")
         if user_id and user_id.startswith("manual"):
             return False
-        # Empty info typically means status update
-        return not self._info
+        # Empty info typically means status update (except for WebSocket activities)
+        return not self._info and self.source != SOURCE_WEBSOCKET
 
 
 class BaseDoorbellMotionActivity(Activity):
