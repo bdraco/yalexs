@@ -168,22 +168,27 @@ class YaleXSData(SubscriberMixin):
         self, device_id: str, date_time: datetime, message: dict[str, Any]
     ) -> None:
         """Process a push message."""
+        _LOGGER.debug("async_push_message: %s %s", device_id, message)
         device = self.get_device_detail(device_id)
         activities = activities_from_pubnub_message(device, date_time, message)
         activity_stream = self.activity_stream
         if activities and activity_stream.async_process_newer_device_activities(
             activities
         ):
-            _LOGGER.debug("async_push_message: %s for %s", device_id, activities)
+            _LOGGER.debug(
+                "async_push_message activities: %s for %s", device_id, activities
+            )
             self.async_signal_device_id_update(device.device_id)
             for activity in activities:
                 # Don't trigger a house refresh if the activity is a status update
                 # to avoid unnecessary API calls.
                 if activity.is_status:
-                    _LOGGER.debug("async_push_message: %s is status update", activity)
+                    _LOGGER.debug(
+                        "async_push_message activity: %s is status update", activity
+                    )
                     continue
                 _LOGGER.debug(
-                    "async_push_message triggering refresh: %s for %s",
+                    "async_push_message activity triggering refresh: %s for %s",
                     device_id,
                     activity,
                 )
