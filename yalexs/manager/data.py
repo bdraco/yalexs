@@ -174,11 +174,7 @@ class YaleXSData(SubscriberMixin):
         if activities and activity_stream.async_process_newer_device_activities(
             activities
         ):
-            _LOGGER.debug(
-                "async_signal_device_id_update (from push): %s for %s",
-                device_id,
-                activities,
-            )
+            _LOGGER.warning("async_push_message: %s for %s", device_id, activities)
             self.async_signal_device_id_update(device.device_id)
             activity_stream.async_schedule_house_id_refresh(device.house_id)
 
