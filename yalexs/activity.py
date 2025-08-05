@@ -338,6 +338,11 @@ class Activity:
         """Return the type of the device."""
         return self._data.get("deviceType")
 
+    @cached_property
+    def is_status(self) -> bool:
+        """Return if the activity is a status update."""
+        return not self._info or self.action == "status"
+
 
 class BaseDoorbellMotionActivity(Activity):
     """Base class for doorbell motion activities."""
