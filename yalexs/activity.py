@@ -349,11 +349,11 @@ class Activity:
         # If action is explicitly "status", it's a status update
         if self.action == "status":
             return True
-        # If there's a calling user, it's likely a real event (e.g., Bluetooth unlock)
-        # even if info is empty
-        if self.calling_user:
+        # If there's a manual operation (Bluetooth lock/unlock), it's NOT a status update
+        user_id = self.calling_user.get("UserID", "")
+        if user_id and user_id.startswith("manual"):
             return False
-        # Otherwise, empty info means status update
+        # Empty info typically means status update
         return not self._info
 
 
