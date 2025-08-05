@@ -1649,4 +1649,3 @@ Changed get_house_activities API to return a list of Activity objects ([`d589244
 * Initial commit ([`5fe824b`](https://github.com/bdraco/yalexs/commit/5fe824b2fd25e303d3307ee5d677ffafae2b8bd4))
 
 * Initial commit ([`f462999`](https://github.com/bdraco/yalexs/commit/f4629999331f8cdc157cceaebae42e4c0c1dce0f))
-
