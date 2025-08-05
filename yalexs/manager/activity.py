@@ -300,6 +300,12 @@ class ActivityStream(SubscriberMixin):
             # is actually newer than the last one.
             latest_activity = get_latest_activity(activity, last_activity)
             if latest_activity != activity:
+                _LOGGER.debug(
+                    "Skipping activity %s for device %s as it is not newer than the last one: %s",
+                    activity,
+                    device_id,
+                    last_activity,
+                )
                 continue
 
             device_activities[activity_type] = activity

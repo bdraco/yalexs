@@ -8,13 +8,14 @@ from abc import abstractmethod
 from collections.abc import Callable, Coroutine, Iterable, ValuesView
 from contextlib import suppress
 from datetime import datetime
+from functools import partial
 from itertools import chain
 from typing import Any, ParamSpec, TypeVar
 
 from aiohttp import ClientError, ClientResponseError, ClientSession
 
 from .._compat import cached_property
-from ..activity import ActivityTypes
+from ..activity import ActivityTypes, Source
 from ..backports.tasks import create_eager_task
 from ..const import Brand
 from ..doorbell import ContentTokenExpired, Doorbell, DoorbellDetail
@@ -81,6 +82,8 @@ class YaleXSData(SubscriberMixin):
         self._initial_sync_task: asyncio.Task | None = None
         self._error_exception_class = error_exception_class
         self._shutdown: bool = False
+        # Track last known state from WebSocket messages to avoid unnecessary updates
+        self._last_websocket_state: dict[str, dict[str, str]] = {}
 
     @cached_property
     def brand(self) -> Brand:
@@ -127,15 +130,19 @@ class YaleXSData(SubscriberMixin):
         push: AugustPubNub | SocketIORunner
         if self.brand is Brand.YALE_GLOBAL:
             push = SocketIORunner(self._gateway)
+            push_source = Source.WEBSOCKET
         else:
             push = AugustPubNub()
+            push_source = Source.PUBNUB
             for device in self._device_detail_by_id.values():
                 push.register_device(device)
         self.activity_stream = ActivityStream(
             self._api, self._gateway, self._house_ids, push
         )
         await self.activity_stream.async_setup()
-        push.subscribe(self.async_push_message)
+        # Use partial to bind the source parameter
+        push_callback = partial(self.async_push_message, source=push_source)
+        push.subscribe(push_callback)
         self._push_unsub = await push.run(user_data["UserID"], self.brand)
 
     async def _async_initial_sync(self) -> None:
@@ -165,17 +172,74 @@ class YaleXSData(SubscriberMixin):
                 )
 
     def async_push_message(
-        self, device_id: str, date_time: datetime, message: dict[str, Any]
+        self,
+        device_id: str,
+        date_time: datetime,
+        message: dict[str, Any],
+        source: Source | str = "unknown",
     ) -> None:
         """Process a push message."""
+        try:
+            self._async_handle_push_message(device_id, date_time, message, source)
+        except Exception:
+            _LOGGER.exception(
+                "Error processing push message for device %s at %s: %s",
+                device_id,
+                date_time,
+                message,
+            )
+            # If we have an error, we want to continue processing other messages
+            return
+
+    def _async_handle_push_message(
+        self,
+        device_id: str,
+        date_time: datetime,
+        message: dict[str, Any],
+        source: Source | str,
+    ) -> None:
+        """Handle a push message."""
+        _LOGGER.debug("async_push_message from %s: %s %s", source, device_id, message)
+
+        # Check if this is a WebSocket message with unchanged state
+        if source == Source.WEBSOCKET and self._is_unchanged_websocket_state(
+            device_id, message
+        ):
+            _LOGGER.debug(
+                "Skipping unchanged WebSocket state for %s: lockAction=%s, doorState=%s",
+                device_id,
+                message.get("lockAction"),
+                message.get("doorState"),
+            )
+            return
+
         device = self.get_device_detail(device_id)
-        activities = activities_from_pubnub_message(device, date_time, message)
+        activities = activities_from_pubnub_message(device, date_time, message, source)
         activity_stream = self.activity_stream
+        _LOGGER.debug("async_push_message activities: %s for %s", activities, device_id)
         if activities and activity_stream.async_process_newer_device_activities(
             activities
         ):
+            _LOGGER.debug(
+                "async_push_message newer activities: %s for %s", device_id, activities
+            )
             self.async_signal_device_id_update(device.device_id)
-            activity_stream.async_schedule_house_id_refresh(device.house_id)
+            for activity in activities:
+                # Don't trigger a house refresh if the activity is a status update
+                # to avoid unnecessary API calls.
+                if activity.is_status:
+                    _LOGGER.debug(
+                        "async_push_message activity: %s is status update",
+                        activity,
+                    )
+                    continue
+                _LOGGER.debug(
+                    "async_push_message activity triggering refresh: %s for %s",
+                    device_id,
+                    activity,
+                )
+                activity_stream.async_schedule_house_id_refresh(device.house_id)
+                break
 
     async def async_stop(self, *args: Any) -> None:
         """Stop the subscriptions."""
@@ -448,6 +512,31 @@ class YaleXSData(SubscriberMixin):
                 doorbell.device_name,
             )
             del self._doorbells_by_id[device_id]
+
+    def _is_unchanged_websocket_state(
+        self, device_id: str, message: dict[str, Any]
+    ) -> bool:
+        """Check if a WebSocket message represents unchanged state."""
+        # Only check WebSocket messages that have lockAction/doorState
+        if "lockAction" not in message and "doorState" not in message:
+            return False
+
+        # Get current state from message
+        current_state = {
+            "lockAction": message.get("lockAction", ""),
+            "doorState": message.get("doorState", ""),
+        }
+
+        # Get last known state
+        last_state = self._last_websocket_state.get(device_id)
+
+        # If we have a previous state and it matches current state, it's unchanged
+        if last_state and last_state == current_state:
+            return True
+
+        # Update the last known state
+        self._last_websocket_state[device_id] = current_state
+        return False
 
     def _remove_inoperative_locks(self) -> None:
         # Remove non-operative locks as there must
