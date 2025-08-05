@@ -191,11 +191,12 @@ class YaleXSData(SubscriberMixin):
         device = self.get_device_detail(device_id)
         activities = activities_from_pubnub_message(device, date_time, message)
         activity_stream = self.activity_stream
+        _LOGGER.debug("async_push_message activities: %s for %s", activities, device_id)
         if activities and activity_stream.async_process_newer_device_activities(
             activities
         ):
             _LOGGER.debug(
-                "async_push_message activities: %s for %s", device_id, activities
+                "async_push_message newer activities: %s for %s", device_id, activities
             )
             self.async_signal_device_id_update(device.device_id)
             for activity in activities:
