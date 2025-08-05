@@ -50,7 +50,10 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def activities_from_pubnub_message(  # noqa: C901
-    device: Device, date_time: datetime, message: dict[str, Any]
+    device: Device,
+    date_time: datetime,
+    message: dict[str, Any],
+    source: str = SOURCE_PUBNUB,
 ) -> list[ActivityTypes]:
     """Create activities from pubnub."""
     activities: list[ActivityTypes] = []
@@ -94,18 +97,18 @@ def activities_from_pubnub_message(  # noqa: C901
             activity_dict["info"]["remote"] = True
         error = message.get("error") or {}
         if error.get("restCode") == 98 or error.get("name") == "ERRNO_BRIDGE_OFFLINE":
-            _add_activity(activities, activity_dict, ACTION_BRIDGE_OFFLINE)
+            _add_activity(activities, activity_dict, ACTION_BRIDGE_OFFLINE, source)
         elif status := message.get("lockAction", message.get(LOCK_STATUS_KEY)):
             if status in _BRIDGE_ACTIONS:
-                _add_activity(activities, activity_dict, status)
+                _add_activity(activities, activity_dict, status, source)
             if action := LOCK_STATUS_TO_ACTION.get(determine_lock_status(status)):
-                _add_activity(activities, activity_dict, action)
+                _add_activity(activities, activity_dict, action, source)
         if door_state_raw := message.get(DOOR_STATE_KEY):
             door_state = determine_door_state(door_state_raw)
             if door_state == LockDoorStatus.OPEN:
-                _add_activity(activities, activity_dict, ACTION_DOOR_OPEN)
+                _add_activity(activities, activity_dict, ACTION_DOOR_OPEN, source)
             elif door_state == LockDoorStatus.CLOSED:
-                _add_activity(activities, activity_dict, ACTION_DOOR_CLOSED)
+                _add_activity(activities, activity_dict, ACTION_DOOR_CLOSED, source)
 
     elif isinstance(device, DoorbellDetail):
         activity_dict["deviceType"] = "doorbell"
@@ -119,19 +122,20 @@ def activities_from_pubnub_message(  # noqa: C901
             ACTION_DOORBELL_IMAGE_CAPTURE,
             ACTION_DOORBELL_BUTTON_PUSHED,
         ):
-            _add_activity(activities, activity_dict, status)
+            _add_activity(activities, activity_dict, status, source)
 
     return activities
 
 
 def _add_activity(
-    activities: list[ActivityTypes], activity_dict: dict[str, Any], action: str
+    activities: list[ActivityTypes],
+    activity_dict: dict[str, Any],
+    action: str,
+    source: str,
 ) -> None:
     """Add an activity."""
     activity_dict = activity_dict.copy()
     activity_dict["action"] = action
     activities.append(
-        _activity_from_dict(
-            SOURCE_PUBNUB, activity_dict, _LOGGER.isEnabledFor(logging.DEBUG)
-        )
+        _activity_from_dict(source, activity_dict, _LOGGER.isEnabledFor(logging.DEBUG))
     )
