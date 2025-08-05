@@ -338,6 +338,24 @@ class Activity:
         """Return the type of the device."""
         return self._data.get("deviceType")
 
+    @cached_property
+    def calling_user(self) -> dict[str, Any]:
+        """Return the calling user."""
+        return self._data.get("callingUser", self._data.get("user", {}))
+
+    @cached_property
+    def is_status(self) -> bool:
+        """Return if the activity is a status update."""
+        # If action is explicitly "status", it's a status update
+        if self.action == "status":
+            return True
+        # If there's a manual operation (Bluetooth lock/unlock), it's NOT a status update
+        user_id = self.calling_user.get("UserID", "")
+        if user_id and user_id.startswith("manual"):
+            return False
+        # Empty info typically means status update (except for WebSocket activities)
+        return not self._info and self.source != SOURCE_WEBSOCKET
+
 
 class BaseDoorbellMotionActivity(Activity):
     """Base class for doorbell motion activities."""
@@ -526,11 +544,6 @@ class LockOperationActivity(Activity):
     def yale_user(self) -> YaleUser | None:
         """Return the Yale user."""
         return get_user_info(self.user_id)
-
-    @cached_property
-    def calling_user(self) -> dict[str, Any]:
-        """Return the the calling user."""
-        return self._data.get("callingUser", self._data.get("user", {}))
 
     @cached_property
     def user_id(self) -> str | None:
