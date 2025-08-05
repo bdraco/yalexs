@@ -339,6 +339,11 @@ class Activity:
         return self._data.get("deviceType")
 
     @cached_property
+    def calling_user(self) -> dict[str, Any]:
+        """Return the calling user."""
+        return self._data.get("callingUser", self._data.get("user", {}))
+
+    @cached_property
     def is_status(self) -> bool:
         """Return if the activity is a status update."""
         # If action is explicitly "status", it's a status update
@@ -539,11 +544,6 @@ class LockOperationActivity(Activity):
     def yale_user(self) -> YaleUser | None:
         """Return the Yale user."""
         return get_user_info(self.user_id)
-
-    @cached_property
-    def calling_user(self) -> dict[str, Any]:
-        """Return the the calling user."""
-        return self._data.get("callingUser", self._data.get("user", {}))
 
     @cached_property
     def user_id(self) -> str | None:
