@@ -341,7 +341,15 @@ class Activity:
     @cached_property
     def is_status(self) -> bool:
         """Return if the activity is a status update."""
-        return not self._info or self.action == "status"
+        # If action is explicitly "status", it's a status update
+        if self.action == "status":
+            return True
+        # If there's a calling user, it's likely a real event (e.g., Bluetooth unlock)
+        # even if info is empty
+        if self.calling_user:
+            return False
+        # Otherwise, empty info means status update
+        return not self._info
 
 
 class BaseDoorbellMotionActivity(Activity):
