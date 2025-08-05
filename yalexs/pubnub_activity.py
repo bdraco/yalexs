@@ -62,11 +62,11 @@ def activities_from_pubnub_message(  # noqa: C901
     info = message.get("info", {})
     context = info.get("context", {})
     accept_user = False
-    if "startDate" in context:
-        activity_dict["dateTime"] = _datetime_string_to_epoch(context["startDate"])
-        accept_user = True
-    elif "startTime" in info:
+    if "startTime" in info:
         activity_dict["dateTime"] = _datetime_string_to_epoch(info["startTime"])
+        accept_user = True
+    elif "startDate" in context:
+        activity_dict["dateTime"] = _datetime_string_to_epoch(context["startDate"])
         accept_user = True
     else:
         activity_dict["dateTime"] = date_time.timestamp() * 1000
