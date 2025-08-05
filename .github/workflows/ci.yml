@@ -54,12 +54,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "poetry"
       - name: Install Dependencies
-        run: |
-          if [ "${{ matrix.extension }}" = "skip_cython" ]; then
-            SKIP_CYTHON=1 poetry install --only=main,dev
-          else
-            REQUIRE_CYTHON=1 poetry install --only=main,dev
-          fi
+        run: poetry install
         shell: bash
       - name: Test with Pytest
         run: poetry run pytest --cov-report=xml
