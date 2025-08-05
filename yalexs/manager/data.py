@@ -168,6 +168,25 @@ class YaleXSData(SubscriberMixin):
         self, device_id: str, date_time: datetime, message: dict[str, Any]
     ) -> None:
         """Process a push message."""
+        try:
+            self._async_handle_push_message(device_id, date_time, message)
+        except Exception:
+            _LOGGER.exception(
+                "Error processing push message for device %s at %s: %s",
+                device_id,
+                date_time,
+                message,
+            )
+            # If we have an error, we want to continue processing other messages
+            return
+
+    def _async_handle_push_message(
+        self,
+        device_id: str,
+        date_time: datetime,
+        message: dict[str, Any],
+    ) -> None:
+        """Handle a push message."""
         _LOGGER.debug("async_push_message: %s %s", device_id, message)
         device = self.get_device_detail(device_id)
         activities = activities_from_pubnub_message(device, date_time, message)
