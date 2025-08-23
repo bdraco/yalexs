@@ -11,7 +11,8 @@ class Brand(StrEnum):
     AUGUST = "august"
     YALE_ACCESS = "yale_access"
     YALE_HOME = "yale_home"
-    YALE_GLOBAL = "yale_global"
+    YALE_GLOBAL = "yale_global"  # requires OAuth with Home Assistant
+    YALE_AUGUST = "yale_august"  # requires OAuth with Home Assistant
 
 
 DEFAULT_BRAND = Brand.AUGUST
@@ -114,6 +115,21 @@ BRAND_CONFIG: dict[Brand, BrandConfig] = {
         # to the user
         pubnub_publish_token=None,
         pubnub_subscribe_token=None,
+    ),
+    Brand.YALE_AUGUST: BrandConfig(
+        name="Yale August",
+        branding="august",
+        access_token_header=HEADER_AUGUST_ACCESS_TOKEN,
+        api_key_header=HEADER_AUGUST_API_KEY,
+        branding_header=HEADER_AUGUST_BRANDING,
+        api_key="66814fd9-af2c-426c-9710-b37e7eadfb51",
+        supports_doorbells=True,
+        supports_alarms=False,
+        require_oauth=True,
+        base_url="https://api-production.august.com",
+        configuration_url="https://account.august.com",
+        pubnub_subscribe_token="sub-c-1030e062-0ebe-11e5-a5c2-0619f8945a4f",  # nosec
+        pubnub_publish_token="pub-c-567d7f2d-270a-438a-a785-f0af12ad8312",  # nosec
     ),
 }
 
